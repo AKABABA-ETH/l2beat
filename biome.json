@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.7.0/schema.json",
   "files": {
-    "ignore": ["node_modules/", ".cache/", "dist/", ".next/"]
+    "ignore": ["node_modules/", ".cache/", "dist/", ".next/", "build/"]
   },
   "formatter": {
     "enabled": true,
@@ -21,7 +21,7 @@
   "organizeImports": { "enabled": true },
   "linter": {
     "enabled": true,
-    "ignore": ["packages/frontend2"],
+    "ignore": ["packages/frontend"],
     "rules": {
       "recommended": false,
       "complexity": {
@@ -79,7 +79,10 @@
           "level": "error",
           "options": {
             "paths": {
-              "console": "Do not use console"
+              "console": "Do not use console",
+              "node:console": "Do not use console",
+              "assert": "Use assert from @l2beat/shared-pure",
+              "node:assert": "Use assert from @l2beat/shared-pure"
             }
           }
         },
@@ -109,6 +112,7 @@
         "noExplicitAny": "error",
         "noExtraNonNullAssertion": "error",
         "noFallthroughSwitchClause": "error",
+        "noFocusedTests": "error",
         "noFunctionAssign": "error",
         "noGlobalAssign": "error",
         "noImportAssign": "error",
@@ -129,7 +133,7 @@
     "formatter": {
       "jsxQuoteStyle": "double",
       "quoteProperties": "asNeeded",
-      "trailingComma": "all",
+      "trailingCommas": "all",
       "semicolons": "asNeeded",
       "arrowParentheses": "always",
       "bracketSpacing": true,

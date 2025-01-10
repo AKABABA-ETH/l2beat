@@ -4,9 +4,11 @@ import {
   UnixTime,
   formatSeconds,
 } from '@l2beat/shared-pure'
-
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -16,8 +18,9 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
+import { formatDelay } from '../../common/formatDelays'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import {
   getCommittee,
@@ -27,17 +30,18 @@ import {
   getSHARPVerifierUpgradeDelay,
 } from '../../discovery/starkware'
 import { delayDescriptionFromString } from '../../utils/delayDescription'
+import { Badge } from '../badges'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('apex')
 
-const upgradeDelaySecondsUSDC = discovery.getContractUpgradeabilityParam(
+const upgradeDelaySecondsUSDC = discovery.getContractValue<number>(
   'StarkExchangeUSDC',
-  'upgradeDelay',
+  'StarkWareDiamond_upgradeDelay',
 )
-const upgradeDelaySecondsUSDT = discovery.getContractUpgradeabilityParam(
+const upgradeDelaySecondsUSDT = discovery.getContractValue<number>(
   'StarkExchangeUSDT',
-  'upgradeDelay',
+  'StarkWareDiamond_upgradeDelay',
 )
 const upgradeDelayUSDC = formatSeconds(upgradeDelaySecondsUSDC)
 const upgradeDelayUSDT = formatSeconds(upgradeDelaySecondsUSDT)
@@ -107,7 +111,15 @@ const dacConfig =
 export const apex: Layer2 = {
   type: 'layer2',
   id: ProjectId('apex'),
+  createdAt: new UnixTime(1663927910), // 2022-09-23T10:11:50Z
+  badges: [
+    Badge.VM.AppChain,
+    Badge.DA.DAC,
+    Badge.Stack.StarkEx,
+    Badge.Infra.SHARP,
+  ],
   display: {
+    reasonsForBeingOther: [REASON_FOR_BEING_OTHER.LOW_DAC_THRESHOLD],
     name: 'ApeX',
     slug: 'apex',
     description: `ApeX Pro is a non-custodial trading platform that delivers
@@ -157,12 +169,14 @@ export const apex: Layer2 = {
       resyncLastDays: 7,
     },
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['DAC'],
-    bridge: { type: 'DAC Members', ...dacConfig },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.DAC],
+      bridge: DA_BRIDGES.DAC_MEMBERS(dacConfig),
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: RISK_VIEW.STATE_ZKP_ST,
     dataAvailability: {
       ...RISK_VIEW.DATA_EXTERNAL_DAC(dacConfig),
@@ -197,12 +211,14 @@ export const apex: Layer2 = {
       includingSHARPUpgradeDelaySeconds,
       minFreezeGracePeriod,
     ),
-    sequencerFailure:
-      RISK_VIEW.SEQUENCER_FORCE_VIA_L1_STARKEX_PERPETUAL(minFreezeGracePeriod),
+    sequencerFailure: {
+      ...RISK_VIEW.SEQUENCER_FORCE_VIA_L1_STARKEX_PERPETUAL(
+        minFreezeGracePeriod,
+      ),
+      secondLine: formatDelay(minFreezeGracePeriod),
+    },
     proposerFailure: RISK_VIEW.PROPOSER_USE_ESCAPE_HATCH_MP_AVGPRICE,
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-    destinationToken: RISK_VIEW.CANONICAL_USDC,
-  }),
+  },
   technology: {
     stateCorrectness: STATE_CORRECTNESS.STARKEX_VALIDITY_PROOFS,
     newCryptography: NEW_CRYPTOGRAPHY.ZK_STARKS,
@@ -300,6 +316,7 @@ export const apex: Layer2 = {
       link: 'https://twitter.com/officialapexdex/status/1564917523401052162?s=21&t=c-SqpS1PL2KOns-2K7myJA',
       description:
         'ApeX Pro beta is launched, with incentives program for users.',
+      type: 'general',
     },
     {
       name: 'ApeX Pro live on Mainnet',
@@ -307,6 +324,7 @@ export const apex: Layer2 = {
       link: 'https://twitter.com/officialapexdex/status/1594722304537288706?s=21&t=c-SqpS1PL2KOns-2K7myJA',
       description:
         'ApeX Pro, a non-custodial decentralized exchange is now live on Mainnet.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [...NUGGETS.STARKWARE],

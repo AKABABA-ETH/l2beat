@@ -1,10 +1,8 @@
-import { assert } from '@l2beat/backend-tools'
-import { EthereumAddress } from '@l2beat/shared-pure'
+import { assert, EthereumAddress } from '@l2beat/shared-pure'
 import { BigNumber, providers, utils } from 'ethers'
 import { isEmpty, zip } from 'lodash'
 import * as z from 'zod'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { FunctionSelectorDecoder } from '../../utils/FunctionSelectorDecoder'
 import { Handler, HandlerResult } from '../Handler'
@@ -71,14 +69,12 @@ export class LineaRolesModuleHandler implements Handler {
     readonly field: string,
     readonly definition: LineaRolesModuleHandlerDefinition,
     readonly abi: string[],
-    readonly logger: DiscoveryLogger,
   ) {}
 
   async execute(
     provider: IProvider,
     address: EthereumAddress,
   ): Promise<HandlerResult> {
-    this.logger.logExecution(this.field, ['Checking LineaRolesModule'])
     const logs = await provider.getLogs(address, [
       [
         abi.getEventTopic('AllowTarget'),

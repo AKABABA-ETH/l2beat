@@ -1,4 +1,1061 @@
-Generated with discovered.json: 0xc15d38e046645c8297c06ef5d46f1685373f6086
+Generated with discovered.json: 0x4a75fdca8455fbd7d6fb3c4a66c4947552961416
+
+# Diff at Fri, 03 Jan 2025 10:43:13 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@f2f208ac8a91552305da5e03332108446838b892 block: 21388072
+- current block number: 21543430
+
+## Description
+
+New Arbitrum_Adapter: No changes  except for comments.
+
+New standard OP_Adapter for the Ink RU.
+
+## Watched changes
+
+```diff
+-   Status: DELETED
+    contract Arbitrum_Adapter (0x5473CBD30bEd1Bf97C0c9d7c59d268CD620dA426)
+    +++ description: None
+```
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.Adapters.42161:
+-        "0x5473CBD30bEd1Bf97C0c9d7c59d268CD620dA426"
++        "0x100EDfCf3af2B4625Fca4EaF6C533703e71F7210"
+      values.Adapters.57073:
++        "0x7e90A40c7519b041A7DF6498fBf5662e8cFC61d2"
+      values.CrossChainContracts.57073:
++        "0xeF684C38F94F48775959ECf2012D7E864ffb9dd4"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract Arbitrum_Adapter (0x100EDfCf3af2B4625Fca4EaF6C533703e71F7210)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract Ink_Adapter (0x7e90A40c7519b041A7DF6498fBf5662e8cFC61d2)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../{.flat@21388072 => .flat}/Arbitrum_Adapter.sol |  10 +
+ .../across-v3/ethereum/.flat/Ink_Adapter.sol       | 596 +++++++++++++++++++++
+ 2 files changed, 606 insertions(+)
+```
+
+Generated with discovered.json: 0x5cf4cef23f0cb03295260afbe5b50fdd11ebf6d1
+
+# Diff at Thu, 12 Dec 2024 17:59:11 GMT:
+
+- author: vincfurc (<10850139+vincfurc@users.noreply.github.com>)
+- comparing to: main@fa5a98638066331a8ea6329a256a3462e7da2b3a block: 21142111
+- current block number: 21388072
+
+## Description
+
+Ignored current time value.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 21142111 (main branch discovery), not current.
+
+```diff
+    contract UMAOptimisticOracle (0xeE3Afe347D5C74317041E2618C49534dAf887c24) {
+    +++ description: None
+      values.getCurrentTime:
+-        1731059123
+    }
+```
+
+Generated with discovered.json: 0x6e237fc3e7c6a0dfacdf8c3facadcfce1cd29744
+
+# Diff at Tue, 10 Dec 2024 10:36:39 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@9ed5a41ddcad978cfdf826bc7a4827bf4a91c814 block: 21142111
+- current block number: 21142111
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 21142111 (main branch discovery), not current.
+
+```diff
++   Status: CREATED
+    contract AcrossConfigStore (0x3B03509645713718B78951126E0A6de6f10043f5)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract PolygonTokenBridger (0x48d990AbDA20afa1fD1da713AbC041B60a922c65)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract UMAOptimisticOracle (0xeE3Afe347D5C74317041E2618C49534dAf887c24)
+    +++ description: None
+```
+
+Generated with discovered.json: 0x52dadfca973170d723ce40d572f31cce6594232a
+
+# Diff at Fri, 08 Nov 2024 09:45:41 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@53988239f42edde0275ed92d8f3ada4279354f7d block: 20997757
+- current block number: 21142111
+
+## Description
+
+Alephzero adapter added.
+
+## Watched changes
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.Adapters.41455:
++        "0x6F4083304C2cA99B077ACE06a5DcF670615915Af"
+      values.CrossChainContracts.41455:
++        "0x13fDac9F9b4777705db45291bbFF3c972c6d1d97"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract Alephzero_Adapter (0x6F4083304C2cA99B077ACE06a5DcF670615915Af)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../across-v3/ethereum/.flat/Alephzero_Adapter.sol | 711 +++++++++++++++++++++
+ 1 file changed, 711 insertions(+)
+```
+
+Generated with discovered.json: 0x06759bc3145293933667947d7cb0ef0a871d648b
+
+# Diff at Mon, 21 Oct 2024 11:03:42 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@8895d33866f5665c4c710f4ddaa32bfa63cc3c78 block: 20997757
+- current block number: 20997757
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20997757 (main branch discovery), not current.
+
+```diff
+    contract Ethereum_SpokePool (0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5) {
+    +++ description: None
+      values.$pastUpgrades.6.2:
++        ["0x48Dcf75EA18233BA947E4480dCd70594720449C1"]
+      values.$pastUpgrades.6.1:
+-        ["0x48Dcf75EA18233BA947E4480dCd70594720449C1"]
++        "0xd3cfc5a7476fd33d3d3fdc2d77adac2bf6900945f9a5c5f35f65b6507dde381f"
+      values.$pastUpgrades.5.2:
++        ["0x08C21b200eD06D2e32cEC91a770C3FcA8aD5F877"]
+      values.$pastUpgrades.5.1:
+-        ["0x08C21b200eD06D2e32cEC91a770C3FcA8aD5F877"]
++        "0xa604480755748d8162a3fb11442719682d473d868450e7460d9dd111a0b8903a"
+      values.$pastUpgrades.4.2:
++        ["0xa4D3535f33549749Fb97fA42903AC80F6fb54af6"]
+      values.$pastUpgrades.4.1:
+-        ["0xa4D3535f33549749Fb97fA42903AC80F6fb54af6"]
++        "0x3ebfeeedb62ab726a1cb350595df3d4b2212f2fda619ae08015d16f304fc8332"
+      values.$pastUpgrades.3.2:
++        ["0x90438AD3d81a0739ce1Cb20C73564682388c5FdD"]
+      values.$pastUpgrades.3.1:
+-        ["0x90438AD3d81a0739ce1Cb20C73564682388c5FdD"]
++        "0xf08778addb8376b0beb500bf569c6251eadc124e6aeeaf5f702ab1dbf576379f"
+      values.$pastUpgrades.2.2:
++        ["0x5ab0A812327aD959dE664AEC8408Ef8c6ABe7184"]
+      values.$pastUpgrades.2.1:
+-        ["0x5ab0A812327aD959dE664AEC8408Ef8c6ABe7184"]
++        "0x946dec56639129cadd298ce5a44341b6f361c5c632f5dea2a80d9cb023b836c6"
+      values.$pastUpgrades.1.2:
++        ["0x326510c1bf9d85Fb73d0AB8d20Aa5BbE9c7561e9"]
+      values.$pastUpgrades.1.1:
+-        ["0x326510c1bf9d85Fb73d0AB8d20Aa5BbE9c7561e9"]
++        "0xceb5b11cd6c78b29d16d2c91bedcb4ec7467814fdce84a753f468c452c36c0d6"
+      values.$pastUpgrades.0.2:
++        ["0xA667498F46457548f1D3ad557340b95Fdb290148"]
+      values.$pastUpgrades.0.1:
+-        ["0xA667498F46457548f1D3ad557340b95Fdb290148"]
++        "0x411ae8360c51beff3d6034ea63f03c41e6cf8b031432391fc44bc4f5a1b908ef"
+    }
+```
+
+Generated with discovered.json: 0x6d36103492d2f52e6253b8f9e2d07b73b4c8b5e5
+
+# Diff at Sat, 19 Oct 2024 06:15:10 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@493c96785a6a32c6417182bb9548d3a990297dbe block: 20934032
+- current block number: 20997757
+
+## Description
+
+Minor upgrade of the WorldChain Adapter to support their custom USDC escrow.
+
+## Watched changes
+
+```diff
+-   Status: DELETED
+    contract WorldChain_Adapter (0x8eBebfc894047bEE213A561b8792fCa71241731f)
+    +++ description: None
+```
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.Adapters.480:
+-        "0x8eBebfc894047bEE213A561b8792fCa71241731f"
++        "0xA8399e221a583A57F54Abb5bA22f31b5D6C09f32"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract WorldChain_Adapter (0xA8399e221a583A57F54Abb5bA22f31b5D6C09f32)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../WorldChain_Adapter.sol                         | 25 +++++++++++++---------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
+```
+
+Generated with discovered.json: 0xd7ff53370050b4046ea7e36258229abf1541932b
+
+# Diff at Fri, 18 Oct 2024 10:53:31 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@0295165a89d86b7450439f24f100d1baa74381fc block: 20934032
+- current block number: 20934032
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20934032 (main branch discovery), not current.
+
+```diff
+    contract OptimisticGovernor (0x8692B776d1Ff0664177c90465038056Dc64f8991) {
+    +++ description: None
+      directlyReceivedPermissions:
++        [{"permission":"act","target":"0xB524735356985D2f267FA010D681f061DfF03715"}]
+    }
+```
+
+Generated with discovered.json: 0xd724021c94c1d6affef9e3b5adf59952c248f1fb
+
+# Diff at Mon, 14 Oct 2024 10:48:32 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 20934032
+- current block number: 20934032
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20934032 (main branch discovery), not current.
+
+```diff
+    contract Zora_Adapter (0x024F2fC31CBDD8de17194b1892c834f98Ef5169b) {
+    +++ description: None
+      sourceHashes:
++        ["0x6d9e4b79712a4e81c51941fb986f4c55774da36be108106577ca01ccb35a0f87"]
+    }
+```
+
+```diff
+    contract VotingToken (0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828) {
+    +++ description: None
+      sourceHashes:
++        ["0x349b0f612f02a8599667c43efe1e547bf4f18a46732001b3afb6b425a87325e9"]
+    }
+```
+
+```diff
+    contract Redstone_Adapter (0x188F8C95B7cfB7993B53a4F643efa687916f73fA) {
+    +++ description: None
+      sourceHashes:
++        ["0x0c32a0cfde3cb87843b5521bf184be1dd2b0031a8e91c2bc7885a2e10db010c1"]
+    }
+```
+
+```diff
+    contract Boba_Adapter (0x33B0Ec794c15D6Cc705818E70d4CaCe7bCfB5Af3) {
+    +++ description: None
+      sourceHashes:
++        ["0x9f8b082009430546d55daaa8e166eca77ef9ca17f7831f03de4635bdc4a32b31"]
+    }
+```
+
+```diff
+    contract Finder (0x40f941E48A552bF496B154Af6bf55725f18D77c3) {
+    +++ description: None
+      sourceHashes:
++        ["0x6b81a32a0de6b3e8ed743f089a6518d3791b0e4d373300269439642482338ddb"]
+    }
+```
+
+```diff
+    contract ProposerV2 (0x50efaC9619225d7fB4703C5872da978849B6E7cC) {
+    +++ description: None
+      sourceHashes:
++        ["0x28c93f7b68e31548857633c6cb61284d9d2860cc0fbbcaaede8f631d364d66a4"]
+    }
+```
+
+```diff
+    contract Ethereum_Adapter (0x527E872a5c3f0C7c24Fe33F2593cFB890a285084) {
+    +++ description: None
+      sourceHashes:
++        ["0x14afbe84cefefdcb06132c680d267b8892f0834a39fc23ca0ea563758653a21a"]
+    }
+```
+
+```diff
+    contract Arbitrum_Adapter (0x5473CBD30bEd1Bf97C0c9d7c59d268CD620dA426) {
+    +++ description: None
+      sourceHashes:
++        ["0xa1c171564a6e837069132a07b8c6d217e08cf53cd6a43151a7f497440d2f1e33"]
+    }
+```
+
+```diff
+    contract Ethereum_SpokePool (0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5) {
+    +++ description: None
+      sourceHashes:
++        ["0x669da4e91a9ad0ca23205a174e7f8931e4d7d128453132164ba6458f11f15c72","0x7bae4a313d267e381b0aa01e463be4435e016d0c53c26b0f4136d4caa180fa88"]
+    }
+```
+
+```diff
+    contract GovernorV2 (0x7b292034084A41B9D441B71b6E3557Edd0463fa8) {
+    +++ description: None
+      sourceHashes:
++        ["0xdf7f17e5c8ba1f0103fcfaf495da624089f8bfb3d5052217537bb064ca8c60b9"]
+    }
+```
+
+```diff
+    contract LpTokenFactory (0x7dB69eb9F52eD773E9b03f5068A1ea0275b2fD9d) {
+    +++ description: None
+      sourceHashes:
++        ["0x54ab5e1f981929fca37e28c313db9ab35343de3df6907dbaeb29dda3840aadcd"]
+    }
+```
+
+```diff
+    contract Linea_Adapter (0x7Ea0D1882D610095A45E512B0113f79cA98a8EfE) {
+    +++ description: None
+      sourceHashes:
++        ["0x6cc7cfdaa6b4d79d35a624dafc13713137f61d46c6536a4837a2793c3fa3fc4d"]
+    }
+```
+
+```diff
+    contract EmergencyProposalExecutor (0x8180D59b7175d4064bDFA8138A58e9baBFFdA44a) {
+    +++ description: None
+      sourceHashes:
++        ["0xd5a33441170541b7df25812e0e3dff6562b2f09ab835a6b431cb9e7198a47605","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+```diff
+    contract Lisk_Adapter (0x8229E812f20537caA1e8Fb41749b4887B8a75C3B) {
+    +++ description: None
+      sourceHashes:
++        ["0x4d929bc632eff7818792b2ad5539b8b5dbc8842e7d23c9d9bfb116acb05eb96a"]
+    }
+```
+
+```diff
+    contract OptimisticGovernor (0x8692B776d1Ff0664177c90465038056Dc64f8991) {
+    +++ description: None
+      sourceHashes:
++        ["0xcecd27c998c8fd83d7532693da2bdff346a1dbedbaab4744f21d2bcf1986e9de"]
+    }
+```
+
+```diff
+    contract WorldChain_Adapter (0x8eBebfc894047bEE213A561b8792fCa71241731f) {
+    +++ description: None
+      sourceHashes:
++        ["0xa2716832109570351047beb288a3a96a17d443cc548980a1327bb59729b74efe"]
+    }
+```
+
+```diff
+    contract EmergencyProposer (0x91F1804aCaf87C2D34A34A70be1bb16bB85D6748) {
+    +++ description: None
+      sourceHashes:
++        ["0x435ceb597bcf7bd820f593bdbc0e3ce4d223cc2203b368911d2b29fa6bc5e048"]
+    }
+```
+
+```diff
+    contract Polygon_Adapter (0xb4AeF0178f5725392A26eE18684C2aB62adc912e) {
+    +++ description: None
+      sourceHashes:
++        ["0xf598be4ed345b6b3e83e04dff2cb5472dc4df0b8476f8f74a4c75c473dee6347"]
+    }
+```
+
+```diff
+    contract HubPool Multisig (0xB524735356985D2f267FA010D681f061DfF03715) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+```diff
+    contract Scroll_Adapter (0xb6129Ab69aEA75e6884c2D6ecf25293C343C519F) {
+    +++ description: None
+      sourceHashes:
++        ["0x56586e3315f76ed277970410b47da25a0980ca9400f2a97fd38139e2a1f2dc5e"]
+    }
+```
+
+```diff
+    contract CoveredCallFinancialProductLibrary (0xBbc6009fEfFc27ce705322832Cb2068F8C1e0A58) {
+    +++ description: None
+      sourceHashes:
++        ["0x626fc280735c432e9187554bc59d556389dc73435f1b570e64f424d257f68d09"]
+    }
+```
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      sourceHashes:
++        ["0x3afa0a01f4cde6c678d6ec12443078407e69293b9a4519105445f694671b2dec"]
+    }
+```
+
+```diff
+    contract Base_Adapter (0xE1421233BF7158A19f89F17c9735F9cbd3D9529c) {
+    +++ description: None
+      sourceHashes:
++        ["0x172a1f27f0fecf665d90a6adc1287223f05a73acd9ed19d9c446972880ccce0f"]
+    }
+```
+
+```diff
+    contract Optimism_Adapter (0xE1e74B3D6A8E2A479B62958D4E4E6eEaea5B612b) {
+    +++ description: None
+      sourceHashes:
++        ["0x59784b70d01278196c00fbfe1f237b01ec891dca28b0542cdf8dcc9e672b3849"]
+    }
+```
+
+```diff
+    contract ZkSync_Adapter (0xE233009838CB898b50e0012a6E783FC9FeE447FB) {
+    +++ description: None
+      sourceHashes:
++        ["0xc4f838b87ec9ed41b647f7d3a4a508abdb28aef5a4908a9e0829ccb37f319cc8"]
+    }
+```
+
+```diff
+    contract BondToken (0xee1DC6BCF1Ee967a350e9aC6CaaAA236109002ea) {
+    +++ description: None
+      sourceHashes:
++        ["0x1d9754ae4e99e4320201bbc6f0e19aa5ecac917dcacaadba3b70cfa018910754"]
+    }
+```
+
+```diff
+    contract Mode_Adapter (0xf1B59868697f3925b72889ede818B9E7ba0316d0) {
+    +++ description: None
+      sourceHashes:
++        ["0x1b1b271fd3f736024fda7dd869d78943819efee5dcbf6f4075af9647cfb16cac"]
+    }
+```
+
+```diff
+    contract Blast_Adapter (0xF2bEf5E905AAE0295003ab14872F811E914EdD81) {
+    +++ description: None
+      sourceHashes:
++        ["0x596bdc0b39f0ff19cde625424cdc037dd3e79355ee2c845bd8a6e5e42b3bc332"]
+    }
+```
+
+```diff
+    contract OptimisticOracleV3 (0xfb55F43fB9F48F63f9269DB7Dde3BbBe1ebDC0dE) {
+    +++ description: None
+      sourceHashes:
++        ["0xfb2c9056673690384bb615fd326655f97b80fa2a5601a15a35065b0a68186ae7"]
+    }
+```
+
+Generated with discovered.json: 0x38aad1481151a89c2ea4d20c9aef1cf3d10e0e3d
+
+# Diff at Thu, 10 Oct 2024 08:32:18 GMT:
+
+- author: sekuba (<sekuba@users.noreply.github.com>)
+- comparing to: main@cb5ff535ffc194baf7396bd6db8232883e2ad088 block: 20675639
+- current block number: 20934032
+
+## Description
+
+New Hub added (Worldchain).
+
+## Watched changes
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.Adapters.480:
++        "0x8eBebfc894047bEE213A561b8792fCa71241731f"
+      values.CrossChainContracts.480:
++        "0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract WorldChain_Adapter (0x8eBebfc894047bEE213A561b8792fCa71241731f)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../ethereum/.flat/WorldChain_Adapter.sol          | 591 +++++++++++++++++++++
+ 1 file changed, 591 insertions(+)
+```
+
+Generated with discovered.json: 0xfd768f13b611e4a0af3411019ac6f2f75bea7357
+
+# Diff at Tue, 01 Oct 2024 10:49:24 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@bd754dc73c66120164006054f8d25c5fae9cd910 block: 20675639
+- current block number: 20675639
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20675639 (main branch discovery), not current.
+
+```diff
+    contract Ethereum_SpokePool (0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2023-04-24T16:52:35.000Z",["0xA667498F46457548f1D3ad557340b95Fdb290148"]],["2023-08-22T00:20:59.000Z",["0x326510c1bf9d85Fb73d0AB8d20Aa5BbE9c7561e9"]],["2023-10-03T13:48:47.000Z",["0x5ab0A812327aD959dE664AEC8408Ef8c6ABe7184"]],["2024-02-21T18:04:23.000Z",["0x90438AD3d81a0739ce1Cb20C73564682388c5FdD"]],["2024-03-18T13:40:47.000Z",["0xa4D3535f33549749Fb97fA42903AC80F6fb54af6"]],["2024-05-15T15:11:59.000Z",["0x08C21b200eD06D2e32cEC91a770C3FcA8aD5F877"]],["2024-09-03T15:48:23.000Z",["0x48Dcf75EA18233BA947E4480dCd70594720449C1"]]]
+    }
+```
+
+Generated with discovered.json: 0x2a73e7d79017ef77856103254e8631297be55635
+
+# Diff at Wed, 04 Sep 2024 07:12:24 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@878a951312cec062f5003f6749f781861b0cdba1 block: 20532552
+- current block number: 20675639
+
+## Description
+
+Small implementation upgrade of the Ethereum Spoke Pool:
+* depositExclusive(): Public method that allows users to set an exclusive relayer for their deposit for a certain time. (Any relayer can fulfill the request at the destination after `exclusivityDeadlineOffset` passes)
+
+## Watched changes
+
+```diff
+    contract Ethereum_SpokePool (0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5) {
+    +++ description: None
+      values.$implementation:
+-        "0x08C21b200eD06D2e32cEC91a770C3FcA8aD5F877"
++        "0x48Dcf75EA18233BA947E4480dCd70594720449C1"
+      values.$upgradeCount:
+-        6
++        7
+    }
+```
+
+## Source code changes
+
+```diff
+.../Ethereum_SpokePool/Ethereum_SpokePool.sol      | 95 +++++++++++++++++++++-
+ 1 file changed, 93 insertions(+), 2 deletions(-)
+```
+
+Generated with discovered.json: 0x5505aceb59200d22be98a33c394b380e7a23c7cf
+
+# Diff at Fri, 30 Aug 2024 07:50:52 GMT:
+
+- author: Adrian Adamiak (<adrian@adamiak.net>)
+- comparing to: main@6c1bd1f41fadf5f2cb1c1805b5a2c6138a3ed35a block: 20532552
+- current block number: 20532552
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20532552 (main branch discovery), not current.
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      receivedPermissions.0.via:
+-        []
+    }
+```
+
+Generated with discovered.json: 0x8e35f31d9d10c1b7228c85a0ffc973980ed619c0
+
+# Diff at Fri, 23 Aug 2024 09:50:52 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@67597c7d6c810bc726594446890178150240711e block: 20532552
+- current block number: 20532552
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20532552 (main branch discovery), not current.
+
+```diff
+    contract Ethereum_SpokePool (0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5) {
+    +++ description: None
+      values.$upgradeCount:
++        6
+    }
+```
+
+Generated with discovered.json: 0x25083660ffed581d9a0044fec9d4ec63fdf6a3d8
+
+# Diff at Wed, 21 Aug 2024 10:01:38 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@2f6dde3357bf5d79196b6e94f79d853a6c4ec72b block: 20532552
+- current block number: 20532552
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20532552 (main branch discovery), not current.
+
+```diff
+    contract Ethereum_SpokePool (0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0xc186fA914353c44b2E33eBE05f21846F1048bEda","via":[]}]
+    }
+```
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      assignedPermissions:
+-        {"upgrade":["0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5"]}
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5","via":[]}]
+    }
+```
+
+Generated with discovered.json: 0xf27ee85934c0dc2fbfecd1d1d8da4503777c5497
+
+# Diff at Thu, 15 Aug 2024 07:31:34 GMT:
+
+- author: Radina Talanova (<nt.radina@gmail.com>)
+- comparing to: main@9a07aead4b3726cc622f66fe9a15e06e63af7acd block: 20518997
+- current block number: 20532552
+
+## Description
+
+New adapter and L2 crosschain target for Zora were added.
+
+## Watched changes
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.Adapters.7777777:
++        "0x024F2fC31CBDD8de17194b1892c834f98Ef5169b"
+      values.CrossChainContracts.7777777:
++        "0x13fDac9F9b4777705db45291bbFF3c972c6d1d97"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract Zora_Adapter (0x024F2fC31CBDD8de17194b1892c834f98Ef5169b)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../across-v3/ethereum/.flat/Zora_Adapter.sol      | 590 +++++++++++++++++++++
+ 1 file changed, 590 insertions(+)
+```
+
+Generated with discovered.json: 0xe9a9d7fdf87c58268c0949602f8942688583b6ab
+
+# Diff at Tue, 13 Aug 2024 10:06:57 GMT:
+
+- author: Radina Talanova (<nt.radina@gmail.com>)
+- comparing to: main@8b923f6edf399d43a5cd7f331708956dce3e83d1 block: 20482283
+- current block number: 20518997
+
+## Description
+
+The Spoke pool (used for liquidity on the destination chains) was changed for the Redstone Adapter.
+
+## Watched changes
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.CrossChainContracts.690:
+-        "0x28077B47Cd03326De7838926A63699849DD4fa87"
++        "0x13fDac9F9b4777705db45291bbFF3c972c6d1d97"
+    }
+```
+
+Generated with discovered.json: 0x268645e90c13973d8d0e1a6b1dd839737c270f02
+
+# Diff at Fri, 09 Aug 2024 10:08:18 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 20482283
+- current block number: 20482283
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20482283 (main branch discovery), not current.
+
+```diff
+    contract EmergencyProposalExecutor (0x8180D59b7175d4064bDFA8138A58e9baBFFdA44a) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "2 of 4 (50%)"
+      values.getOwners:
+-        ["0x363605C0bdE9F1F5053aDA30618d95dbFc109Bf5","0xcc400c09ecBAC3e0033e4587BdFAABB26223e37d","0x1d933Fd71FF07E69f066d50B39a7C34EB3b69F05","0x837219D7a9C666F5542c4559Bf17D7B804E5c5fe"]
+      values.getThreshold:
+-        2
+      values.$members:
++        ["0x363605C0bdE9F1F5053aDA30618d95dbFc109Bf5","0xcc400c09ecBAC3e0033e4587BdFAABB26223e37d","0x1d933Fd71FF07E69f066d50B39a7C34EB3b69F05","0x837219D7a9C666F5542c4559Bf17D7B804E5c5fe"]
+      values.$threshold:
++        2
+      values.multisigThreshold:
++        "2 of 4 (50%)"
+    }
+```
+
+```diff
+    contract HubPool Multisig (0xB524735356985D2f267FA010D681f061DfF03715) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "3 of 5 (60%)"
+      values.getOwners:
+-        ["0x1d933Fd71FF07E69f066d50B39a7C34EB3b69F05","0x837219D7a9C666F5542c4559Bf17D7B804E5c5fe","0x996267d7d1B7f5046543feDe2c2Db473Ed4f65e9","0xcc400c09ecBAC3e0033e4587BdFAABB26223e37d","0x868CF19464e17F76D6419ACC802B122c22D2FD34"]
+      values.getThreshold:
+-        3
+      values.$members:
++        ["0x1d933Fd71FF07E69f066d50B39a7C34EB3b69F05","0x837219D7a9C666F5542c4559Bf17D7B804E5c5fe","0x996267d7d1B7f5046543feDe2c2Db473Ed4f65e9","0xcc400c09ecBAC3e0033e4587BdFAABB26223e37d","0x868CF19464e17F76D6419ACC802B122c22D2FD34"]
+      values.$threshold:
++        3
+      values.multisigThreshold:
++        "3 of 5 (60%)"
+    }
+```
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      assignedPermissions.admin:
+-        ["0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5"]
+      assignedPermissions.upgrade:
++        ["0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5"]
+    }
+```
+
+Generated with discovered.json: 0x694b66df3231b8a4fe6cb923963e8254b05ba3e1
+
+# Diff at Thu, 08 Aug 2024 07:11:14 GMT:
+
+- author: Radina Talanova (<nt.radina@gmail.com>)
+- comparing to: main@5a17db968badca34a66703637dabf76a313bb43e block: 20389580
+- current block number: 20482283
+
+## Description
+
+A new Adapter and L2 crosschain target for Redstone are added.
+
+## Watched changes
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.Adapters.690:
++        "0x188F8C95B7cfB7993B53a4F643efa687916f73fA"
+      values.CrossChainContracts.690:
++        "0x28077B47Cd03326De7838926A63699849DD4fa87"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract Redstone_Adapter (0x188F8C95B7cfB7993B53a4F643efa687916f73fA)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../across-v3/ethereum/.flat/Redstone_Adapter.sol  | 590 +++++++++++++++++++++
+ 1 file changed, 590 insertions(+)
+```
+
+Generated with discovered.json: 0xdbd5447e307a5f0e39981d7b5ea954532dc92555
+
+# Diff at Fri, 26 Jul 2024 08:38:43 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@f98f9bf0ba32e20ec33942af664ae6ed27e8172d block: 20289714
+- current block number: 20389580
+
+## Description
+
+A new Adapter and L2 crosschain target for Scroll is registered.
+
+## Watched changes
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.Adapters.534352:
++        "0xb6129Ab69aEA75e6884c2D6ecf25293C343C519F"
+      values.CrossChainContracts.534352:
++        "0x3baD7AD0728f9917d1Bf08af5782dCbD516cDd96"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract Scroll_Adapter (0xb6129Ab69aEA75e6884c2D6ecf25293C343C519F)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../across-v3/ethereum/.flat/Scroll_Adapter.sol    | 531 +++++++++++++++++++++
+ 1 file changed, 531 insertions(+)
+```
+
+Generated with discovered.json: 0x5bed7c1b5746cf1f6518eef6a73859844d4d86c8
+
+# Diff at Fri, 12 Jul 2024 10:06:36 GMT:
+
+- author: sekuba (<sekuba@users.noreply.github.com>)
+- comparing to: main@48ec906f1df3ec8351c0e2324170592091f7c1db block: 20232297
+- current block number: 20289714
+
+## Description
+
+An adapter for Blast L2 is added.
+
+## Watched changes
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.Adapters.81457:
++        "0xF2bEf5E905AAE0295003ab14872F811E914EdD81"
+      values.CrossChainContracts.81457:
++        "0x2D509190Ed0172ba588407D4c2df918F955Cc6E1"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract Blast_Adapter (0xF2bEf5E905AAE0295003ab14872F811E914EdD81)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../across-v3/ethereum/.flat/Blast_Adapter.sol     | 601 +++++++++++++++++++++
+ 1 file changed, 601 insertions(+)
+```
+
+Generated with discovered.json: 0xe1c37ec100450be1198b8b4a281461e96e22f4fe
+
+# Diff at Thu, 04 Jul 2024 09:37:01 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@bfc05c606d82c4a38bb3b8c60569f0c976d7ba3a block: 20204613
+- current block number: 20232297
+
+## Description
+
+A new adapter for Lisk is registered. Other changes are config related.
+
+## Watched changes
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.Adapters.1135:
++        "0x8229E812f20537caA1e8Fb41749b4887B8a75C3B"
+      values.CrossChainContracts.1135:
++        "0x9552a0a6624A23B848060AE5901659CDDa1f83f8"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract Lisk_Adapter (0x8229E812f20537caA1e8Fb41749b4887B8a75C3B)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../across-v3/ethereum/.flat/Lisk_Adapter.sol      | 590 +++++++++++++++++++++
+ 1 file changed, 590 insertions(+)
+```
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20204613 (main branch discovery), not current.
+
+```diff
+    contract HubPool (0xc186fA914353c44b2E33eBE05f21846F1048bEda) {
+    +++ description: None
+      values.CrossChainContracts.1:
+-        {"l2ChainId":1,"adapter":"0x527E872a5c3f0C7c24Fe33F2593cFB890a285084","spokePool":"0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5"}
++        "0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5"
+      values.CrossChainContracts.10:
+-        {"l2ChainId":10,"adapter":"0xE1e74B3D6A8E2A479B62958D4E4E6eEaea5B612b","spokePool":"0x6f26Bf09B1C792e3228e5467807a900A503c0281"}
++        "0x6f26Bf09B1C792e3228e5467807a900A503c0281"
+      values.CrossChainContracts.137:
+-        {"l2ChainId":137,"adapter":"0xb4AeF0178f5725392A26eE18684C2aB62adc912e","spokePool":"0x9295ee1d8C5b022Be115A2AD3c30C72E34e7F096"}
++        "0x9295ee1d8C5b022Be115A2AD3c30C72E34e7F096"
+      values.CrossChainContracts.288:
+-        {"l2ChainId":288,"adapter":"0x33B0Ec794c15D6Cc705818E70d4CaCe7bCfB5Af3","spokePool":"0xBbc6009fEfFc27ce705322832Cb2068F8C1e0A58"}
++        "0xBbc6009fEfFc27ce705322832Cb2068F8C1e0A58"
+      values.CrossChainContracts.324:
+-        {"l2ChainId":324,"adapter":"0xE233009838CB898b50e0012a6E783FC9FeE447FB","spokePool":"0xE0B015E54d54fc84a6cB9B666099c46adE9335FF"}
++        "0xE0B015E54d54fc84a6cB9B666099c46adE9335FF"
+      values.CrossChainContracts.8453:
+-        {"l2ChainId":8453,"adapter":"0xE1421233BF7158A19f89F17c9735F9cbd3D9529c","spokePool":"0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64"}
++        "0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64"
+      values.CrossChainContracts.34443:
+-        {"l2ChainId":34443,"adapter":"0xf1B59868697f3925b72889ede818B9E7ba0316d0","spokePool":"0x3baD7AD0728f9917d1Bf08af5782dCbD516cDd96"}
++        "0x3baD7AD0728f9917d1Bf08af5782dCbD516cDd96"
+      values.CrossChainContracts.42161:
+-        {"l2ChainId":42161,"adapter":"0x5473CBD30bEd1Bf97C0c9d7c59d268CD620dA426","spokePool":"0xe35e9842fceaCA96570B734083f4a58e8F7C5f2A"}
++        "0xe35e9842fceaCA96570B734083f4a58e8F7C5f2A"
+      values.CrossChainContracts.59144:
+-        {"l2ChainId":59144,"adapter":"0x7Ea0D1882D610095A45E512B0113f79cA98a8EfE","spokePool":"0x7E63A5f1a8F0B4d0934B2f2327DAED3F6bb2ee75"}
++        "0x7E63A5f1a8F0B4d0934B2f2327DAED3F6bb2ee75"
+      values.Adapters:
++        {"1":"0x527E872a5c3f0C7c24Fe33F2593cFB890a285084","10":"0xE1e74B3D6A8E2A479B62958D4E4E6eEaea5B612b","137":"0xb4AeF0178f5725392A26eE18684C2aB62adc912e","288":"0x33B0Ec794c15D6Cc705818E70d4CaCe7bCfB5Af3","324":"0xE233009838CB898b50e0012a6E783FC9FeE447FB","8453":"0xE1421233BF7158A19f89F17c9735F9cbd3D9529c","34443":"0xf1B59868697f3925b72889ede818B9E7ba0316d0","42161":"0x5473CBD30bEd1Bf97C0c9d7c59d268CD620dA426","59144":"0x7Ea0D1882D610095A45E512B0113f79cA98a8EfE"}
+    }
+```
+
+Generated with discovered.json: 0x44dcb247700d419ff4f0fe12d00a6c356c1963ba
+
+# Diff at Sun, 30 Jun 2024 12:51:10 GMT:
+
+- author: Adrian Adamiak (<adrian@adamiak.net>)
+- comparing to: main@60708cb34918009c7ee36a463625bddd2353d3c5 block: 19976242
+- current block number: 20204613
+
+## Description
+
+Added ZkSync_Adapter.getL1CallValue to "ignoreMethods" because it is dependent
+on tx.gasprice and returns different results event for the same block number
+(e.g. when call is batched).
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19976242 (main branch discovery), not current.
+
+```diff
+    contract ZkSync_Adapter (0xE233009838CB898b50e0012a6E783FC9FeE447FB) {
+    +++ description: None
+      values.getL1CallValue:
+-        500000000000000
+    }
+```
+
+Generated with discovered.json: 0x4d7efdd31fe5b56bea03552b2c01f60249641603
 
 # Diff at Wed, 29 May 2024 14:54:44 GMT:
 

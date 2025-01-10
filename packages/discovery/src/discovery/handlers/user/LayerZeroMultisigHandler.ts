@@ -1,10 +1,8 @@
-import { assert } from '@l2beat/backend-tools'
 import { ContractValue } from '@l2beat/discovery-types'
-import { EthereumAddress } from '@l2beat/shared-pure'
+import { assert, EthereumAddress } from '@l2beat/shared-pure'
 import { providers, utils } from 'ethers'
 import { z } from 'zod'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { Handler, HandlerResult } from '../Handler'
 import { toContractValue } from '../utils/toContractValue'
@@ -43,7 +41,6 @@ export class LayerZeroMultisigHandler implements Handler {
   constructor(
     readonly field: string,
     abi: string[],
-    readonly logger: DiscoveryLogger,
   ) {
     this.constructorArgsHandler = new ConstructorArgsHandler(
       'constructorArgs',
@@ -52,7 +49,6 @@ export class LayerZeroMultisigHandler implements Handler {
         nameArgs: true,
       },
       abi,
-      logger,
     )
   }
 
@@ -65,13 +61,6 @@ export class LayerZeroMultisigHandler implements Handler {
       address,
     )
 
-    this.logger.logExecution(this.field, [
-      'Querying ',
-      UPDATE_SIGNER_EVENT_FRAGMENT.name,
-      ' and ',
-      UPDATE_QUORUM_EVENT_FRAGMENT.name,
-    ])
-
     async function getLogs(topic: string): Promise<providers.Log[]> {
       return await provider.getLogs(address, [ABI.getEventTopic(topic)])
     }
@@ -83,7 +72,9 @@ export class LayerZeroMultisigHandler implements Handler {
     const ctorValue = constructorArgs.value
     assert(ctorValue !== undefined, 'constructorArgs.value is undefined')
     assert(
-      typeof ctorValue === 'object' && !Array.isArray(ctorValue),
+      typeof ctorValue === 'object' &&
+        !Array.isArray(ctorValue) &&
+        isNotEthereumAddress(ctorValue),
       'constructorArgs.value is not an object',
     )
     assert(Array.isArray(ctorValue._signers), 'signers is not an array')
@@ -116,4 +107,10 @@ export class LayerZeroMultisigHandler implements Handler {
       },
     }
   }
+}
+
+function isNotEthereumAddress<T extends object>(
+  value: T | EthereumAddress,
+): value is T {
+  return typeof value !== 'string'
 }

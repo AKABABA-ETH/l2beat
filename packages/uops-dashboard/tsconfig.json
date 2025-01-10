@@ -1,0 +1,13 @@
+{
+  "extends": "@l2beat/typescript-config/nextjs",
+  "compilerOptions": {
+    "downlevelIteration": true,
+    "noUncheckedIndexedAccess": false,
+    "paths": {
+      "@/*": ["./src/*"],
+      "react": ["./node_modules/@types/react"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}

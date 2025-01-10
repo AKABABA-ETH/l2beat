@@ -11,7 +11,7 @@ const EXIT_CENSORSHIP: ScalingProjectRisk = {
 const WITHDRAW: ScalingProjectTechnologyChoice = {
   name: 'Users can independently exit the system',
   description:
-    'Independent exit allows the users to escape censorship by withdrawing their funds. The system allows users to  withdraw their funds by submitting a transaction directly to the contract on-chain.',
+    'Independent exit allows the users to escape censorship by withdrawing their funds. The system allows users to  withdraw their funds by submitting a transaction directly to the contract onchain.',
   risks: [EXIT_CENSORSHIP],
   references: [],
 }
@@ -19,7 +19,7 @@ const WITHDRAW: ScalingProjectTechnologyChoice = {
 function WITHDRAW_OR_HALT(delay?: number): ScalingProjectTechnologyChoice {
   return {
     name: 'Users can force exit the system',
-    description: `Force exit allows the users to escape censorship by withdrawing their funds. The system allows users to force the withdrawal of funds by submitting a request directly to the contract on-chain.  The request must be served within ${
+    description: `Force exit allows the users to escape censorship by withdrawing their funds. The system allows users to force the withdrawal of funds by submitting a request directly to the contract onchain.  The request must be served within ${
       delay !== undefined ? formatSeconds(delay) : 'a defined time period'
     }. If this does not happen, the system will halt regular operation and permit trustless withdrawal of funds.`,
     risks: [EXIT_CENSORSHIP],
@@ -67,12 +67,15 @@ function STARKEX_PERPETUAL_WITHDRAW(
   }
 }
 
-const CANONICAL_ORDERING: ScalingProjectTechnologyChoice = {
-  name: 'Users can force any transaction',
-  description:
-    'Because the state of the system is based on transactions submitted on-chain and anyone can submit their transactions there it allows the users to circumvent censorship by interacting with the smart contract directly.',
-  risks: [],
-  references: [],
+function CANONICAL_ORDERING(
+  forcedInbox: 'smart contract' | 'EOA inbox',
+): ScalingProjectTechnologyChoice {
+  return {
+    name: 'Users can force any transaction',
+    description: `Because the state of the system is based on transactions submitted on the underlying host chain and anyone can submit their transactions there it allows the users to circumvent censorship by interacting with the ${forcedInbox} on the host chain directly.`,
+    risks: [],
+    references: [],
+  }
 }
 
 const PROPOSE_OWN_BLOCKS: ScalingProjectTechnologyChoice = {
@@ -81,7 +84,7 @@ const PROPOSE_OWN_BLOCKS: ScalingProjectTechnologyChoice = {
     'Because the block production is open to anyone if users experience censorship from the operator they can propose their own blocks which would include their transactions.',
   risks: [
     {
-      category: 'Users can be censored if',
+      category: 'Funds can be frozen if',
       text: 'the operator refuses to include their transactions and users lack resources to propose blocks themselves.',
     },
   ],

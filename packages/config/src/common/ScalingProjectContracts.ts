@@ -1,4 +1,3 @@
-import type { UpgradeabilityParameters } from '@l2beat/discovery-types'
 import { EthereumAddress } from '@l2beat/shared-pure'
 
 import { ScalingProjectReference } from './ScalingProjectReference'
@@ -19,13 +18,11 @@ export interface ScalingProjectContracts {
   isUnderReview?: boolean
 }
 
-export type ScalingProjectContract =
-  | ScalingProjectContractSingleAddress
-  | ScalingProjectContractMultipleAddresses
-
-export interface ScalingProjectContractSingleAddress {
+export interface ScalingProjectContract {
   /** Address of the contract */
   address: EthereumAddress
+  /** Verification status of the contract */
+  isVerified: boolean
   /** Name of the chain of this address. Optional for backwards compatibility */
   chain?: string
   /** Solidity name of the contract */
@@ -49,64 +46,13 @@ export interface ScalingProjectContractSingleAddress {
   }
   /** List of references */
   references?: ScalingProjectReference[]
+  /** Indicates whether the generation of contained data was driven by discovery */
+  discoveryDrivenData?: boolean
 }
 
-export function isSingleAddress(
-  c: ScalingProjectContract,
-): c is ScalingProjectContractSingleAddress {
-  return (c as ScalingProjectContractSingleAddress).address !== undefined
-}
-
-export interface ScalingProjectContractMultipleAddresses {
-  /** Address of the contract */
-  multipleAddresses: EthereumAddress[]
-  /** Solidity name of the contract */
-  name: string
-  /** Description of the contract's role in the system */
-  description?: string
-  /** Url to chain's etherscan */
-  etherscanUrl?: string
-  /** Name of the chain of this address. Optional for backwards compatibility */
-  chain?: string
-}
-
-export type ScalingProjectUpgradeability =
-  | CustomUpgradeability
-  | CustomUpgradeabilityWithoutAdmin
-  | ReferenceUpgradeability
-  | BeaconUpgradeability
-  | UpgradeabilityParameters
-
-export interface CustomUpgradeability {
-  type: 'Custom'
-  /** Address of the admin */
-  admin: EthereumAddress
-  /** Address of the implementation */
-  implementation: EthereumAddress
-}
-
-export interface CustomUpgradeabilityWithoutAdmin {
-  type: 'CustomWithoutAdmin'
-  /** Address of the admin */
-  implementation: EthereumAddress
-}
-
-export interface ReferenceUpgradeability {
-  type: 'Reference'
-  /** Name of the base contract */
-  base: string
-  /** Method signature to check */
-  method: string
-  /** Arguments to the method */
-  args?: (string | boolean | number)[]
-}
-
-export interface BeaconUpgradeability {
-  type: 'Beacon'
-  /** Address of the beacon contract */
-  beacon: EthereumAddress
-  /** Address of the admin of the beacon contract */
-  beaconAdmin: EthereumAddress
-  /** Address of the implementation */
-  implementation: EthereumAddress
+export interface ScalingProjectUpgradeability {
+  proxyType: string
+  immutable?: boolean
+  admins: EthereumAddress[]
+  implementations: EthereumAddress[]
 }

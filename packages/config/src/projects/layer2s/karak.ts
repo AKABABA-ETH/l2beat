@@ -1,32 +1,31 @@
 import { UnixTime } from '@l2beat/shared-pure'
 
+import { NUGGETS } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
 import { CELESTIA_DA_PROVIDER, opStackL2 } from './templates/opStack'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('karak')
 
-const upgradeability = {
-  upgradableBy: ['ProxyAdmin'],
-  upgradeDelay: 'No delay',
-}
-
 export const karak: Layer2 = opStackL2({
+  createdAt: new UnixTime(1687459278), // 2023-06-22T18:41:18Z
   daProvider: CELESTIA_DA_PROVIDER,
+  additionalBadges: [Badge.DA.Celestia, Badge.RaaS.Caldera],
   discovery,
   display: {
-    name: 'Karak',
-    slug: 'karak',
-    warning:
-      'Fraud proof system is currently under development. Users need to trust the block proposer to submit correct L1 state roots.',
-    description: 'Karak is a general-purpose Optimium.',
-    purposes: ['Universal'],
+    reasonsForBeingOther: [
+      REASON_FOR_BEING_OTHER.NO_PROOFS,
+      REASON_FOR_BEING_OTHER.NO_DA_ORACLE,
+    ],
+    name: 'K2',
+    slug: 'k2',
+    description: 'K2 is a general-purpose Optimium.',
     links: {
       websites: ['https://karak.network/'],
       apps: ['https://karak.network/karak-xp/'],
-      documentation: [
-        'https://docs.karak.network/karak/general/karak-overview',
-      ],
+      documentation: ['https://docs.karak.network/'],
       explorers: ['https://explorer.karak.network/'],
       repositories: [],
       socialMedia: [
@@ -36,27 +35,24 @@ export const karak: Layer2 = opStackL2({
     },
     activityDataSource: 'Blockchain RPC',
   },
-  upgradeability,
   rpcUrl: 'https://rpc.karak.network/',
-  finality: {
-    type: 'OPStack',
-    lag: 0,
-    stateUpdate: 'disabled',
-  },
   genesisTimestamp: new UnixTime(1703226695), //First sequencer transaction
   isNodeAvailable: true,
+  discoveryDrivenData: true,
   milestones: [
     {
-      name: 'Karak Network Early Access Launch',
+      name: 'K2 Network Early Access Launch',
       link: 'https://x.com/Karak_Network/status/1762561646999068899?s=20',
       date: '2024-02-27T00:00:00Z',
-      description: 'Karak Network is live on mainnet.',
+      description: 'K2 Network is live on mainnet.',
+      type: 'general',
     },
   ],
-  nonTemplatePermissions: [
-    ...discovery.getMultisigPermission(
-      'KarakMultisig',
-      'This address is the owner of the following contracts: ProxyAdmin, SystemConfig. It is also designated as a Challenger and Guardian of the OptimismPortal, meaning it can halt withdrawals and change incorrect state roots. It can upgrade the bridge implementation potentially gaining access to all funds, and change the sequencer, state root proposer or any other system component (unlimited upgrade power).',
-    ),
+  knowledgeNuggets: [
+    {
+      title: 'Blobstream and Celestia Architecture',
+      url: 'https://www.youtube.com/watch?v=cn_fN6pkakQ',
+      thumbnail: NUGGETS.THUMBNAILS.MODULAR_ROLLUP,
+    },
   ],
 })

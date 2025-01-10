@@ -1,4 +1,7 @@
-import { ContractParameters } from '@l2beat/discovery-types'
+import {
+  ContractParameters,
+  get$Implementations,
+} from '@l2beat/discovery-types'
 import {
   assert,
   EthereumAddress,
@@ -9,6 +12,9 @@ import {
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   DataAvailabilityBridge,
   DataAvailabilityLayer,
   EXITS,
@@ -21,6 +27,7 @@ import {
   ScalingProjectContract,
   ScalingProjectEscrow,
   ScalingProjectPermission,
+  ScalingProjectPurpose,
   ScalingProjectRiskView,
   ScalingProjectRiskViewEntry,
   ScalingProjectStateDerivation,
@@ -29,47 +36,78 @@ import {
   ScalingProjectTransactionApi,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
+  pickWorseRisk,
+  sumRisk,
 } from '../../../common'
 import { ChainConfig } from '../../../common/ChainConfig'
 import { subtractOne } from '../../../common/assessCount'
+import {
+  formatChallengePeriod,
+  formatDelay,
+} from '../../../common/formatDelays'
 import { ProjectDiscovery } from '../../../discovery/ProjectDiscovery'
 import { HARDCODED } from '../../../discovery/values/hardcoded'
+import { Badge, BadgeId, badges } from '../../badges'
 import { type Layer3, type Layer3Display } from '../../layer3s/types'
-import { OPTIMISTIC_ROLLUP_STATE_UPDATES_WARNING, StageConfig } from '../common'
+import { OPTIMISTIC_ROLLUP_STATE_UPDATES_WARNING } from '../common/liveness'
 import { getStage } from '../common/stages/getStage'
+import { StageConfig } from '../common/stages/types'
 import {
   type Layer2,
   type Layer2Display,
   Layer2FinalityConfig,
   Layer2TxConfig,
 } from '../types'
+import { generateDiscoveryDrivenSections } from './generateDiscoveryDrivenSections'
+import { mergeBadges } from './utils'
 
 export const CELESTIA_DA_PROVIDER: DAProvider = {
-  name: 'Celestia',
+  layer: DA_LAYERS.CELESTIA,
   riskView: RISK_VIEW.DATA_CELESTIA(false),
   technology: TECHNOLOGY_DATA_AVAILABILITY.CELESTIA_OFF_CHAIN(false),
-  bridge: { type: 'None' },
+  bridge: DA_BRIDGES.NONE,
 }
 
-export interface DAProvider {
-  name: DataAvailabilityLayer
+export function DACHALLENGES_DA_PROVIDER(
+  daChallengeWindow: string,
+  daResolveWindow: string,
+  nodeSourceLink?: string,
+  daLayer: DataAvailabilityLayer = DA_LAYERS.NONE,
+): DAProvider {
+  return {
+    layer: daLayer,
+    riskView: RISK_VIEW.DATA_EXTERNAL_CHALLENGES,
+    technology: TECHNOLOGY_DATA_AVAILABILITY.DACHALLENGES_OFF_CHAIN(
+      daChallengeWindow,
+      daResolveWindow,
+      nodeSourceLink,
+    ),
+    bridge: DA_BRIDGES.NONE_WITH_DA_CHALLENGES,
+  }
+}
+
+interface DAProvider {
+  layer: DataAvailabilityLayer
   fallback?: DataAvailabilityLayer
   riskView: ScalingProjectRiskViewEntry
   technology: ScalingProjectTechnologyChoice
   bridge: DataAvailabilityBridge
 }
 
-export interface OpStackConfigCommon {
+interface OpStackConfigCommon {
+  architectureImage?: string
+  isArchived?: true
+  createdAt: UnixTime
   daProvider?: DAProvider
   discovery: ProjectDiscovery
-  nonTemplateTechnology?: Partial<ScalingProjectTechnology>
+  additionalDiscoveries?: { [chain: string]: ProjectDiscovery }
   upgradeability?: {
     upgradableBy: string[] | undefined
     upgradeDelay: string | undefined
   }
   l1StandardBridgeEscrow?: EthereumAddress
   l1StandardBridgeTokens?: string[]
+  l1StandardBridgePremintedTokens?: string[]
   rpcUrl?: string
   transactionApi?: ScalingProjectTransactionApi
   genesisTimestamp: UnixTime
@@ -81,12 +119,14 @@ export interface OpStackConfigCommon {
   knowledgeNuggets?: KnowledgeNugget[]
   roleOverrides?: Record<string, string>
   nonTemplatePermissions?: ScalingProjectPermission[]
-  nonTemplateNativePermissions?: ScalingProjectPermission[]
+  nonTemplateNativePermissions?: Record<string, ScalingProjectPermission[]>
   nonTemplateContracts?: ScalingProjectContract[]
   nonTemplateNativeContracts?: Record<string, ScalingProjectContract[]>
   nonTemplateEscrows?: ScalingProjectEscrow[]
+  nonTemplateExcludedTokens?: string[]
   nonTemplateOptimismPortalEscrowTokens?: string[]
   nonTemplateTrackedTxs?: Layer2TxConfig[]
+  nonTemplateTechnology?: Partial<ScalingProjectTechnology>
   associatedTokens?: string[]
   isNodeAvailable?: boolean | 'UnderReview'
   nodeSourceLink?: string
@@ -96,42 +136,77 @@ export interface OpStackConfigCommon {
   usesBlobs?: boolean
   isUnderReview?: boolean
   stage?: StageConfig
+  additionalBadges?: BadgeId[]
+  discoveryDrivenData?: boolean
+  additionalPurposes?: ScalingProjectPurpose[]
+  riskView?: ScalingProjectRiskView
+  gasTokens?: string[]
 }
 
 export interface OpStackConfigL2 extends OpStackConfigCommon {
-  display: Omit<Layer2Display, 'provider' | 'category' | 'dataAvailabilityMode'>
+  display: Omit<Layer2Display, 'provider' | 'category' | 'purposes'> & {
+    category?: Layer2Display['category']
+  }
 }
 
 export interface OpStackConfigL3 extends OpStackConfigCommon {
-  display: Omit<Layer3Display, 'provider' | 'category' | 'dataAvailabilityMode'>
+  display: Omit<Layer3Display, 'provider' | 'category' | 'purposes'> & {
+    category?: Layer3Display['category']
+  }
   stackedRiskView?: ScalingProjectRiskView
   hostChain: ProjectId
-  nativeToken?: string
 }
 
-export function opStackCommon(
+function opStackCommon(
   templateVars: OpStackConfigCommon,
-): Omit<
-  Layer2,
-  'type' | 'display' | 'config' | 'isArchived' | 'stage' | 'riskView'
-> {
+): Omit<Layer2, 'type' | 'display' | 'config' | 'stage' | 'riskView'> {
+  const nativeContractRisks = [CONTRACTS.UPGRADE_NO_DELAY_RISK]
+  const discoveryDrivenSections = templateVars.discoveryDrivenData
+    ? generateDiscoveryDrivenSections(
+        templateVars.discovery,
+        nativeContractRisks,
+        templateVars.additionalDiscoveries,
+      )
+    : undefined
+
   const sequencerInbox = EthereumAddress(
     templateVars.discovery.getContractValue('SystemConfig', 'sequencerInbox'),
   )
 
-  const postsToCelestia = templateVars.discovery.getContractValue<{
-    isSomeTxsLengthEqualToCelestiaDAExample: boolean
-  }>('SystemConfig', 'opStackDA').isSomeTxsLengthEqualToCelestiaDAExample
+  // if usesBlobs is set to false at this point it means that it uses calldata
+  const postsToCelestia =
+    templateVars.usesBlobs ??
+    templateVars.discovery.getContractValue<{
+      isSomeTxsLengthEqualToCelestiaDAExample: boolean
+    }>('SystemConfig', 'opStackDA').isSomeTxsLengthEqualToCelestiaDAExample
   const daProvider =
     templateVars.daProvider ??
     (postsToCelestia ? CELESTIA_DA_PROVIDER : undefined)
+
+  let daBadge: BadgeId | undefined = postsToCelestia
+    ? Badge.DA.Celestia
+    : undefined
+
+  const usesBlobs =
+    templateVars.usesBlobs ??
+    templateVars.discovery.getContractValue<{
+      isSequencerSendingBlobTx: boolean
+    }>('SystemConfig', 'opStackDA').isSequencerSendingBlobTx
 
   if (daProvider === undefined) {
     assert(
       templateVars.isNodeAvailable !== undefined,
       'isNodeAvailable must be defined if no DA provider is defined',
     )
+    daBadge = usesBlobs ? Badge.DA.EthereumBlobs : Badge.DA.EthereumCalldata
   }
+
+  if (daBadge === undefined) {
+    daBadge = templateVars.additionalBadges?.find(
+      (b) => badges[b].type === 'DA',
+    )
+  }
+  assert(daBadge !== undefined, 'DA badge must be defined')
 
   const portal =
     templateVars.portal ?? templateVars.discovery.getContract('OptimismPortal')
@@ -144,14 +219,16 @@ export function opStackCommon(
   }
 
   return {
+    isArchived: templateVars.isArchived,
     id: ProjectId(templateVars.discovery.projectName),
+    createdAt: templateVars.createdAt,
     isUnderReview: templateVars.isUnderReview ?? false,
     technology: {
       stateCorrectness: templateVars.nonTemplateTechnology
         ?.stateCorrectness ?? {
-        name: 'Fraud proofs are in development',
+        name: 'Fraud proofs are not enabled',
         description:
-          'Ultimately, OP stack chains will use interactive fraud proofs to enforce state correctness. This feature is currently in development and the system permits invalid state roots.',
+          'OP Stack projects can use the OP fault proof system, already being deployed on some. This project though is not using fault proofs yet and is relying on the honesty of the permissioned Proposer and Challengers to ensure state correctness. The smart contract system permits invalid state roots.',
         risks: [
           {
             category: 'Funds can be stolen if',
@@ -170,9 +247,9 @@ export function opStackCommon(
       },
       dataAvailability: templateVars.nonTemplateTechnology
         ?.dataAvailability ?? {
-        ...technologyDA(daProvider, templateVars.usesBlobs),
+        ...technologyDA(daProvider, usesBlobs),
         references: [
-          ...technologyDA(daProvider, templateVars.usesBlobs).references,
+          ...technologyDA(daProvider, usesBlobs).references,
           {
             text: 'Derivation: Batch submission - OP Mainnet specs',
             href: 'https://github.com/ethereum-optimism/specs/blob/main/specs/protocol/derivation.md#batch-submission',
@@ -204,15 +281,11 @@ export function opStackCommon(
               l2OutputOracle,
             )}#code`,
           },
-          {
-            text: 'Decentralizing the sequencer - OP Stack docs',
-            href: 'https://community.optimism.io/docs/protocol/#decentralizing-the-sequencer',
-          },
         ],
       },
       forceTransactions: templateVars.nonTemplateTechnology
         ?.forceTransactions ?? {
-        ...FORCE_TRANSACTIONS.CANONICAL_ORDERING,
+        ...FORCE_TRANSACTIONS.CANONICAL_ORDERING('smart contract'),
         references: [
           {
             text: 'Sequencing Window - OP Mainnet Specs',
@@ -284,25 +357,31 @@ export function opStackCommon(
         },
       ],
     },
-    permissions: [
-      ...templateVars.discovery.getOpStackPermissions({
-        batcherHash: 'Sequencer',
-        PROPOSER: 'Proposer',
-        GUARDIAN: 'Guardian',
-        CHALLENGER: 'Challenger',
-        ...(templateVars.roleOverrides ?? {}),
-      }),
-      ...(templateVars.nonTemplatePermissions ?? []),
-    ],
-    nativePermissions: templateVars.nonTemplateNativePermissions,
-    contracts: {
-      addresses: [
-        ...templateVars.discovery.getOpStackContractDetails(upgradeability),
-        ...(templateVars.nonTemplateContracts ?? []),
-      ],
-      risks: [CONTRACTS.UPGRADE_NO_DELAY_RISK],
-      nativeAddresses: templateVars.nonTemplateNativeContracts,
-    },
+    permissions: discoveryDrivenSections
+      ? discoveryDrivenSections.permissions
+      : [
+          ...templateVars.discovery.getOpStackPermissions({
+            batcherHash: 'Sequencer',
+            PROPOSER: 'Proposer',
+            GUARDIAN: 'Guardian',
+            CHALLENGER: 'Challenger',
+            ...(templateVars.roleOverrides ?? {}),
+          }),
+          ...(templateVars.nonTemplatePermissions ?? []),
+        ],
+    nativePermissions: discoveryDrivenSections
+      ? discoveryDrivenSections.nativePermissions
+      : templateVars.nonTemplateNativePermissions,
+    contracts: discoveryDrivenSections
+      ? discoveryDrivenSections.contracts
+      : {
+          addresses: [
+            ...templateVars.discovery.getOpStackContractDetails(upgradeability),
+            ...(templateVars.nonTemplateContracts ?? []),
+          ],
+          risks: nativeContractRisks,
+          nativeAddresses: templateVars.nonTemplateNativeContracts,
+        },
     milestones: templateVars.milestones ?? [],
     knowledgeNuggets: [
       ...(templateVars.knowledgeNuggets ?? []),
@@ -312,9 +391,9 @@ export function opStackCommon(
         thumbnail: NUGGETS.THUMBNAILS.L2BEAT_03,
       },
       {
-        title: 'Bedrock Explainer',
-        url: 'https://community.optimism.io/docs/developers/bedrock/explainer/',
-        thumbnail: NUGGETS.THUMBNAILS.OPTIMISM_04,
+        title: 'Superchain Explainer',
+        url: 'https://docs.optimism.io/stack/explainer',
+        thumbnail: NUGGETS.THUMBNAILS.OPTIMISM_03,
       },
       {
         title: 'Modular Rollup Theory',
@@ -322,6 +401,10 @@ export function opStackCommon(
         thumbnail: NUGGETS.THUMBNAILS.MODULAR_ROLLUP,
       },
     ],
+    badges: mergeBadges(
+      [Badge.Stack.OPStack, Badge.VM.EVM, daBadge],
+      templateVars.additionalBadges ?? [],
+    ),
   }
 }
 
@@ -350,12 +433,21 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
     upgradeDelay: 'No delay',
   }
 
-  const postsToCelestia = templateVars.discovery.getContractValue<{
-    isSomeTxsLengthEqualToCelestiaDAExample: boolean
-  }>('SystemConfig', 'opStackDA').isSomeTxsLengthEqualToCelestiaDAExample
+  // if usesBlobs is set to false at this point it means that it uses calldata
+  const postsToCelestia =
+    templateVars.usesBlobs ??
+    templateVars.discovery.getContractValue<{
+      isSomeTxsLengthEqualToCelestiaDAExample: boolean
+    }>('SystemConfig', 'opStackDA').isSomeTxsLengthEqualToCelestiaDAExample
   const daProvider =
     templateVars.daProvider ??
     (postsToCelestia ? CELESTIA_DA_PROVIDER : undefined)
+
+  const usesBlobs =
+    templateVars.usesBlobs ??
+    templateVars.discovery.getContractValue<{
+      isSequencerSendingBlobTx: boolean
+    }>('SystemConfig', 'opStackDA').isSequencerSendingBlobTx
 
   if (daProvider === undefined) {
     assert(
@@ -370,17 +462,22 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
       'FINALIZATION_PERIOD_SECONDS',
     )
 
+  // 4 cases: Optimium, Optimium + Superchain, Rollup, Rollup + Superchain
+  // archi images defined locally in the project.ts take precedence over this one
+  const architectureImage = `opstack-${daProvider !== undefined ? 'optimium' : 'rollup'}${templateVars.discovery.hasContract('SuperchainConfig') ? '-superchain' : ''}`
+
   return {
     type: 'layer2',
     ...opStackCommon(templateVars),
     display: {
+      purposes: ['Universal', ...(templateVars.additionalPurposes ?? [])],
+      architectureImage: templateVars.architectureImage ?? architectureImage,
       ...templateVars.display,
       provider: 'OP Stack',
-      category: daProvider !== undefined ? 'Optimium' : 'Optimistic Rollup',
-      warning:
-        templateVars.display.warning === undefined
-          ? 'Fraud proof system is currently under development. Users need to trust the block proposer to submit correct L1 state roots.'
-          : templateVars.display.warning,
+      category:
+        templateVars.display.category ??
+        (daProvider !== undefined ? 'Optimium' : 'Optimistic Rollup'),
+      warning: templateVars.display.warning,
       liveness:
         daProvider !== undefined
           ? undefined
@@ -413,6 +510,7 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
     chainConfig: templateVars.chainConfig,
     config: {
       associatedTokens: templateVars.associatedTokens,
+      gasTokens: templateVars.gasTokens,
       escrows: [
         templateVars.discovery.getEscrowDetails({
           address: portal.address,
@@ -425,6 +523,8 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
         templateVars.discovery.getEscrowDetails({
           address: l1StandardBridgeEscrow,
           tokens: templateVars.l1StandardBridgeTokens ?? '*',
+          premintedTokens: templateVars.l1StandardBridgePremintedTokens,
+          excludedTokens: templateVars.nonTemplateExcludedTokens,
           description:
             'Main entry point for users depositing ERC20 token that do not require custom gateway.',
           ...upgradeability,
@@ -445,7 +545,7 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
       trackedTxs:
         daProvider !== undefined
           ? undefined
-          : templateVars.nonTemplateTrackedTxs ?? [
+          : (templateVars.nonTemplateTrackedTxs ?? [
               {
                 uses: [
                   { type: 'liveness', subtype: 'batchSubmissions' },
@@ -455,7 +555,7 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
                   formula: 'transfer',
                   from: sequencerAddress,
                   to: sequencerInbox,
-                  sinceTimestampInclusive: templateVars.genesisTimestamp,
+                  sinceTimestamp: templateVars.genesisTimestamp,
                 },
               },
               {
@@ -469,39 +569,38 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
                   selector: '0x9aaab648',
                   functionSignature:
                     'function proposeL2Output(bytes32 _outputRoot, uint256 _l2BlockNumber, bytes32 _l1Blockhash, uint256 _l1BlockNumber)',
-                  sinceTimestampInclusive: new UnixTime(
+                  sinceTimestamp: new UnixTime(
                     l2OutputOracle.sinceTimestamp ??
                       templateVars.genesisTimestamp.toNumber(),
                   ),
                 },
               },
-            ],
+            ]),
       finality: daProvider !== undefined ? undefined : templateVars.finality,
     },
-    dataAvailability:
+    dataAvailability: [
       daProvider !== undefined
         ? addSentimentToDataAvailability({
             layers: daProvider.fallback
-              ? [daProvider.name, daProvider.fallback]
-              : [daProvider.name],
+              ? [daProvider.layer, daProvider.fallback]
+              : [daProvider.layer],
             bridge: daProvider.bridge,
-            mode: 'Transactions data (compressed)',
+            mode: DA_MODES.TRANSACTION_DATA_COMPRESSED,
           })
         : addSentimentToDataAvailability({
             layers: [
-              templateVars.usesBlobs
-                ? 'Ethereum (blobs or calldata)'
-                : 'Ethereum (calldata)',
+              usesBlobs
+                ? DA_LAYERS.ETH_BLOBS_OR_CALLDATA
+                : DA_LAYERS.ETH_CALLDATA,
             ],
-            bridge: { type: 'Enshrined' },
-            mode: 'Transactions data (compressed)',
+            bridge: DA_BRIDGES.ENSHRINED,
+            mode: DA_MODES.TRANSACTION_DATA_COMPRESSED,
           }),
-    riskView: makeBridgeCompatible({
+    ],
+    riskView: templateVars.riskView ?? {
       stateValidation: {
         ...RISK_VIEW.STATE_NONE,
-        secondLine: `${formatSeconds(
-          FINALIZATION_PERIOD_SECONDS,
-        )} challenge period`,
+        secondLine: formatChallengePeriod(FINALIZATION_PERIOD_SECONDS),
       },
       dataAvailability: {
         ...riskViewDA(daProvider),
@@ -513,13 +612,7 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
         ],
       },
       exitWindow: {
-        ...RISK_VIEW.EXIT_WINDOW(
-          0,
-          templateVars.discovery.getContractValue<number>(
-            'L2OutputOracle',
-            'FINALIZATION_PERIOD_SECONDS',
-          ),
-        ),
+        ...RISK_VIEW.EXIT_WINDOW(0, FINALIZATION_PERIOD_SECONDS),
         sources: [
           {
             contract: portal.name,
@@ -533,6 +626,7 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
           // so we assume it to be the same value as in other op stack chains
           HARDCODED.OPTIMISM.SEQUENCING_WINDOW_SECONDS,
         ),
+        secondLine: formatDelay(HARDCODED.OPTIMISM.SEQUENCING_WINDOW_SECONDS),
         sources: [
           {
             contract: portal.name,
@@ -549,9 +643,7 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
           },
         ],
       },
-      destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-      validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-    }),
+    },
     stage:
       templateVars.stage === undefined
         ? daProvider !== undefined || templateVars.isNodeAvailable === undefined
@@ -583,8 +675,8 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
               {
                 rollupNodeLink:
                   templateVars.isNodeAvailable === true
-                    ? templateVars.nodeSourceLink ??
-                      'https://github.com/ethereum-optimism/optimism/tree/develop/op-node'
+                    ? (templateVars.nodeSourceLink ??
+                      'https://github.com/ethereum-optimism/optimism/tree/develop/op-node')
                     : '',
               },
             )
@@ -595,6 +687,13 @@ export function opStackL2(templateVars: OpStackConfigL2): Layer2 {
 }
 
 export function opStackL3(templateVars: OpStackConfigL3): Layer3 {
+  const layer2s = require('..').layer2s as Layer2[]
+  const baseChain = layer2s.find((l2) => l2.id === templateVars.hostChain)
+  assert(
+    baseChain,
+    `Could not find base chain ${templateVars.hostChain} in layer2s`,
+  )
+
   const optimismPortalTokens = [
     'ETH',
     ...(templateVars.nonTemplateOptimismPortalEscrowTokens ?? []),
@@ -614,6 +713,12 @@ export function opStackL3(templateVars: OpStackConfigL3): Layer3 {
     )
   }
 
+  const FINALIZATION_PERIOD_SECONDS: number =
+    templateVars.discovery.getContractValue<number>(
+      'L2OutputOracle',
+      'FINALIZATION_PERIOD_SECONDS',
+    )
+
   const portal =
     templateVars.portal ?? templateVars.discovery.getContract('OptimismPortal')
   const l2OutputOracle =
@@ -627,91 +732,164 @@ export function opStackL3(templateVars: OpStackConfigL3): Layer3 {
     upgradeDelay: 'No delay',
   }
 
+  const riskView = {
+    stateValidation: {
+      ...RISK_VIEW.STATE_NONE,
+      secondLine: formatChallengePeriod(FINALIZATION_PERIOD_SECONDS),
+    },
+    dataAvailability: {
+      ...riskViewDA(daProvider),
+      sources: [
+        {
+          contract: portal.name,
+          references: [],
+        },
+      ],
+    },
+    exitWindow: {
+      ...RISK_VIEW.EXIT_WINDOW(0, FINALIZATION_PERIOD_SECONDS),
+      sources: [
+        {
+          contract: portal.name,
+          references: [],
+        },
+      ],
+    },
+    sequencerFailure: {
+      ...RISK_VIEW.SEQUENCER_SELF_SEQUENCE(
+        // the value is inside the node config, but we have no reference to it
+        // so we assume it to be the same value as in other op stack chains
+        HARDCODED.OPTIMISM.SEQUENCING_WINDOW_SECONDS,
+      ),
+      secondLine: formatDelay(HARDCODED.OPTIMISM.SEQUENCING_WINDOW_SECONDS),
+      sources: [
+        {
+          contract: portal.name,
+          references: [],
+        },
+      ],
+    },
+    proposerFailure: {
+      ...RISK_VIEW.PROPOSER_CANNOT_WITHDRAW,
+      sources: [
+        {
+          contract: l2OutputOracle.name,
+          references: [],
+        },
+      ],
+    },
+    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(
+      templateVars.gasTokens ?? ['ETH'],
+    ),
+    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
+  }
+
+  const getStackedRisks = () => {
+    return {
+      stateValidation: pickWorseRisk(
+        riskView.stateValidation,
+        baseChain.riskView.stateValidation,
+      ),
+      dataAvailability: pickWorseRisk(
+        riskView.dataAvailability,
+        baseChain.riskView.dataAvailability,
+      ),
+      exitWindow: pickWorseRisk(
+        riskView.exitWindow,
+        baseChain.riskView.exitWindow,
+      ),
+      sequencerFailure: sumRisk(
+        riskView.sequencerFailure,
+        baseChain.riskView.sequencerFailure,
+        RISK_VIEW.SEQUENCER_SELF_SEQUENCE,
+      ),
+      proposerFailure: sumRisk(
+        riskView.proposerFailure,
+        baseChain.riskView.proposerFailure,
+        RISK_VIEW.PROPOSER_SELF_PROPOSE_WHITELIST_DROPPED,
+      ),
+      validatedBy: riskView.validatedBy,
+      destinationToken: riskView.destinationToken,
+    }
+  }
+
+  const architectureImage = templateVars.discovery.hasContract(
+    'SuperchainConfig',
+  )
+    ? 'bedrock-superchain'
+    : 'opstack'
+
   return {
     type: 'layer3',
     ...opStackCommon(templateVars),
     hostChain: templateVars.hostChain,
     display: {
+      architectureImage,
+      purposes: ['Universal', ...(templateVars.additionalPurposes ?? [])],
       ...templateVars.display,
       provider: 'OP Stack',
-      category: daProvider !== undefined ? 'Optimium' : 'Optimistic Rollup',
+      category:
+        templateVars.display.category ??
+        (daProvider !== undefined ? 'Optimium' : 'Optimistic Rollup'),
       warning:
         templateVars.display.warning === undefined
           ? 'Fraud proof system is currently under development. Users need to trust the block proposer to submit correct L1 state roots.'
           : templateVars.display.warning,
     },
-    stackedRiskView: templateVars.stackedRiskView,
-    riskView: makeBridgeCompatible({
-      stateValidation: RISK_VIEW.STATE_NONE,
-      dataAvailability: {
-        ...riskViewDA(daProvider),
-        sources: [
-          {
-            contract: portal.name,
-            references: [],
-          },
-        ],
-      },
-      exitWindow: {
-        ...RISK_VIEW.EXIT_WINDOW(
-          0,
-          templateVars.discovery.getContractValue<number>(
-            'L2OutputOracle',
-            'FINALIZATION_PERIOD_SECONDS',
-          ),
-        ),
-        sources: [
-          {
-            contract: portal.name,
-            references: [],
-          },
-        ],
-      },
-      sequencerFailure: {
-        ...RISK_VIEW.SEQUENCER_SELF_SEQUENCE(
-          // the value is inside the node config, but we have no reference to it
-          // so we assume it to be the same value as in other op stack chains
-          HARDCODED.OPTIMISM.SEQUENCING_WINDOW_SECONDS,
-        ),
-        sources: [
-          {
-            contract: portal.name,
-            references: [],
-          },
-        ],
-      },
-      proposerFailure: {
-        ...RISK_VIEW.PROPOSER_CANNOT_WITHDRAW,
-        sources: [
-          {
-            contract: l2OutputOracle.name,
-            references: [],
-          },
-        ],
-      },
-      destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-      validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-    }),
+    stackedRiskView: templateVars.stackedRiskView ?? getStackedRisks(),
+    riskView,
+    stage:
+      templateVars.stage === undefined
+        ? daProvider !== undefined || templateVars.isNodeAvailable === undefined
+          ? {
+              stage: 'NotApplicable',
+            }
+          : getStage(
+              {
+                stage0: {
+                  callsItselfRollup: true,
+                  stateRootsPostedToL1: true,
+                  dataAvailabilityOnL1: true,
+                  rollupNodeSourceAvailable: templateVars.isNodeAvailable,
+                },
+                stage1: {
+                  stateVerificationOnL1: false,
+                  fraudProofSystemAtLeast5Outsiders: null,
+                  usersHave7DaysToExit: false,
+                  usersCanExitWithoutCooperation: false,
+                  securityCouncilProperlySetUp:
+                    templateVars.hasProperSecurityCouncil ?? null,
+                },
+                stage2: {
+                  proofSystemOverriddenOnlyInCaseOfABug: null,
+                  fraudProofSystemIsPermissionless: null,
+                  delayWith30DExitWindow: false,
+                },
+              },
+              {
+                rollupNodeLink:
+                  templateVars.isNodeAvailable === true
+                    ? (templateVars.nodeSourceLink ??
+                      'https://github.com/ethereum-optimism/optimism/tree/develop/op-node')
+                    : '',
+              },
+            )
+        : templateVars.stage,
     dataAvailability:
       daProvider !== undefined
-        ? addSentimentToDataAvailability({
-            layers: daProvider.fallback
-              ? [daProvider.name, daProvider.fallback]
-              : [daProvider.name],
-            bridge: daProvider.bridge,
-            mode: 'Transactions data (compressed)',
-          })
-        : addSentimentToDataAvailability({
-            layers: [
-              templateVars.usesBlobs
-                ? 'Ethereum (blobs or calldata)'
-                : 'Ethereum (calldata)',
-            ],
-            bridge: { type: 'Enshrined' },
-            mode: 'Transactions data (compressed)',
-          }),
+        ? [
+            addSentimentToDataAvailability({
+              layers: daProvider.fallback
+                ? [daProvider.layer, daProvider.fallback]
+                : [daProvider.layer],
+              bridge: daProvider.bridge,
+              mode: DA_MODES.TRANSACTION_DATA_COMPRESSED,
+            }),
+          ]
+        : baseChain.dataAvailability,
     config: {
       associatedTokens: templateVars.associatedTokens,
+      gasTokens: templateVars.gasTokens,
       escrows: [
         templateVars.discovery.getEscrowDetails({
           includeInTotal: false,
@@ -726,6 +904,7 @@ export function opStackL3(templateVars: OpStackConfigL3): Layer3 {
           includeInTotal: false,
           address: l1StandardBridgeEscrow,
           tokens: templateVars.l1StandardBridgeTokens ?? '*',
+          excludedTokens: templateVars.nonTemplateExcludedTokens,
           description:
             'Main entry point for users depositing ERC20 token that do not require custom gateway.',
           ...upgradeability,
@@ -749,7 +928,7 @@ export function opStackL3(templateVars: OpStackConfigL3): Layer3 {
 }
 
 function safeGetImplementation(contract: ContractParameters): string {
-  const implementation = contract.implementations?.[0]
+  const implementation = get$Implementations(contract.values)[0]
   if (!implementation) {
     throw new Error(`No implementation found for ${contract.name}`)
   }

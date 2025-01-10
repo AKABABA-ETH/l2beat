@@ -1,5 +1,6 @@
 import { EthereumAddress } from '@l2beat/shared-pure'
 
+import { merge } from 'lodash'
 import { DiscoveryContract, RawDiscoveryConfig } from './RawDiscoveryConfig'
 
 export type ContractOverrides = DiscoveryContract & {
@@ -7,12 +8,26 @@ export type ContractOverrides = DiscoveryContract & {
   address: EthereumAddress
 }
 
+export type CommonAddressNames = Record<string, Record<string, string>>
+
 export class DiscoveryOverrides {
   private readonly nameToAddress = new Map<string, EthereumAddress>()
+  private readonly commonAddressNames: Record<string, string>
 
   constructor(
-    public readonly config: Pick<RawDiscoveryConfig, 'names' | 'overrides'>,
+    public readonly config: Pick<
+      RawDiscoveryConfig,
+      'names' | 'overrides' | 'chain'
+    >,
+    commonAddressNamesAllChains: CommonAddressNames = {},
   ) {
+    const all = commonAddressNamesAllChains?.['all'] ?? {}
+    const thisChain = commonAddressNamesAllChains?.[this.config.chain] ?? {}
+    this.commonAddressNames = merge(all, thisChain)
+
+    for (const [address, name] of Object.entries(this.commonAddressNames)) {
+      this.nameToAddress.set(name, EthereumAddress(address))
+    }
     for (const [address, name] of Object.entries(config.names ?? {})) {
       this.nameToAddress.set(name, EthereumAddress(address))
     }
@@ -24,7 +39,9 @@ export class DiscoveryOverrides {
 
     if (EthereumAddress.check(nameOrAddress.toString())) {
       address = EthereumAddress(nameOrAddress.toString())
-      name = this.config.names?.[address.toString()]
+      const commonName = this.commonAddressNames?.[address.toString()]
+
+      name = this.config.names?.[address.toString()] ?? commonName
     } else {
       address = this.nameToAddress.get(nameOrAddress.toString())
       name = nameOrAddress.toString()

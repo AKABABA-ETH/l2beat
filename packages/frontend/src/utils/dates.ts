@@ -1,6 +1,7 @@
-import { UnixTime } from '@l2beat/shared-pure'
+import { assert } from '@l2beat/shared-pure'
+import { EM_DASH } from '~/consts/characters'
 
-const MONTHS: Record<
+export const MONTHS: Record<
   string,
   {
     longName: string
@@ -24,6 +25,10 @@ const MONTHS: Record<
 export function parseTimestamp(timestamp: number) {
   const isoString = new Date(timestamp * 1000).toISOString()
   const [year, month, day] = isoString.slice(0, 10).split('-')
+  assert(year !== undefined, 'Year is undefined')
+  assert(month !== undefined, 'Month is undefined')
+  assert(day !== undefined, 'Day is undefined')
+
   const time = isoString.slice(11, 16)
   return {
     year,
@@ -54,18 +59,19 @@ function toNiceDate(
   year?: string,
   longMonthName = false,
 ) {
-  if (month && year) {
-    const monthName = longMonthName
-      ? MONTHS[month].longName
-      : MONTHS[month].shortName
-    return `${year} ${monthName} ${day}`
-  }
   if (month) {
+    const monthRecord = MONTHS[month]
+    assert(monthRecord !== undefined, `Invalid month: ${month}`)
     const monthName = longMonthName
-      ? MONTHS[month].longName
-      : MONTHS[month].shortName
+      ? monthRecord.longName
+      : monthRecord.shortName
+
+    if (year) {
+      return `${year} ${monthName} ${day}`
+    }
     return `${monthName} ${day}`
   }
+
   return day
 }
 
@@ -80,7 +86,7 @@ export function formatRange(from: number, to: number) {
       : parsedTo.month,
     parsedFrom.year === parsedTo.year ? undefined : parsedTo.year,
   )
-  return `${fromDate} &ndash;\n${toDate}`
+  return `${fromDate} ${EM_DASH}\n${toDate}`
 }
 
 export function formatTimestamp(
@@ -97,13 +103,16 @@ export function formatTimestamp(
 
 export function formatDate(date: string) {
   const [year, month, day] = date.split('-')
+  assert(day !== undefined, 'Day is undefined')
   return toNiceDate(day, month, year)
 }
 
-export function formatTimestampToDateWithHour(timestamp: UnixTime) {
-  const { year, month, day, time } = parseTimestamp(timestamp.toNumber())
+export function formatTimestampToDateWithHour(timestamp: number) {
+  const { year, month, day, time } = parseTimestamp(timestamp)
 
-  const monthAbbr = MONTHS[month].shortName
+  const monthRecord = MONTHS[month]
+  assert(monthRecord !== undefined, `Invalid month: ${month}`)
+  const monthAbbr = monthRecord.shortName
   const numericDay = +day
 
   const daySuffix =
@@ -149,7 +158,10 @@ export function getNextDateForDayOfWeek(
   return currentDate
 }
 
-export const formatPublicationDate = (date: Date) =>
-  `${date.getDate()} ${
-    MONTHS[String(date.getMonth() + 1).padStart(2, '0')].shortName
-  } ${date.getFullYear()}`
+export const formatPublicationDate = (date: Date) => {
+  const monthName = String(date.getMonth() + 1).padStart(2, '0')
+  const monthRecord = MONTHS[monthName]
+  assert(monthRecord !== undefined, `Invalid month: ${monthName}`)
+
+  return `${date.getDate()} ${monthRecord.shortName} ${date.getFullYear()}`
+}

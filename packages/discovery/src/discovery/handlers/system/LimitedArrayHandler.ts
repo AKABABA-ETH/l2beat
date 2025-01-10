@@ -2,9 +2,9 @@ import { ContractValue } from '@l2beat/discovery-types'
 import { EthereumAddress } from '@l2beat/shared-pure'
 import { utils } from 'ethers'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { Handler, HandlerResult } from '../Handler'
+import { rewriteSolidityIdentifier } from '../utils/rewriteSolidityIdentifier'
 import { toContractValue } from '../utils/toContractValue'
 import { toFunctionFragment } from '../utils/toFunctionFragment'
 
@@ -16,24 +16,16 @@ export class LimitedArrayHandler implements Handler {
   constructor(
     fragment: string | utils.FunctionFragment,
     private readonly limit = 5,
-    readonly logger: DiscoveryLogger,
   ) {
     this.fragment =
       typeof fragment === 'string' ? toFunctionFragment(fragment) : fragment
-    this.field = this.fragment.name
+    this.field = rewriteSolidityIdentifier(this.fragment.name)
   }
 
   async execute(
     provider: IProvider,
     address: EthereumAddress,
   ): Promise<HandlerResult> {
-    this.logger.logExecution(this.field, [
-      'Calling array (max: ',
-      this.limit.toString(),
-      ') ',
-      this.fragment.name + '(i)',
-    ])
-
     const results = await Promise.all(
       Array.from({ length: this.limit }).map((_, index) =>
         provider.callMethod(address, this.fragment, [index]).then(

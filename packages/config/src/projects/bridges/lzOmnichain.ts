@@ -1,4 +1,4 @@
-import { ProjectId } from '@l2beat/shared-pure'
+import { ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import { CONTRACTS, NUGGETS } from '../../common'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
@@ -18,6 +18,7 @@ const discovery = new ProjectDiscovery('lzomnichain')
 export const lzOmnichain: Bridge = {
   type: 'bridge',
   id: ProjectId('lzomnichain'),
+  createdAt: new UnixTime(1677513767), // 2023-02-27T16:02:47Z
   display: {
     name: 'Omnichain (LayerZero)',
     slug: 'omnichain',
@@ -66,7 +67,7 @@ export const lzOmnichain: Bridge = {
     principleOfOperation: {
       name: 'Principle of operation',
       description:
-        'Omnichain tokens are tokenized Token Bridges. Usually, one chain is designated as main and acts as an token escrow. In this case, transfers from the main chain are done using typical lock-mint model. Transfers between\
+        'Omnichain tokens are tokenized Token Bridges. Usually, one chain is designated as main and acts as a token escrow. In this case, transfers from the main chain are done using typical lock-mint model. Transfers between\
         other (non-main) chains are made using burn-mint model. The implementation details may vary between each individual omnichain token and must be individually assessed.',
       risks: [],
       references: [],
@@ -86,17 +87,14 @@ export const lzOmnichain: Bridge = {
         {
           category: 'Users can be censored if',
           text: 'oracles or relayers fail to facilitate the transfer.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'oracles and relayers collude to submit fraudulent block hash and relay fraudulent transfer.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'omnichain token owner changes Oracle/Relayer pair for their own.',
-          isCritical: true,
         },
       ],
       isIncomplete: true,
@@ -119,12 +117,12 @@ export const lzOmnichain: Bridge = {
         'LayerZero Relayer',
         'Contract used to provide the merkle proof for the transfers on source chains.',
       ),
-      {
-        multipleAddresses: INBOUND_PROOF_LIBRARIES,
-        name: 'Default LayerZero Inbound Proof Libraries',
-        description:
+      ...INBOUND_PROOF_LIBRARIES.map((l) =>
+        discovery.getContractDetails(
+          l,
           'Contracts used to validate messages coming from source chains.',
-      },
+        ),
+      ),
       discovery.getContractDetails(
         'Endpoint',
         'Contract used for cross-chain messaging.',

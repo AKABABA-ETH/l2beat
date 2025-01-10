@@ -2,6 +2,9 @@ import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -10,7 +13,6 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { Layer2 } from './types'
@@ -20,6 +22,7 @@ const discovery = new ProjectDiscovery('zkswap')
 export const zkswap: Layer2 = {
   type: 'layer2',
   id: ProjectId('zkswap'),
+  createdAt: new UnixTime(1623153328), // 2021-06-08T11:55:28Z
   isArchived: true,
   display: {
     name: 'ZKSwap 1.0',
@@ -28,7 +31,7 @@ export const zkswap: Layer2 = {
       'Version 3 of the protocol called ZkSpace is available and users are encouraged to move their assets there.',
     description:
       'ZKSwap is a fork of ZKsync with added AMM functionality. Based on ZK Rollup technology, ZKSwap aims to execute the full functionality of Uniswap on Layer 2, but increase the TPS, and make transaction processing cheaper.',
-    purposes: ['Payments', 'AMM'],
+    purposes: ['Payments', 'Exchange'],
     provider: 'ZKsync Lite',
     category: 'ZK Rollup',
 
@@ -44,7 +47,6 @@ export const zkswap: Layer2 = {
         'https://discord.gg/rpjpeq4Y47',
         'https://t.me/zkswapofficial',
         'https://reddit.com/r/ZKSwap_Official/',
-        'https://zks.org/en/blog',
       ],
     },
   },
@@ -62,20 +64,20 @@ export const zkswap: Layer2 = {
       },
     ],
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: RISK_VIEW.STATE_ZKP_SN,
     dataAvailability: RISK_VIEW.DATA_ON_CHAIN,
     exitWindow: RISK_VIEW.EXIT_WINDOW_UNKNOWN,
     sequencerFailure: RISK_VIEW.SEQUENCER_FORCE_VIA_L1(),
     proposerFailure: RISK_VIEW.PROPOSER_USE_ESCAPE_HATCH_ZK,
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   technology: {
     stateCorrectness: {
       ...STATE_CORRECTNESS.VALIDITY_PROOFS,

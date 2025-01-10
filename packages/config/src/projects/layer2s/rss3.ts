@@ -1,19 +1,19 @@
 import { EthereumAddress, UnixTime } from '@l2beat/shared-pure'
 
+import { DA_BRIDGES, DA_LAYERS } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
 import { opStackL2 } from './templates/opStack'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('rss3')
 
-const upgradeability = {
-  upgradableBy: ['ProxyAdmin'],
-  upgradeDelay: 'No delay',
-}
-
 export const rss3: Layer2 = opStackL2({
+  createdAt: new UnixTime(1705391231), // 2024-01-16T07:47:11Z
+  additionalBadges: [Badge.DA.NearDA],
   daProvider: {
-    name: 'NearDA',
+    layer: DA_LAYERS.NEAR_DA,
     riskView: {
       value: 'External',
       description:
@@ -51,17 +51,21 @@ export const rss3: Layer2 = opStackL2({
         },
       ],
     },
-    bridge: { type: 'None' },
+    bridge: DA_BRIDGES.NONE,
   },
   associatedTokens: ['RSS3'],
   discovery,
+  additionalPurposes: ['AI', 'Information'],
   display: {
-    shortName: 'RSS3',
+    reasonsForBeingOther: [
+      REASON_FOR_BEING_OTHER.NO_PROOFS,
+      REASON_FOR_BEING_OTHER.NO_DA_ORACLE,
+    ],
+    shortName: 'RSS3 VSL',
     name: 'RSS3 Value Sublayer',
     slug: 'rss3',
     description:
       'The RSS3 Value Sublayer (VSL) as part of the RSS3 Network, is an Ethereum Layer2 built with OP Stack, handling the value and ownership of AI and Open Information.',
-    purposes: ['AI', 'Information'],
     links: {
       websites: ['https://rss3.io'],
       apps: [
@@ -81,7 +85,6 @@ export const rss3: Layer2 = opStackL2({
     },
     activityDataSource: 'Blockchain RPC',
   },
-  upgradeability,
   rpcUrl: 'https://rpc.rss3.io/',
   chainConfig: {
     name: 'rss3',
@@ -91,7 +94,6 @@ export const rss3: Layer2 = opStackL2({
       url: 'https://scan.rss3.io/api',
       type: 'blockscout',
     },
-    minTimestampForTvl: UnixTime.fromDate(new Date('2024-03-08T00:41:59Z')),
     multicallContracts: [
       {
         address: EthereumAddress('0xcA11bde05977b3631167028862bE2a173976CA11'),
@@ -101,48 +103,23 @@ export const rss3: Layer2 = opStackL2({
       },
     ],
   },
-  finality: {
-    type: 'OPStack',
-    lag: 0,
-    stateUpdate: 'disabled',
-  },
   genesisTimestamp: new UnixTime(1709858519),
-  nonTemplatePermissions: [
-    {
-      name: 'SystemConfig owner',
-      description:
-        'Account privileged to change System Config parameters such as sequencer address and gas limit.',
-      accounts: [discovery.getPermissionedAccount('SystemConfig', 'owner')],
-    },
-    ...discovery.getMultisigPermission(
-      'RSS3Multisig',
-      'This address is the owner of the following contracts: ProxyAdmin. It can upgrade the bridge implementation potentially gaining access to all funds, and change the sequencer, state root proposer or any other system component (unlimited upgrade power).',
-    ),
-  ],
-  nonTemplateContracts: [
-    discovery.getContractDetails('L1StandardBridge', {
-      description: 'The L1 Bridge to VSL.',
-      ...upgradeability,
-    }),
-    discovery.getContractDetails('SuperchainConfig', {
-      description:
-        'Contract that stores the Guardian address and allows it to pause the system.',
-    }),
-  ],
-  l1StandardBridgeTokens: ['RSS3'],
   isNodeAvailable: false,
+  discoveryDrivenData: true,
   milestones: [
     {
       name: 'RSS3 Mainnet Alpha Launch',
       link: 'https://x.com/rss3_/status/1767370007275851789',
       date: '2024-03-12T00:00:00Z',
       description: 'RSS3 Network Mainnet Alpha is live.',
+      type: 'general',
     },
     {
       name: 'RSS3 starts using NearDA',
       link: 'https://x.com/rss3_/status/1788183577219436985',
       date: '2024-05-07T00:00:00Z',
       description: 'RSS3 Network starts publishing data to NearDA.',
+      type: 'general',
     },
   ],
 })

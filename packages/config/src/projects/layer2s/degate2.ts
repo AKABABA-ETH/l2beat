@@ -5,8 +5,12 @@ import {
   UnixTime,
 } from '@l2beat/shared-pure'
 import { utils } from 'ethers'
+import { Badge } from '../badges'
 
 import {
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -15,7 +19,6 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { getStage } from './common/stages/getStage'
@@ -49,6 +52,12 @@ export const degate2: Layer2 = {
   isArchived: true,
   type: 'layer2',
   id: ProjectId('degate2'),
+  createdAt: new UnixTime(1684838286), // 2023-05-23T10:38:06Z
+  badges: [
+    Badge.VM.AppChain,
+    Badge.DA.EthereumCalldata,
+    Badge.Fork.LoopringFork,
+  ],
   display: {
     name: 'DeGate V1 Legacy',
     slug: 'degate2',
@@ -97,18 +106,20 @@ export const degate2: Layer2 = {
           selector: '0x377bb770',
           functionSignature:
             'function submitBlocks(bool isDataCompressed,bytes data)',
-          sinceTimestampInclusive: new UnixTime(1693304819),
-          untilTimestampExclusive: new UnixTime(1699766508),
+          sinceTimestamp: new UnixTime(1693304819),
+          untilTimestamp: new UnixTime(1699766508),
         },
       },
     ],
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: RISK_VIEW.STATE_ZKP_SN,
     dataAvailability: RISK_VIEW.DATA_ON_CHAIN,
     exitWindow: RISK_VIEW.EXIT_WINDOW_NON_UPGRADABLE,
@@ -139,9 +150,7 @@ export const degate2: Layer2 = {
         },
       ],
     },
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   stage: getStage({
     stage0: {
       callsItselfRollup: true,
@@ -327,6 +336,7 @@ export const degate2: Layer2 = {
       link: 'https://medium.com/degate/degate-mainnet-beta-redeployment-update-a0f1a6b7350c',
       date: '2023-09-14T00:00:00Z',
       description: 'DeGate redeploys the contracts to fix a bug.',
+      type: 'general',
     },
   ],
 }

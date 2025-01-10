@@ -7,6 +7,9 @@ import {
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   FRONTRUNNING_RISK,
@@ -15,9 +18,10 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('zkfair')
@@ -27,25 +31,25 @@ const upgradeDelay = discovery.getContractValue<number>(
 )
 const upgradeDelayString = formatSeconds(upgradeDelay)
 const trustedAggregatorTimeout = discovery.getContractValue<number>(
-  'CDKValidium',
+  'ZKFairValidium',
   'trustedAggregatorTimeout',
 )
 const trustedAggregatorTimeoutString = formatSeconds(trustedAggregatorTimeout)
 
 const pendingStateTimeout = discovery.getContractValue<number>(
-  'CDKValidium',
+  'ZKFairValidium',
   'pendingStateTimeout',
 )
 const pendingStateTimeoutString = formatSeconds(pendingStateTimeout)
 const _HALT_AGGREGATION_TIMEOUT = formatSeconds(
   discovery.getContractValue<number>(
-    'CDKValidium',
+    'ZKFairValidium',
     '_HALT_AGGREGATION_TIMEOUT',
   ),
 )
 
 const forceBatchTimeout = discovery.getContractValue<number>(
-  'CDKValidium',
+  'ZKFairValidium',
   'forceBatchTimeout',
 )
 
@@ -53,7 +57,9 @@ const exitWindowRisk = {
   ...RISK_VIEW.EXIT_WINDOW(
     upgradeDelay,
     trustedAggregatorTimeout + pendingStateTimeout + forceBatchTimeout,
-    0,
+    {
+      upgradeDelay2: 0,
+    },
   ),
   description: `Even though there is a ${upgradeDelayString} Timelock for upgrades, forced transactions are disabled. Even if they were to be enabled, user withdrawals can be censored up to ${formatSeconds(
     trustedAggregatorTimeout + pendingStateTimeout + forceBatchTimeout,
@@ -65,36 +71,42 @@ const exitWindowRisk = {
 } as const
 
 const timelockUpgrades = {
-  upgradableBy: ['ZkFairAdmin'],
+  upgradableBy: ['ZKFairAdmin'],
   upgradeDelay: exitWindowRisk.value,
   upgradeConsiderations: exitWindowRisk.description,
 }
 
 const isForcedBatchDisallowed = discovery.getContractValue<boolean>(
-  'CDKValidium',
+  'ZKFairValidium',
   'isForcedBatchDisallowed',
 )
 
 const membersCount = discovery.getContractValue<number>(
-  'DataAvailabilityCommittee',
+  'ZKFairValidiumDAC',
   'getAmountOfMembers',
 )
 
 const requiredSignatures = discovery.getContractValue<number>(
-  'DataAvailabilityCommittee',
+  'ZKFairValidiumDAC',
   'requiredAmountOfSignatures',
 )
 
 export const zkfair: Layer2 = {
   type: 'layer2',
   id: ProjectId('zkfair'),
+  createdAt: new UnixTime(1690815262), // 2023-07-31T14:54:22Z
+  badges: [Badge.VM.EVM, Badge.DA.DAC, Badge.Stack.PolygonCDK],
   display: {
+    reasonsForBeingOther: [
+      REASON_FOR_BEING_OTHER.NO_PROOFS,
+      REASON_FOR_BEING_OTHER.NO_DA_ORACLE,
+    ],
     name: 'ZKFair',
     slug: 'zkfair',
+    purposes: ['Universal'],
     warning:
       'The forced transaction mechanism is currently disabled. The project claims to use CelestiaDA but smart contracts on L1 use DAC. Arbitrary messaging passing is removed from the bridge.',
     description: 'ZKFair is a Validium based on Polygon CDK and Celestia DA.',
-    purposes: ['Universal'],
     category: 'Validium',
     provider: 'Polygon',
     links: {
@@ -144,17 +156,22 @@ export const zkfair: Layer2 = {
     ],
     coingeckoPlatform: 'zkfair',
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['DAC'],
-    bridge: { type: 'DAC Members', requiredSignatures, membersCount },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.DAC],
+      bridge: DA_BRIDGES.DAC_MEMBERS({
+        requiredSignatures,
+        membersCount,
+      }),
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: {
       ...RISK_VIEW.STATE_ZKP_SN,
       sources: [
         {
-          contract: 'CDKValidium',
+          contract: 'ZKFairValidium',
           references: [
             'https://etherscan.io/address/0x668965757127549f8755D2eEd10494B06420213b#code#F8#L820',
           ],
@@ -168,7 +185,7 @@ export const zkfair: Layer2 = {
       }),
       sources: [
         {
-          contract: 'CDKValidium',
+          contract: 'ZKFairValidium',
           references: [
             'https://etherscan.io/address/0x668965757127549f8755D2eEd10494B06420213b#code#F8#L587',
           ],
@@ -181,7 +198,7 @@ export const zkfair: Layer2 = {
       ...SEQUENCER_NO_MECHANISM(isForcedBatchDisallowed),
       sources: [
         {
-          contract: 'CDKValidium',
+          contract: 'ZKFairValidium',
           references: [
             'https://etherscan.io/address/0x668965757127549f8755D2eEd10494B06420213b#code#F8#L247',
           ],
@@ -195,7 +212,7 @@ export const zkfair: Layer2 = {
         ` There is a ${trustedAggregatorTimeoutString} delay for proving and a ${pendingStateTimeoutString} delay for finalizing state proven in this way. These delays can only be lowered except during the emergency state.`,
       sources: [
         {
-          contract: 'CDKValidium',
+          contract: 'ZKFairValidium',
           references: [
             'https://etherscan.io/address/0x668965757127549f8755D2eEd10494B06420213b#code#F8#L639',
             'https://etherscan.io/address/0x668965757127549f8755D2eEd10494B06420213b#code#F8#L862',
@@ -203,9 +220,7 @@ export const zkfair: Layer2 = {
         },
       ],
     },
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   stage: {
     stage: 'NotApplicable',
   },
@@ -214,7 +229,7 @@ export const zkfair: Layer2 = {
       ...STATE_CORRECTNESS.VALIDITY_PROOFS,
       references: [
         {
-          text: 'CDKValidium.sol#L758 - Etherscan source code, _verifyAndRewardBatches function',
+          text: 'ZKFairValidium.sol#L758 - Etherscan source code, _verifyAndRewardBatches function',
           href: 'https://etherscan.io/address/0x668965757127549f8755D2eEd10494B06420213b#code#F8#L758',
         },
       ],
@@ -223,7 +238,7 @@ export const zkfair: Layer2 = {
       ...TECHNOLOGY_DATA_AVAILABILITY.GENERIC_OFF_CHAIN,
       references: [
         {
-          text: 'CDKValidium.sol#L494 - Etherscan source code, sequencedBatches mapping',
+          text: 'ZKFairValidium.sol#L494 - Etherscan source code, sequencedBatches mapping',
           href: 'https://etherscan.io/address/0x668965757127549f8755D2eEd10494B06420213b#code#F8#L494',
         },
       ],
@@ -242,7 +257,7 @@ export const zkfair: Layer2 = {
       ],
       references: [
         {
-          text: 'CDKValidium.sol#L61 - Etherscan source code, onlyTrustedSequencer modifier',
+          text: 'ZKFairValidium.sol#L61 - Etherscan source code, onlyTrustedSequencer modifier',
           href: 'https://etherscan.io/address/0x668965757127549f8755D2eEd10494B06420213b#code#F8#L461',
         },
       ],
@@ -253,7 +268,7 @@ export const zkfair: Layer2 = {
         'The mechanism for allowing users to submit their own transactions is currently disabled.',
       references: [
         {
-          text: 'CDKValidium.sol#L475 - Etherscan source code, isForceBatchAllowed modifier',
+          text: 'ZKFairValidium.sol#L475 - Etherscan source code, isForceBatchAllowed modifier',
           href: 'https://etherscan.io/address/0x668965757127549f8755D2eEd10494B06420213b#code#F8#L475',
         },
       ],
@@ -271,14 +286,10 @@ export const zkfair: Layer2 = {
     ],
   },
   permissions: [
-    ...discovery.getMultisigPermission(
-      'ZkFairAdmin',
-      'Admin of the CDKValidium, can set core system parameters like timeouts, sequencer and aggregator as well as deactivate emergency state. They can also upgrade the CDKValidium contracts, but are restricted by a 10d delay unless rollup is put in the Emergency State.',
-    ),
     {
       name: 'Sequencer',
       accounts: [
-        discovery.getPermissionedAccount('CDKValidium', 'trustedSequencer'),
+        discovery.getPermissionedAccount('ZKFairValidium', 'trustedSequencer'),
       ],
       description:
         'Its sole purpose and ability is to submit transaction batches. In case they are unavailable users cannot rely on the force batch mechanism because it is currently disabled.',
@@ -286,12 +297,16 @@ export const zkfair: Layer2 = {
     {
       name: 'Proposer',
       accounts: [
-        discovery.getPermissionedAccount('CDKValidium', 'trustedAggregator'),
+        discovery.getPermissionedAccount('ZKFairValidium', 'trustedAggregator'),
       ],
-      description: `The trusted proposer (called Aggregator) provides the CDKValidium contract with ZK proofs of the new system state. In case they are unavailable a mechanism for users to submit proofs on their own exists, but is behind a ${trustedAggregatorTimeoutString} delay for proving and a ${pendingStateTimeoutString} delay for finalizing state proven in this way. These delays can only be lowered except during the emergency state.`,
+      description: `The trusted proposer (called Aggregator) provides the ZKFairValidium contract with ZK proofs of the new system state. In case they are unavailable a mechanism for users to submit proofs on their own exists, but is behind a ${trustedAggregatorTimeoutString} delay for proving and a ${pendingStateTimeoutString} delay for finalizing state proven in this way. These delays can only be lowered except during the emergency state.`,
     },
     ...discovery.getMultisigPermission(
-      'ZkFairOwner',
+      'ZKFairAdmin',
+      'Admin of the ZKFairValidium, can set core system parameters like timeouts, sequencer and aggregator as well as deactivate emergency state.',
+    ),
+    ...discovery.getMultisigPermission(
+      'ZKFairOwner',
       'The ZkFair Owner is a multisig that can be used to trigger the emergency state which pauses bridge functionality, restricts advancing system state and removes the upgradeability delay.',
     ),
     ...discovery.getMultisigPermission(
@@ -303,7 +318,7 @@ export const zkfair: Layer2 = {
       accounts: (() => {
         // format: [ [ip, address], ... ]
         const membersMap = discovery.getContractValue<string[][]>(
-          'DataAvailabilityCommittee',
+          'ZKFairValidiumDAC',
           'members',
         )
 
@@ -318,16 +333,25 @@ export const zkfair: Layer2 = {
     {
       name: 'DAC Owner',
       accounts: [
-        discovery.getPermissionedAccount('DataAvailabilityCommittee', 'owner'),
+        discovery.getPermissionedAccount('ZKFairValidiumDAC', 'owner'),
       ],
       description:
         'The owner of the Data Availability Committee, can update the member set at any time.',
     },
+    {
+      name: 'TimelockExecutor',
+      accounts: discovery.getAccessControlRolePermission(
+        'Timelock',
+        'EXECUTOR_ROLE',
+      ),
+      description:
+        'Controls the upgrades to the ZKFairValidiumDAC and ZKFairValidium contracts through the Timelock. ',
+    },
   ],
   contracts: {
     addresses: [
-      discovery.getContractDetails('CDKValidium', {
-        description: `The main contract of the Polygon CDK Validium. It defines the rules of the system including core system parameters, permissioned actors as well as emergency procedures. The emergency state can be activated either by the ZkFair Owner, by proving a soundness error or by presenting a sequenced batch that has not been aggregated before a ${_HALT_AGGREGATION_TIMEOUT} timeout. This contract receives transaction roots, L2 state roots as well as ZK proofs. It also holds the address of DataAvailabilityCommittee.`,
+      discovery.getContractDetails('ZKFairValidium', {
+        description: `The main contract of the Polygon CDK Validium. It defines the rules of the system including core system parameters, permissioned actors as well as emergency procedures. The emergency state can be activated either by the ZkFair Owner, by proving a soundness error or by presenting a sequenced batch that has not been aggregated before a ${_HALT_AGGREGATION_TIMEOUT} timeout. This contract receives transaction roots, L2 state roots as well as ZK proofs. It also holds the address of ZKFairValidiumDAC.`,
         ...timelockUpgrades,
       }),
       discovery.getContractDetails('Bridge', {
@@ -342,12 +366,15 @@ export const zkfair: Layer2 = {
       }),
       discovery.getContractDetails(
         'FflonkVerifier',
-        'An autogenerated contract that verifies ZK proofs in the CDKValidium system.',
+        'An autogenerated contract that verifies ZK proofs in the ZKFairValidium system.',
       ),
-      discovery.getContractDetails('DataAvailabilityCommittee', {
+      discovery.getContractDetails('ZKFairValidiumDAC', {
         description:
           'Committee attesting that data for a given dataRoot has been published. The DAC Owner can update the member set at any time.',
         ...timelockUpgrades,
+      }),
+      discovery.getContractDetails('Timelock', {
+        description: `Contract upgrades have to go through a ${upgradeDelayString} timelock unless the Emergency State is activated. It is controlled by the TimelockExecutor.`,
       }),
     ],
     references: [
@@ -364,6 +391,7 @@ export const zkfair: Layer2 = {
       link: 'https://twitter.com/ZKFCommunity/status/1737307444181869017',
       date: '2023-12-20T00:00:00Z',
       description: 'ZKFair launched.',
+      type: 'general',
     },
   ],
 }

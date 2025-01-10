@@ -1,6 +1,7 @@
 import { Logger } from '@l2beat/backend-tools'
-import { DiscoveryConfig, DiscoveryDiff } from '@l2beat/discovery'
+import { DiscoveryDiff } from '@l2beat/discovery'
 import {
+  ChainConverter,
   ChainId,
   EthereumAddress,
   UnixTime,
@@ -8,13 +9,16 @@ import {
 } from '@l2beat/shared-pure'
 import { expect, mockObject } from 'earl'
 
+import { Database } from '@l2beat/database'
 import {
   DiscordClient,
   MAX_MESSAGE_LENGTH,
 } from '../../peripherals/discord/DiscordClient'
-import { ChainConverter } from '../../tools/ChainConverter'
-import { DailyReminderChainEntry, UpdateNotifier } from './UpdateNotifier'
-import { UpdateNotifierRepository } from './repositories/UpdateNotifierRepository'
+import {
+  DailyReminderChainEntry,
+  UpdateNotifier,
+  generateTemplatizedStatus,
+} from './UpdateNotifier'
 
 const BLOCK = 123
 
@@ -30,8 +34,8 @@ describe(UpdateNotifier.name, () => {
         sendMessage: async () => {},
       })
 
-      const updateNotifierRepository = mockObject<UpdateNotifierRepository>({
-        add: async () => 0,
+      const updateNotifierRepository = mockObject<Database['updateNotifier']>({
+        insert: async () => 0,
         findLatestId: async () => undefined,
         getNewerThan: async () => [],
       })
@@ -39,7 +43,7 @@ describe(UpdateNotifier.name, () => {
       updateNotifierRepository.findLatestId.resolvesToOnce(0)
 
       const updateNotifier = new UpdateNotifier(
-        updateNotifierRepository,
+        mockObject<Database>({ updateNotifier: updateNotifierRepository }),
         discordClient,
         chainConverter,
         Logger.SILENT,
@@ -59,7 +63,6 @@ describe(UpdateNotifier.name, () => {
       await updateNotifier.handleUpdate(
         project,
         changes,
-        undefined,
         BLOCK,
         ChainId.ETHEREUM,
         dependents,
@@ -97,8 +100,8 @@ describe(UpdateNotifier.name, () => {
         ].join('\n'),
         'PUBLIC',
       )
-      expect(updateNotifierRepository.add).toHaveBeenCalledTimes(1)
-      expect(updateNotifierRepository.add).toHaveBeenCalledWith({
+      expect(updateNotifierRepository.insert).toHaveBeenCalledTimes(1)
+      expect(updateNotifierRepository.insert).toHaveBeenCalledWith({
         projectName: project,
         diff: changes,
         blockNumber: BLOCK,
@@ -111,8 +114,8 @@ describe(UpdateNotifier.name, () => {
         sendMessage: async () => {},
       })
 
-      const updateNotifierRepository = mockObject<UpdateNotifierRepository>({
-        add: async () => 0,
+      const updateNotifierRepository = mockObject<Database['updateNotifier']>({
+        insert: async () => 0,
         findLatestId: async () => undefined,
         getNewerThan: async () => [],
       })
@@ -120,7 +123,7 @@ describe(UpdateNotifier.name, () => {
       updateNotifierRepository.findLatestId.resolvesToOnce(0)
 
       const updateNotifier = new UpdateNotifier(
-        updateNotifierRepository,
+        mockObject<Database>({ updateNotifier: updateNotifierRepository }),
         discordClient,
         chainConverter,
         Logger.SILENT,
@@ -133,33 +136,21 @@ describe(UpdateNotifier.name, () => {
         {
           name: 'Contract',
           address,
-          diff: [{ key: 'A', before: '1', after: '2' }],
+          diff: [
+            {
+              key: 'A',
+              before: '1',
+              after: '2',
+              severity: 'MEDIUM',
+              description: 'This should never be equal to two',
+            },
+          ],
         },
       ]
-      const config = new DiscoveryConfig({
-        name: 'test',
-        chain: 'ethereum',
-        initialAddresses: [],
-        names: {
-          '0x0000000000000000000000000000000000000001': 'Contract',
-        },
-        overrides: {
-          Contract: {
-            fields: {
-              A: {
-                type: null,
-                severity: 'MEDIUM',
-                description: 'This should never be equal to two',
-              },
-            },
-          },
-        },
-      })
 
       await updateNotifier.handleUpdate(
         project,
         changes,
-        config,
         BLOCK,
         ChainId.ETHEREUM,
         dependents,
@@ -201,8 +192,8 @@ describe(UpdateNotifier.name, () => {
         ].join('\n'),
         'PUBLIC',
       )
-      expect(updateNotifierRepository.add).toHaveBeenCalledTimes(1)
-      expect(updateNotifierRepository.add).toHaveBeenCalledWith({
+      expect(updateNotifierRepository.insert).toHaveBeenCalledTimes(1)
+      expect(updateNotifierRepository.insert).toHaveBeenCalledWith({
         projectName: project,
         diff: changes,
         blockNumber: BLOCK,
@@ -215,8 +206,8 @@ describe(UpdateNotifier.name, () => {
         sendMessage: async () => {},
       })
 
-      const updateNotifierRepository = mockObject<UpdateNotifierRepository>({
-        add: async () => 0,
+      const updateNotifierRepository = mockObject<Database['updateNotifier']>({
+        insert: async () => 0,
         findLatestId: async () => undefined,
         getNewerThan: async () => [],
       })
@@ -224,7 +215,7 @@ describe(UpdateNotifier.name, () => {
       updateNotifierRepository.findLatestId.resolvesToOnce(0)
 
       const updateNotifier = new UpdateNotifier(
-        updateNotifierRepository,
+        mockObject<Database>({ updateNotifier: updateNotifierRepository }),
         discordClient,
         chainConverter,
         Logger.SILENT,
@@ -246,7 +237,6 @@ describe(UpdateNotifier.name, () => {
       await updateNotifier.handleUpdate(
         project,
         changes,
-        undefined,
         BLOCK,
         ChainId.ETHEREUM,
         dependents,
@@ -288,8 +278,8 @@ describe(UpdateNotifier.name, () => {
         publicMessage,
         'PUBLIC',
       )
-      expect(updateNotifierRepository.add).toHaveBeenCalledTimes(1)
-      expect(updateNotifierRepository.add).toHaveBeenCalledWith({
+      expect(updateNotifierRepository.insert).toHaveBeenCalledTimes(1)
+      expect(updateNotifierRepository.insert).toHaveBeenCalledWith({
         projectName: project,
         diff: changes,
         blockNumber: BLOCK,
@@ -302,15 +292,15 @@ describe(UpdateNotifier.name, () => {
         sendMessage: async () => {},
       })
 
-      const updateNotifierRepository = mockObject<UpdateNotifierRepository>({
-        add: async () => 0,
+      const updateNotifierRepository = mockObject<Database['updateNotifier']>({
+        insert: async () => 0,
         findLatestId: async () => 0,
         getNewerThan: async () => [],
       })
       updateNotifierRepository.findLatestId.resolvesToOnce(undefined)
 
       const updateNotifier = new UpdateNotifier(
-        updateNotifierRepository,
+        mockObject<Database>({ updateNotifier: updateNotifierRepository }),
         discordClient,
         chainConverter,
         Logger.SILENT,
@@ -330,7 +320,6 @@ describe(UpdateNotifier.name, () => {
       await updateNotifier.handleUpdate(
         project,
         changes,
-        undefined,
         BLOCK,
         ChainId.ETHEREUM,
         dependents,
@@ -353,8 +342,8 @@ describe(UpdateNotifier.name, () => {
         ].join('\n'),
         'INTERNAL',
       )
-      expect(updateNotifierRepository.add).toHaveBeenCalledTimes(1)
-      expect(updateNotifierRepository.add).toHaveBeenCalledWith({
+      expect(updateNotifierRepository.insert).toHaveBeenCalledTimes(1)
+      expect(updateNotifierRepository.insert).toHaveBeenCalledWith({
         projectName: project,
         diff: changes,
         blockNumber: BLOCK,
@@ -365,8 +354,8 @@ describe(UpdateNotifier.name, () => {
 
   describe(UpdateNotifier.prototype.sendDailyReminder.name, () => {
     it('sends daily reminder at 9am CET', async () => {
-      const updateNotifierRepository = mockObject<UpdateNotifierRepository>({
-        add: async () => 0,
+      const updateNotifierRepository = mockObject<Database['updateNotifier']>({
+        insert: async () => 0,
       })
 
       const discordClient = mockObject<DiscordClient>({
@@ -374,7 +363,7 @@ describe(UpdateNotifier.name, () => {
       })
 
       const updateNotifier = new UpdateNotifier(
-        updateNotifierRepository,
+        mockObject<Database>({ updateNotifier: updateNotifierRepository }),
         discordClient,
         chainConverter,
         Logger.SILENT,
@@ -431,13 +420,14 @@ describe(UpdateNotifier.name, () => {
         ['project-a', 'arbitrum', '', '', '', '12'],
       ]
       const table = formatAsAsciiTable(headers, rows)
+      const templatizationStatus = generateTemplatizedStatus()
 
       await updateNotifier.sendDailyReminder(reminders, timestamp)
 
       expect(discordClient.sendMessage).toHaveBeenCalledTimes(1)
       expect(discordClient.sendMessage).toHaveBeenNthCalledWith(
         1,
-        `# Daily bot report @ ${timestamp.toYYYYMMDD()}\n\n:x: Detected changes with following severities :x:\n\`\`\`\n${table}\n\`\`\`\n`,
+        `# Daily bot report @ ${timestamp.toYYYYMMDD()}\n${templatizationStatus}\n:x: Detected changes with following severities :x:\n\`\`\`\n${table}\n\`\`\`\n`,
         'INTERNAL',
       )
     })
@@ -453,8 +443,8 @@ describe(UpdateNotifier.name, () => {
         },
       })
 
-      const updateNotifierRepository = mockObject<UpdateNotifierRepository>({
-        add: async () => 0,
+      const updateNotifierRepository = mockObject<Database['updateNotifier']>({
+        insert: async () => 0,
       })
 
       const discordClient = mockObject<DiscordClient>({
@@ -464,7 +454,7 @@ describe(UpdateNotifier.name, () => {
       })
 
       const updateNotifier = new UpdateNotifier(
-        updateNotifierRepository,
+        mockObject<Database>({ updateNotifier: updateNotifierRepository }),
         discordClient,
         chainConverter,
         Logger.SILENT,
@@ -504,12 +494,12 @@ describe(UpdateNotifier.name, () => {
       const discordClient = mockObject<DiscordClient>({
         sendMessage: async () => {},
       })
-      const updateNotifierRepository = mockObject<UpdateNotifierRepository>({
-        add: async () => 0,
+      const updateNotifierRepository = mockObject<Database['updateNotifier']>({
+        insert: async () => 0,
         findLatestId: async () => undefined,
       })
       const updateNotifier = new UpdateNotifier(
-        updateNotifierRepository,
+        mockObject<Database>({ updateNotifier: updateNotifierRepository }),
         discordClient,
         chainConverter,
         Logger.SILENT,

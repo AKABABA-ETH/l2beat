@@ -9,6 +9,7 @@
       "type": "string"
     },
     "extends": { "type": "string" },
+    "canActIndependently": { "type": "boolean" },
     "ignoreDiscovery": { "type": "boolean" },
     "proxyType": { "type": "string" },
     "ignoreInWatchMode": {
@@ -88,13 +89,31 @@
         null
       ]
     },
-    "stackRole": {
-      "type": ["string", "null"],
-      "enum": ["Sequencer", "Proposer", "Challenger", "Guardian", "Validator"]
-    },
     "permission": {
-      "type": ["string", "null"],
-      "enum": ["admin", "owner"]
+      "type": "object",
+      "unevaluatedProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "propose",
+            "challenge",
+            "validate",
+            "operateLinea",
+            "sequence",
+            "guard",
+            "fastconfirm",
+            "configure",
+            "upgrade",
+            "act"
+          ]
+        },
+        "delay": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "description": { "type:": ["string", "null"] }
+      }
     },
     "stackCategory": {
       "type": ["string", "null"],
@@ -106,15 +125,6 @@
       "properties": {
         "description": { "type": ["string", "null"] },
         "template": { "type": ["string", "null"] },
-        "role": {
-          "anyOf": [
-            { "$ref": "#/$defs/stackRole" },
-            {
-              "type": "array",
-              "items": { "$ref": "#/$defs/stackRole" }
-            }
-          ]
-        },
         "category": {
           "anyOf": [
             { "$ref": "#/$defs/stackCategory" },
@@ -124,14 +134,9 @@
             }
           ]
         },
-        "permission": {
-          "anyOf": [
-            { "$ref": "#/$defs/permission" },
-            {
-              "type": "array",
-              "items": { "$ref": "#/$defs/permission" }
-            }
-          ]
+        "permissions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/permission" }
         }
       }
     }

@@ -2,10 +2,12 @@ import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   NEW_CRYPTOGRAPHY,
   RISK_VIEW,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { Layer2 } from './types'
@@ -16,6 +18,7 @@ const discovery = new ProjectDiscovery('zkswap2')
 export const zkswap2: Layer2 = {
   type: 'layer2',
   id: ProjectId('zkswap2'),
+  createdAt: new UnixTime(1629199654), // 2021-08-17T11:27:34Z
   isArchived: true,
   display: {
     name: 'ZKSwap 2.0',
@@ -24,7 +27,7 @@ export const zkswap2: Layer2 = {
       'Version 3 of the protocol called ZkSpace is available and users are encouraged to move their assets there.',
     description:
       'ZKSwap is a fork of ZKsync with added AMM functionality. Based on ZK Rollup technology, ZKSwap aims to execute the full functionality of Uniswap on Layer 2, but increase the TPS, and make transaction processing cheaper.',
-    purposes: ['Payments', 'AMM'],
+    purposes: ['Payments', 'Exchange'],
     provider: 'ZKsync Lite',
     category: 'ZK Rollup',
 
@@ -57,20 +60,20 @@ export const zkswap2: Layer2 = {
       },
     ],
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: RISK_VIEW.STATE_ZKP_SN,
     dataAvailability: RISK_VIEW.DATA_ON_CHAIN,
     exitWindow: RISK_VIEW.EXIT_WINDOW_UNKNOWN,
     sequencerFailure: RISK_VIEW.SEQUENCER_FORCE_VIA_L1(),
     proposerFailure: RISK_VIEW.PROPOSER_USE_ESCAPE_HATCH_ZK,
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   technology: {
     stateCorrectness: zkswap.technology.stateCorrectness,
     newCryptography: {

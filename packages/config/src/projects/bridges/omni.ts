@@ -17,7 +17,7 @@ const size = discovery.getContractValue<number>(
 const validatorsString = `${threshold} / ${size}`
 
 const upgrades = {
-  upgradableBy: ['BridgeGovernance'],
+  upgradableBy: ['OmniBridgeGovernance'],
   upgradeDelay: 'No delay',
 }
 
@@ -27,12 +27,13 @@ const warningText = paused ? 'The bridge is currently paused.' : undefined
 
 const pausable = {
   paused,
-  pausableBy: ['BridgeGovernance'],
+  pausableBy: ['OmniBridgeGovernance'],
 }
 
 export const omni: Bridge = {
   type: 'bridge',
   id: ProjectId('omni'),
+  createdAt: new UnixTime(1662628329), // 2022-09-08T09:12:09Z
   display: {
     name: 'Omnibridge',
     slug: 'omni',
@@ -85,7 +86,7 @@ export const omni: Bridge = {
         {
           contract: 'ForeignAMB',
           references: [
-            'https://etherscan.io/address/0x82b67a43b69914e611710c62e629dabb2f7ac6ab#code#L1608',
+            'https://etherscan.io/address/0x098f51bdfb5D6d319DD4FDf06b64773d25bD1316#code#F14#L94',
           ],
         },
       ],
@@ -125,22 +126,18 @@ export const omni: Bridge = {
         {
           category: 'Users can be censored if',
           text: 'validators decide to not pass selected messages between chains.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'validators relay a fake message to Gnosis chain to mint more tokens than there are locked on Ethereum thus preventing some existing holders from being able to bring their funds back to Ethereum.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'validators relay a fake message to Ethereum chain allowing a user to withdraw tokens from Ethereum escrow when equivalent amount of tokens has not been deposited and burned on Gnosis chain.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: "there's an exploit in contracts that invest user deposit.",
-          isCritical: true,
         },
         {
           category: 'Funds can be frozen if',
@@ -185,7 +182,7 @@ export const omni: Bridge = {
   },
   permissions: [
     ...discovery.getMultisigPermission(
-      'BridgeGovernance',
+      'OmniBridgeGovernance',
       'Can update the contracts and parameters of the bridge.',
     ),
     {

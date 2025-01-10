@@ -1,6 +1,6 @@
-import { EthereumAddress } from '@l2beat/shared-pure'
 import { expect } from 'earl'
 
+import { EthereumAddress } from '@l2beat/shared-pure'
 import { chains } from './index'
 
 describe('chains', () => {
@@ -32,6 +32,9 @@ describe('chains', () => {
     )
 
     const contracts = chains
+      .filter(
+        (c) => c.name !== 'zksync2' && c.name !== 'kinto' && c.name !== 'degen',
+      ) // we are omitting zksync2, degen and kinto as they use different addresses
       .flatMap(
         (x) => x.multicallContracts?.map((y) => [x.name, y] as const) ?? [],
       )

@@ -1,31 +1,21 @@
-import {} from '@l2beat/shared'
-import { UnixTime } from '@l2beat/shared-pure'
-
-import {
-  ManagedChildIndexer,
-  ManagedChildIndexerOptions,
-} from '../../../tools/uif/ManagedChildIndexer'
-import { DEFAULT_RETRY_FOR_TVL } from '../../../tools/uif/defaultRetryForTvl'
-import { BlockTimestampRepository } from '../repositories/BlockTimestampRepository'
-import { BlockTimestampProvider } from '../services/BlockTimestampProvider'
-import { SyncOptimizer } from '../utils/SyncOptimizer'
-
-interface Dependencies extends Omit<ManagedChildIndexerOptions, 'name'> {
-  blockTimestampProvider: BlockTimestampProvider
-  blockTimestampRepository: BlockTimestampRepository
-  chain: string
-  syncOptimizer: SyncOptimizer
-}
+import { assert, UnixTime } from '@l2beat/shared-pure'
+import { Indexer } from '@l2beat/uif'
+import { ManagedChildIndexer } from '../../../tools/uif/ManagedChildIndexer'
+import { BlockTimestampIndexerDeps } from './types'
 
 export class BlockTimestampIndexer extends ManagedChildIndexer {
-  constructor(private readonly $: Dependencies) {
-    const logger = $.logger.tag($.tag)
-    const name = 'block_timestamp_indexer'
+  // used only for runtime invalidation protection
+  blockHeight = 0
+
+  constructor(private readonly $: BlockTimestampIndexerDeps) {
     super({
       ...$,
-      name,
-      logger,
-      updateRetryStrategy: DEFAULT_RETRY_FOR_TVL,
+      name: 'block_timestamp_indexer',
+      tags: {
+        tag: $.chain,
+        chain: $.chain,
+      },
+      updateRetryStrategy: Indexer.getInfiniteRetryStrategy(),
       configHash: $.minHeight.toString(),
     })
   }
@@ -49,7 +39,12 @@ export class BlockTimestampIndexer extends ManagedChildIndexer {
       blockNumber,
     })
 
-    await this.$.blockTimestampRepository.add({
+    assert(
+      blockNumber >= this.blockHeight,
+      `Block number cannot be smaller: ${blockNumber} < ${this.blockHeight}`,
+    )
+
+    await this.$.db.blockTimestamp.insert({
       chain: this.$.chain,
       timestamp,
       blockNumber,
@@ -60,15 +55,15 @@ export class BlockTimestampIndexer extends ManagedChildIndexer {
       blockNumber,
     })
 
+    this.blockHeight = blockNumber
     return timestamp.toNumber()
   }
 
   override async invalidate(targetHeight: number): Promise<number> {
-    const deletedRecords =
-      await this.$.blockTimestampRepository.deleteAfterExclusive(
-        this.$.chain,
-        new UnixTime(targetHeight),
-      )
+    const deletedRecords = await this.$.db.blockTimestamp.deleteAfterExclusive(
+      this.$.chain,
+      new UnixTime(targetHeight),
+    )
 
     if (deletedRecords > 0) {
       this.logger.info('Deleted block timestamps after height', {

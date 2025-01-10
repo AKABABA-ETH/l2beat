@@ -10,12 +10,12 @@ const discovery = new ProjectDiscovery('near')
 
 const threshold = discovery.getContractValue<number>(
   'BridgeAdminMultisig',
-  'getThreshold',
+  '$threshold',
 )
 
 const owners: string[] = discovery.getContractValue<string[]>(
   'BridgeAdminMultisig',
-  'getOwners',
+  '$members',
 )
 
 const size = owners.length
@@ -36,6 +36,7 @@ const lockRequirementInWei = discovery.getContractValue<number>(
 export const near: Bridge = {
   type: 'bridge',
   id: ProjectId('near'),
+  createdAt: new UnixTime(1662628329), // 2022-09-08T09:12:09Z
   display: {
     name: 'Rainbow Bridge',
     slug: 'near',
@@ -116,7 +117,6 @@ export const near: Bridge = {
         {
           category: 'Funds can be stolen if',
           text: 'bridge administrator removes funds from the bridge escrow.',
-          isCritical: true,
         },
       ],
       isIncomplete: true,
@@ -130,7 +130,6 @@ export const near: Bridge = {
         {
           category: 'Funds can be stolen if',
           text: 'destination token contract is maliciously upgraded.',
-          isCritical: true,
         },
       ],
       isIncomplete: true,
@@ -144,16 +143,14 @@ export const near: Bridge = {
       discovery.getContractDetails('NearProver', {
         description: 'Contract verifying merkle proofs, used for withdrawals.',
       }),
-      {
-        address: EthereumAddress('0x23Ddd3e3692d1861Ed57EDE224608875809e127f'),
-        name: 'ERC20Locker',
-        description: 'Escrow contract for ERC20 tokens.',
-      }, // Note: Escrow contract has to be hardcoded
-      {
-        address: EthereumAddress('0x6BFaD42cFC4EfC96f529D786D643Ff4A8B89FA52'),
-        name: 'EthCustodian',
-        description: 'Escrow contract for ETH tokens.',
-      }, // Note: Escrow contract has to be hardcoded
+      discovery.getContractDetails(
+        'ERC20Locker',
+        'Escrow contract for ERC20 tokens.',
+      ),
+      discovery.getContractDetails(
+        'EthCustodian',
+        'Escrow contract for ETH tokens.',
+      ),
     ],
     risks: [CONTRACTS.UPGRADE_NO_DELAY_RISK],
   },

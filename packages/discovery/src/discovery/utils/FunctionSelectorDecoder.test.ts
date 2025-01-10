@@ -1,5 +1,4 @@
-import { assert } from '@l2beat/backend-tools'
-import { Bytes, EthereumAddress } from '@l2beat/shared-pure'
+import { assert, Bytes, EthereumAddress } from '@l2beat/shared-pure'
 import { expect, mockFn, mockObject } from 'earl'
 import { utils } from 'ethers'
 
@@ -83,6 +82,7 @@ describe(FunctionSelectorDecoder.name, () => {
           .returnsOnce(implementation)
           .returns(EthereumAddress.ZERO),
         callMethod: mockFn().executes(callMethodStub),
+        getLogs: mockFn().returns([]),
         getSource: mockFn().resolvesTo({
           name: 'name',
           isVerified: true,
@@ -115,6 +115,7 @@ describe(FunctionSelectorDecoder.name, () => {
           abi: [],
           source: 'name',
         }),
+        getLogs: mockFn().resolvesTo([]),
       })
       const decoder = new FunctionSelectorDecoder(provider)
 
@@ -139,6 +140,7 @@ describe(FunctionSelectorDecoder.name, () => {
           .returnsOnce(implementation2)
           .resolvesTo(EthereumAddress.ZERO),
         callMethod: mockFn().executes(callMethodStub),
+        getLogs: mockFn().returns([]),
         getSource: mockFn().resolvesTo({
           name: 'name',
           isVerified: true,
@@ -178,6 +180,7 @@ describe(FunctionSelectorDecoder.name, () => {
           abi: [],
           source: 'name',
         }),
+        getLogs: mockFn().resolvesTo([]),
       })
       const decoder = new FunctionSelectorDecoder(provider)
 
@@ -207,6 +210,7 @@ describe(FunctionSelectorDecoder.name, () => {
           .given(target2, EIP2535_METHOD, [])
           .resolvesToOnce([implementation2, implementation3])
           .executes(callMethodStub),
+        getLogs: mockFn().returns([]),
         getSource: mockFn().resolvesTo({
           name: 'name',
           isVerified: true,
@@ -339,6 +343,7 @@ describe(FunctionSelectorDecoder.name, () => {
           .given(target2, EIP2535_METHOD, [])
           .resolvesToOnce([implementation2, implementation3])
           .executes(callMethodStub),
+        getLogs: mockFn().returns([]),
         getSource: mockFn()
           .given(target1)
           .resolvesToOnce({

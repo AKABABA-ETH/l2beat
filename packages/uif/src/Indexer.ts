@@ -1,7 +1,6 @@
-import { assert } from 'node:console'
-
 import { Logger } from '@l2beat/backend-tools'
 
+import { assert } from '@l2beat/shared-pure'
 import { Retries, RetryStrategy } from './Retries'
 import { assertUnreachable } from './assertUnreachable'
 import { getInitialState } from './reducer/getInitialState'
@@ -30,33 +29,51 @@ export abstract class Indexer {
    * used for all indexers that don't specify their own strategy.
    * @returns A default retry strategy that will be used for all indexers
    */
-  static GET_DEFAULT_RETRY_STRATEGY: () => RetryStrategy = () =>
+  static getDefaultRetryStrategy: () => RetryStrategy = () =>
     Retries.exponentialBackOff({
       initialTimeoutMs: 1000,
       maxAttempts: 10,
       maxTimeoutMs: 60 * 1000,
     })
 
+  static getInfiniteRetryStrategy: () => RetryStrategy = () =>
+    Retries.exponentialBackOff({
+      initialTimeoutMs: 1000,
+      maxAttempts: Infinity,
+      // WARNING: Change only if you know what you are doing
+      // Alerting system in Kibana requires Indexer to log sth once an hour
+      maxTimeoutMs: 1 * 60 * 60_000,
+    })
+
   /**
-   * Initializes the indexer. It should return a height that the indexer has
-   * synced up to. If the indexer has not synced any data, it should return
-   * `minHeight - 1`. For root indexers it should return the initial target
-   * height for the entire system.
+   * Initializes the indexer.
    *
    * This method is expected to read the height that was saved previously with
    * `setSafeHeight`. It shouldn't call `setSafeHeight` itself.
    *
-   * For root indexers if `setSafeHeight` is implemented it should return the
-   * height that was saved previously. If not it can `return this.tick()`.
-   * This method should also schedule a process to request ticks. For example
-   * with `setInterval(() => this.requestTick(), 1000)`.
+   * For root indexers this method should  schedule a process to request ticks.
+   * For example with `setInterval(() => this.requestTick(), 1000)`.
    *
-   * @returns The height that the indexer has synced up to or the target height
-   * for the entire system if this is a root indexer. Optionally it can return
-   * a config hash that will be saved in the state. Config hash can be used e.g.
-   * to detect changes in the indexer configuration between restarts.
+   * @returns
+   *
+   *  - The height that the indexer has synced up to or the target height
+   *    for the entire system if this is a root indexer. If the indexer has not
+   *    synced any data, it should return `minHeight - 1`.
+   *
+   *    For root indexers it should return the initial target height for the entire
+   *    system. If `setSafeHeight` is implemented it should return the height that
+   *    was saved previously. If not it can `return this.tick()`.
+   *
+   *  - Optionally it can return a config hash that will be saved in the state. Config
+   *    hash can be used e.g. to detect changes in the indexer configuration between
+   *    restarts.
+   *
+   *  - `undefined` if the initialization is not needed. Be mindful that in such case
+   *    none of the init effects will be dispatched.
    */
-  abstract initialize(): Promise<{ safeHeight: number; configHash?: string }>
+  abstract initialize(): Promise<
+    { safeHeight: number; configHash?: string } | undefined
+  >
 
   /**
    * This method will be called with the results of `initialize`, only once during the
@@ -156,11 +173,11 @@ export abstract class Indexer {
     })
 
     this.tickRetryStrategy =
-      options?.tickRetryStrategy ?? Indexer.GET_DEFAULT_RETRY_STRATEGY()
+      options?.tickRetryStrategy ?? Indexer.getDefaultRetryStrategy()
     this.updateRetryStrategy =
-      options?.updateRetryStrategy ?? Indexer.GET_DEFAULT_RETRY_STRATEGY()
+      options?.updateRetryStrategy ?? Indexer.getDefaultRetryStrategy()
     this.invalidateRetryStrategy =
-      options?.invalidateRetryStrategy ?? Indexer.GET_DEFAULT_RETRY_STRATEGY()
+      options?.invalidateRetryStrategy ?? Indexer.getDefaultRetryStrategy()
   }
 
   get safeHeight(): number {
@@ -172,6 +189,11 @@ export abstract class Indexer {
     this.started = true
     this.logger.info('Starting...')
     const initializedState = await this.initialize()
+
+    if (!initializedState) {
+      return
+    }
+
     this.dispatch({
       type: 'Initialized',
       ...initializedState,
@@ -245,17 +267,20 @@ export abstract class Indexer {
     this.logger.info('Updating', { from, to: effect.targetHeight })
     try {
       const newHeight = await this.update(from, effect.targetHeight)
-      if (newHeight > effect.targetHeight) {
+      if (newHeight < from || newHeight > effect.targetHeight) {
         this.logger.critical('Update returned invalid height', {
+          from,
+          to: effect.targetHeight,
           newHeight,
-          max: effect.targetHeight,
         })
         this.dispatch({ type: 'UpdateFailed', fatal: true })
       } else {
         this.dispatch({ type: 'UpdateSucceeded', from, newHeight })
+        this.logMetrics(newHeight, effect.targetHeight)
         this.updateRetryStrategy.clear()
       }
     } catch (error) {
+      const attempt = this.updateRetryStrategy.attempts()
       this.updateRetryStrategy.markAttempt()
       const fatal = !this.updateRetryStrategy.shouldRetry()
       if (fatal) {
@@ -263,21 +288,32 @@ export abstract class Indexer {
           error,
           from,
           to: effect.targetHeight,
+          attempt,
         })
-      } else {
+      } else if (attempt >= 10) {
         this.logger.error('Update failed', {
           error,
           from,
           to: effect.targetHeight,
+          attempt,
+        })
+      } else {
+        this.logger.warn('Update failed', {
+          error,
+          from,
+          to: effect.targetHeight,
+          attempt,
         })
       }
+      this.logMetrics(this.state.height, effect.targetHeight)
       this.dispatch({ type: 'UpdateFailed', fatal })
     }
   }
 
   private executeScheduleRetryUpdate(): void {
     const timeoutMs = this.updateRetryStrategy.timeoutMs()
-    this.logger.debug('Scheduling retry update', { timeoutMs })
+    const attempt = this.updateRetryStrategy.attempts()
+    this.logger.info('Scheduling retry update', { timeoutMs, attempt })
     setTimeout(() => {
       this.dispatch({ type: 'RetryUpdate' })
     }, timeoutMs)
@@ -334,7 +370,7 @@ export abstract class Indexer {
   // #region Root methods
 
   private async executeTick(): Promise<void> {
-    this.logger.debug('Ticking')
+    this.logger.info('Ticking')
     try {
       const safeHeight = await this.tick()
       this.dispatch({ type: 'TickSucceeded', safeHeight })
@@ -371,7 +407,7 @@ export abstract class Indexer {
 
   // #endregion
   // #region Common methods
-
+  //
   private async executeSetSafeHeight(
     effect: SetSafeHeightEffect,
   ): Promise<void> {
@@ -380,6 +416,10 @@ export abstract class Indexer {
       child.notifyUpdate(this, effect.safeHeight),
     )
     await this.setSafeHeight(effect.safeHeight)
+  }
+
+  private logMetrics(current: number, target: number): void {
+    this.logger.info('Metrics', { delay: target - current, current, target })
   }
 
   // #endregion

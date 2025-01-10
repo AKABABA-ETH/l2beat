@@ -10,6 +10,7 @@ const discovery = new ProjectDiscovery('synapse')
 export const synapse: Bridge = {
   type: 'bridge',
   id: ProjectId('synapse'),
+  createdAt: new UnixTime(1662628329), // 2022-09-08T09:12:09Z
   display: {
     name: 'Synapse',
     slug: 'synapse',
@@ -80,17 +81,14 @@ export const synapse: Bridge = {
         {
           category: 'Users can be censored if',
           text: 'nodes decide not to transfer tokens after observing an event on Ethereum.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'nodes decide to mint more tokens than there are locked on Ethereum thus preventing some existing holders from being able to bring their funds back to Ethereum.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'nodes decide to withdraw all the funds from the Ethereum Contract.',
-          isCritical: true,
         },
       ],
     },
@@ -103,7 +101,6 @@ export const synapse: Bridge = {
         {
           category: 'Funds can be stolen if',
           text: 'destination token contract is maliciously upgraded or not securely implemented.',
-          isCritical: true,
         },
       ],
     },
@@ -124,22 +121,18 @@ export const synapse: Bridge = {
   },
   contracts: {
     addresses: [
-      {
-        name: 'L1BridgeZap',
-        description:
-          'Entry point for deposits. Acts as a relayer between user and escrow, enabling token swap feature.',
-        address: EthereumAddress('0x6571d6be3d8460CF5F7d6711Cd9961860029D85F'),
-      },
+      discovery.getContractDetails(
+        'L1BridgeZap',
+        'Entry point for deposits. Acts as a relayer between user and escrow, enabling token swap feature.',
+      ),
       discovery.getContractDetails(
         'SynapseBridge',
         "Main escrow contract where all the funds are being held, the address with certain privileges can perform withdraw on user's behalf.",
       ),
-      {
-        name: 'Liquidity Pool',
-        description:
-          'Contract utilized as Liquidity Pool, allowing users to bridge their tokens to canonical versions on Ethereum.',
-        address: EthereumAddress('0x1116898DdA4015eD8dDefb84b6e8Bc24528Af2d8'),
-      },
+      discovery.getContractDetails(
+        'Liquidity Pool',
+        'Contract utilized as Liquidity Pool, allowing users to bridge their tokens to canonical versions on Ethereum.',
+      ),
     ],
     risks: [CONTRACTS.UPGRADE_WITH_DELAY_RISK('3 minutes')],
   },

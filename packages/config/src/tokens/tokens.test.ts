@@ -1,11 +1,20 @@
 import { CoingeckoClient, HttpClient } from '@l2beat/shared'
-import { AssetId, CoingeckoId, EthereumAddress } from '@l2beat/shared-pure'
+import {
+  assert,
+  AssetId,
+  ChainId,
+  CoingeckoId,
+  EthereumAddress,
+  Token,
+} from '@l2beat/shared-pure'
 import { expect } from 'earl'
 import { Contract, providers, utils } from 'ethers'
 
+import { Logger } from '@l2beat/backend-tools'
+import { chains } from '../chains'
 import { bridges } from '../projects'
 import { config } from '../test/config'
-import { canonicalTokenList, tokenList } from './tokens'
+import { tokenList } from './tokens'
 
 describe('tokens', () => {
   it('every token has a unique address and chainId', () => {
@@ -25,7 +34,22 @@ describe('tokens', () => {
     expect(everyUnique).toEqual(true)
   })
 
+  it('every token has a chain with minTimestampForTvl', () => {
+    for (const token of tokenList) {
+      const chain = chains.find((c) => c.chainId === +token.chainId)
+      assert(chain, `Chain not found for token ${token.symbol}`)
+      assert(
+        chain.minTimestampForTvl,
+        `Token ${token.symbol} added for chain without minTimestampForTvl ${chain.name}`,
+      )
+    }
+  })
+
   describe('canonical', () => {
+    const canonicalTokenList: Token[] = tokenList.filter(
+      (t) => t.source === 'canonical' && t.chainId === ChainId.ETHEREUM,
+    )
+
     describe('metadata is correct', function () {
       this.timeout(10_000)
       const MULTICALL_ADDRESS = '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441'
@@ -134,7 +158,14 @@ describe('tokens', () => {
       this.timeout(10000)
 
       const http = new HttpClient()
-      const coingeckoClient = new CoingeckoClient(http, config.coingeckoApiKey)
+      const coingeckoClient = new CoingeckoClient({
+        apiKey: config.coingeckoApiKey,
+        http,
+        retryStrategy: 'TEST',
+        logger: Logger.SILENT,
+        callsPerMinute: 10,
+        sourceName: 'coingeckoApi',
+      })
 
       const coinsList = await coingeckoClient.getCoinList({
         includePlatform: true,
@@ -150,9 +181,7 @@ describe('tokens', () => {
       canonicalTokenList.map((token) => {
         if (token.symbol === 'ETH') {
           expect(token.coingeckoId).toEqual(CoingeckoId('ethereum'))
-        } else if (
-          token.id === AssetId('wusdm-wrapped-mountain-protocol-usd')
-        ) {
+        } else if (token.id === AssetId.WUSDM) {
           // TODO(radomski): This is a short term solution to the problem of
           // wrapped token prices. wUSDM is ~15% of Manta Pacific TVL but the
           // Coingecko price chart for the _WRAPPED_ version of this token is
@@ -176,6 +205,16 @@ describe('tokens', () => {
           expect(token.coingeckoId).toEqual(
             CoingeckoId('mountain-protocol-usdm'),
           )
+        } else if (token.id === AssetId.YBETH) {
+          // TODO(maciekzygmunt): ybETH is a yield-bearing token version of vETH,
+          // and its price should increase relative to vETH over time. Currently, the
+          // price of ybETH is not available on CoinGecko, so we are using the price
+          // of vETH as a placeholder. For now, the difference is not significant, so
+          // there shouldn't be a major impact on TVL calculations. This should be updated
+          // in the future when the price is added to CoinGecko.
+          //
+          // - 8 October 2024
+          expect(token.coingeckoId).toEqual(CoingeckoId('veno-eth'))
         } else {
           const expectedId = token.address && result.get(token.address)
 
@@ -198,9 +237,11 @@ describe('tokens', () => {
     it('every bridge slug in bridgedUsing property is valid', () => {
       const tokenSlugs = tokenList
         .filter(
-          (token) => token.source === 'external' && token.bridgedUsing?.slug,
+          (token) =>
+            token.source === 'external' &&
+            token.bridgedUsing?.bridges.some((b) => b.slug),
         )
-        .map((token) => token.bridgedUsing?.slug)
+        .flatMap((token) => token.bridgedUsing?.bridges.map((b) => b.slug))
       const bridgesSlugs = bridges.map((bridge) => bridge.display.slug)
       const invalidSlugs = tokenSlugs.filter(
         (slug) => !bridgesSlugs.includes(slug!),

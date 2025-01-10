@@ -1,18 +1,19 @@
 import type {
   ProjectId,
   Sentiment,
+  UnixTime,
   WarningValueWithSentiment,
 } from '@l2beat/shared-pure'
 
 import type {
-  DataAvailabilityWithSentiment,
+  DataAvailabilityHistory,
   KnowledgeNugget,
-  Layer2Provider,
   Milestone,
   ScalingProjectConfig,
   ScalingProjectContracts,
   ScalingProjectDisplay,
   ScalingProjectPermission,
+  ScalingProjectStack,
   ScalingProjectTransactionApi,
 } from '../../../common'
 import type { ChainConfig } from '../../../common/ChainConfig'
@@ -30,6 +31,8 @@ export interface Layer2 {
   type: 'layer2'
   /** Unique, readable id, will be used in DB. DO NOT EDIT THIS PROPERTY */
   id: ProjectId
+  /** Date of creation of the file (not the project) */
+  createdAt: UnixTime
   /** Is this layer2 archived? */
   isArchived?: boolean
   /** Is this layer2 an upcoming rollup? */
@@ -43,7 +46,7 @@ export interface Layer2 {
   /** Technical chain configuration */
   chainConfig?: ChainConfig
   /** Data availability of scaling project */
-  dataAvailability?: DataAvailabilityWithSentiment
+  dataAvailability?: DataAvailabilityHistory
   /** Risk view values for this layer2 */
   riskView: ScalingProjectRiskView
   /** Rollup stage */
@@ -61,7 +64,7 @@ export interface Layer2 {
   /** List of permissioned addresses on the host chain */
   permissions?: ScalingProjectPermission[] | 'UnderReview'
   /** List of permissioned addresses on the chain itself */
-  nativePermissions?: ScalingProjectPermission[] | 'UnderReview'
+  nativePermissions?: Record<string, ScalingProjectPermission[]> | 'UnderReview'
   /** Links to recent developments, milestones achieved by the project */
   milestones?: Milestone[]
   /** List of knowledge nuggets: useful articles worth reading */
@@ -70,9 +73,9 @@ export interface Layer2 {
   badges?: BadgeId[]
 }
 
-export interface Layer2Display extends ScalingProjectDisplay {
+export type Layer2Display = ScalingProjectDisplay & {
   /** Technology provider */
-  provider?: Layer2Provider
+  provider?: ScalingProjectStack
   /** Tooltip contents for liveness tab for given project */
   liveness?: Layer2LivenessDisplay
   finality?: Layer2FinalityDisplay
@@ -106,12 +109,12 @@ export interface Layer2Config extends ScalingProjectConfig {
   /** Configuration for getting liveness data */
   liveness?: Layer2LivenessConfig
   /** Configuration for getting finality data */
-  finality?: Layer2FinalityConfig | 'coming soon'
+  finality?: Layer2FinalityConfig
 }
 
 export interface WarningWithSentiment {
   /** Content of the warning */
   content: string
   /** Color with which the warning should be displayed */
-  sentiment: Extract<Sentiment, 'bad' | 'warning'>
+  sentiment: Extract<Sentiment, 'bad' | 'warning' | 'neutral'>
 }

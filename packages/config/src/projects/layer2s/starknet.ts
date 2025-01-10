@@ -4,12 +4,15 @@ import {
   EthereumAddress,
   ProjectId,
   UnixTime,
-  formatLargeNumberShared,
+  formatLargeNumber,
   formatSeconds,
 } from '@l2beat/shared-pure'
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -19,8 +22,9 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { ESCROW } from '../../common/escrow'
+import { formatExecutionDelay } from '../../common/formatDelays'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import {
   getProxyGovernance,
@@ -29,15 +33,17 @@ import {
   getSHARPVerifierUpgradeDelay,
 } from '../../discovery/starkware'
 import { delayDescriptionFromSeconds } from '../../utils/delayDescription'
+import { Badge } from '../badges'
+import { PROOFS } from '../zk-catalog/common/proofSystems'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('starknet')
 const verifierAddress = discovery.getAddressFromValue('Starknet', 'verifier')
 
-const starknetDelaySeconds = discovery.getContractUpgradeabilityParam(
+const starknetDelaySeconds = discovery.getContractValue<number>(
   'Starknet',
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
 
 const ESCROW_ETH_ADDRESS = '0xae0Ee0A63A2cE6BaeEFFE56e7714FB4EFE48D419'
@@ -55,67 +61,67 @@ const ESCROW_LORDS_ADDRESS = '0x023A2aAc5d0fa69E3243994672822BA43E34E5C9'
 const ESCROW_STRK_ADDRESS = '0xcE5485Cfb26914C5dcE00B9BAF0580364daFC7a4'
 const ESCROW_MULTIBRIDGE_ADDRESS = '0xF5b6Ee2CAEb6769659f6C091D209DfdCaF3F69Eb'
 
-const escrowETHDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowETHDelaySeconds = discovery.getContractValue<number>(
   ESCROW_ETH_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowWBTCDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowWBTCDelaySeconds = discovery.getContractValue<number>(
   ESCROW_WBTC_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowUSDCDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowUSDCDelaySeconds = discovery.getContractValue<number>(
   ESCROW_USDC_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowUSDTDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowUSDTDelaySeconds = discovery.getContractValue<number>(
   ESCROW_USDT_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowWSTETHDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowWSTETHDelaySeconds = discovery.getContractValue<number>(
   ESCROW_WSTETH_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowRETHDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowRETHDelaySeconds = discovery.getContractValue<number>(
   ESCROW_RETH_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowUNIDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowUNIDelaySeconds = discovery.getContractValue<number>(
   ESCROW_UNI_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowFRAXDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowFRAXDelaySeconds = discovery.getContractValue<number>(
   ESCROW_FRAX_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowSFRXETHDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowSFRXETHDelaySeconds = discovery.getContractValue<number>(
   ESCROW_SFRXETH_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowFXSDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowFXSDelaySeconds = discovery.getContractValue<number>(
   ESCROW_FXS_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowLUSDDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowLUSDDelaySeconds = discovery.getContractValue<number>(
   ESCROW_LUSD_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowSTRKDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowSTRKDelaySeconds = discovery.getContractValue<number>(
   ESCROW_STRK_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
-const escrowMultibridgeDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowMultibridgeDelaySeconds = discovery.getContractValue<number>(
   ESCROW_MULTIBRIDGE_ADDRESS,
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
 
-const starkgateManagerDelaySeconds = discovery.getContractUpgradeabilityParam(
+const starkgateManagerDelaySeconds = discovery.getContractValue<number>(
   'StarkgateManager',
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
 
-const starkgateRegistryDelaySeconds = discovery.getContractUpgradeabilityParam(
+const starkgateRegistryDelaySeconds = discovery.getContractValue<number>(
   'StarkgateRegistry',
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
 
 const minDelay = Math.min(
@@ -144,7 +150,7 @@ function formatMaxTotalBalanceString(
   ) {
     return 'There is no bridge cap.'
   } else {
-    return `The current bridge cap is ${formatLargeNumberShared(
+    return `The current bridge cap is ${formatLargeNumber(
       maxTotalBalance / 10 ** decimals,
     )} ${ticker}.`
   }
@@ -232,9 +238,12 @@ const escrowEKUBOMaxTotalBalanceString = formatMaxTotalBalanceString(
   18,
 )
 
+const finalizationPeriod = 0
+
 export const starknet: Layer2 = {
   type: 'layer2',
   id: ProjectId('starknet'),
+  createdAt: new UnixTime(1642687633), // 2022-01-20T14:07:13Z
   display: {
     name: 'Starknet',
     slug: 'starknet',
@@ -252,7 +261,7 @@ export const starknet: Layer2 = {
         'https://starkware.co/ecosystem/',
         'https://community.starknet.io/',
       ],
-      documentation: ['https://starknet.io/learn/what-is-starknet'],
+      documentation: ['https://docs.starknet.io'],
       explorers: ['https://voyager.online/', 'https://starkscan.co/'],
       repositories: ['https://github.com/starkware-libs'],
       socialMedia: [
@@ -269,7 +278,7 @@ export const starknet: Layer2 = {
         'Starknet is a ZK rollup that posts state diffs to the L1. For a transaction to be considered final, the state diffs have to be submitted and validity proof should be generated, submitted, and verified. Proofs are aggregated with other projects using SHARP and state updates have to refer to proved claims.',
     },
     finality: {
-      finalizationPeriod: 0,
+      finalizationPeriod,
     },
     costsWarning: {
       sentiment: 'warning',
@@ -293,6 +302,7 @@ export const starknet: Layer2 = {
         address: EthereumAddress('0x0437465dfb5B79726e35F08559B0cBea55bb585C'),
         sinceTimestamp: new UnixTime(1652101033),
         tokens: ['DAI'],
+        ...ESCROW.CANONICAL_EXTERNAL,
         description:
           'DAI Vault for custom DAI Gateway managed by MakerDAO.' +
           ' ' +
@@ -333,6 +343,7 @@ export const starknet: Layer2 = {
           ' ' +
           escrowWSTETHMaxTotalBalanceString,
         upgradableBy: ['BridgeMultisig'],
+        ...ESCROW.CANONICAL_EXTERNAL,
         upgradeDelay: formatSeconds(escrowWSTETHDelaySeconds),
       }),
       discovery.getEscrowDetails({
@@ -401,9 +412,9 @@ export const starknet: Layer2 = {
       }),
       discovery.getEscrowDetails({
         address: EthereumAddress(ESCROW_MULTIBRIDGE_ADDRESS),
-        tokens: ['EKUBO'],
+        tokens: ['EKUBO', 'ZEND', 'NSTR'],
         description:
-          'StarkGate bridge for EKUBO (and potentially other tokens listed via StarkgateManager).' +
+          'StarkGate bridge for EKUBO, ZEND, NSTR (and potentially other tokens listed via StarkgateManager).' +
           ' ' +
           escrowEKUBOMaxTotalBalanceString,
         upgradeDelay: formatSeconds(escrowMultibridgeDelaySeconds),
@@ -418,7 +429,7 @@ export const starknet: Layer2 = {
     finality: {
       lag: 0,
       type: 'Starknet',
-      minTimestamp: new UnixTime(1710252998),
+      minTimestamp: new UnixTime(1724856347),
       stateUpdate: 'disabled',
     },
     trackedTxs: [
@@ -429,8 +440,8 @@ export const starknet: Layer2 = {
         ],
         query: {
           formula: 'sharpSubmission',
-          sinceTimestampInclusive: new UnixTime(1636978914),
-          untilTimestampExclusive: new UnixTime(1702921247),
+          sinceTimestamp: new UnixTime(1636978914),
+          untilTimestamp: new UnixTime(1702921247),
           programHashes: [
             '1865367024509426979036104162713508294334262484507712987283009063059134893433',
           ],
@@ -444,8 +455,8 @@ export const starknet: Layer2 = {
         ],
         query: {
           formula: 'sharpSubmission',
-          sinceTimestampInclusive: new UnixTime(1702921247),
-          untilTimestampExclusive: new UnixTime(1704855731),
+          sinceTimestamp: new UnixTime(1702921247),
+          untilTimestamp: new UnixTime(1704855731),
           programHashes: [
             '54878256403880350656938046611252303365750679698042371543935159963667935317',
           ],
@@ -459,8 +470,8 @@ export const starknet: Layer2 = {
         ],
         query: {
           formula: 'sharpSubmission',
-          sinceTimestampInclusive: new UnixTime(1704855731),
-          untilTimestampExclusive: new UnixTime(1710252995),
+          sinceTimestamp: new UnixTime(1704855731),
+          untilTimestamp: new UnixTime(1710252995),
           programHashes: [
             '2479841346739966073527450029179698923866252973805981504232089731754042431018',
           ],
@@ -474,8 +485,8 @@ export const starknet: Layer2 = {
         ],
         query: {
           formula: 'sharpSubmission',
-          sinceTimestampInclusive: new UnixTime(1710252995),
-          untilTimestampExclusive: new UnixTime(1710625271),
+          sinceTimestamp: new UnixTime(1710252995),
+          untilTimestamp: new UnixTime(1710625271),
           programHashes: [
             '109586309220455887239200613090920758778188956576212125550190099009305121410',
           ],
@@ -489,9 +500,38 @@ export const starknet: Layer2 = {
         ],
         query: {
           formula: 'sharpSubmission',
-          sinceTimestampInclusive: new UnixTime(1710625271),
+          sinceTimestamp: new UnixTime(1710625271),
+          untilTimestamp: new UnixTime(1724856227), // https://app.blocksec.com/explorer/tx/eth/0x3b5c41b3abb8e265b8d58ec3dde79790d4f0ee050de97f8bd0fe68048c070bdd
           programHashes: [
             '3383082961563516565935611087683915026448707331436034043529592588079494402084',
+          ],
+        },
+        _hackCostMultiplier: 0.65,
+      },
+      {
+        uses: [
+          { type: 'liveness', subtype: 'proofSubmissions' },
+          { type: 'l2costs', subtype: 'proofSubmissions' },
+        ],
+        query: {
+          formula: 'sharpSubmission',
+          sinceTimestamp: new UnixTime(1724856227),
+          programHashes: [
+            '853638403225561750106379562222782223909906501242604214771127703946595519856', // Starknet OS
+          ],
+        },
+        _hackCostMultiplier: 0.65,
+      },
+      {
+        uses: [
+          { type: 'liveness', subtype: 'proofSubmissions' },
+          { type: 'l2costs', subtype: 'proofSubmissions' },
+        ],
+        query: {
+          formula: 'sharpSubmission',
+          sinceTimestamp: new UnixTime(1724856227),
+          programHashes: [
+            '1161178844461337253856226043908368523817098764221830529880464854589141231910', // Aggregator
           ],
         },
         _hackCostMultiplier: 0.65,
@@ -509,7 +549,7 @@ export const starknet: Layer2 = {
           selector: '0x77552641',
           functionSignature:
             'function updateState(uint256[] programOutput, uint256 onchainDataHash, uint256 onchainDataSize)',
-          sinceTimestampInclusive: new UnixTime(1636978914),
+          sinceTimestamp: new UnixTime(1636978914),
         },
       },
       {
@@ -525,7 +565,24 @@ export const starknet: Layer2 = {
           selector: '0xb72d42a1',
           functionSignature:
             'function updateStateKzgDA(uint256[] programOutput, bytes kzgProof)',
-          sinceTimestampInclusive: new UnixTime(1710252995),
+          sinceTimestamp: new UnixTime(1710252995),
+          untilTimestamp: new UnixTime(1724856227),
+        },
+      },
+      {
+        uses: [
+          { type: 'liveness', subtype: 'stateUpdates' },
+          { type: 'l2costs', subtype: 'stateUpdates' },
+        ],
+        query: {
+          formula: 'functionCall',
+          address: EthereumAddress(
+            '0xc662c410C0ECf747543f5bA90660f6ABeBD9C8c4',
+          ),
+          selector: '0x507ee528',
+          functionSignature:
+            'function updateStateKzgDA(uint256[] programOutput, bytes[] kzgProofs)',
+          sinceTimestamp: new UnixTime(1724856227),
         },
       },
       {
@@ -538,8 +595,8 @@ export const starknet: Layer2 = {
           selector: '0x5578ceae',
           functionSignature:
             'function registerContinuousMemoryPage(uint256 startAddr,uint256[] values,uint256 z,uint256 alpha,uint256 prime)',
-          sinceTimestampInclusive: new UnixTime(1678095635),
-          untilTimestampExclusive: new UnixTime(1706789063),
+          sinceTimestamp: new UnixTime(1678095635),
+          untilTimestamp: new UnixTime(1706789063),
         },
         _hackCostMultiplier: 0.9,
       },
@@ -553,8 +610,8 @@ export const starknet: Layer2 = {
           selector: '0x5578ceae',
           functionSignature:
             'function registerContinuousMemoryPage(uint256 startAddr,uint256[] values,uint256 z,uint256 alpha,uint256 prime)',
-          sinceTimestampInclusive: new UnixTime(1706789063),
-          untilTimestampExclusive: new UnixTime(1710342000),
+          sinceTimestamp: new UnixTime(1706789063),
+          untilTimestamp: new UnixTime(1710342000),
         },
         _hackCostMultiplier: 0.9,
       },
@@ -568,7 +625,36 @@ export const starknet: Layer2 = {
           selector: '0x5578ceae',
           functionSignature:
             'function registerContinuousMemoryPage(uint256 startAddr,uint256[] values,uint256 z,uint256 alpha,uint256 prime)',
-          sinceTimestampInclusive: new UnixTime(1710342000),
+          sinceTimestamp: new UnixTime(1710342000),
+          untilTimestamp: new UnixTime(1722197315),
+        },
+        _hackCostMultiplier: 0.5,
+      },
+      {
+        uses: [{ type: 'l2costs', subtype: 'batchSubmissions' }],
+        query: {
+          formula: 'functionCall',
+          address: EthereumAddress(
+            '0xe583BcDE0160b637330b27a3ea1F3c02ba2eC460',
+          ),
+          selector: '0x5578ceae',
+          functionSignature:
+            'function registerContinuousMemoryPage(uint256 startAddr,uint256[] values,uint256 z,uint256 alpha,uint256 prime)',
+          sinceTimestamp: new UnixTime(1722197315),
+        },
+        _hackCostMultiplier: 0.5,
+      },
+      {
+        uses: [{ type: 'l2costs', subtype: 'batchSubmissions' }],
+        query: {
+          formula: 'functionCall',
+          address: EthereumAddress(
+            '0xe583BcDE0160b637330b27a3ea1F3c02ba2eC460',
+          ),
+          selector: '0x739ef303',
+          functionSignature:
+            'function registerContinuousPageBatch((uint256 startAddr, uint256[] values, uint256 z, uint256 alpha, uint256 prime)[] memoryPageEntries)',
+          sinceTimestamp: new UnixTime(1722197315),
         },
         _hackCostMultiplier: 0.5,
       },
@@ -582,8 +668,8 @@ export const starknet: Layer2 = {
           selector: '0xe85a6a28',
           functionSignature:
             'function verifyFRI(uint256[] proof,uint256[] friQueue,uint256 evaluationPoint,uint256 friStepSize,uint256 expectedRoot)',
-          sinceTimestampInclusive: new UnixTime(1706772791),
-          untilTimestampExclusive: new UnixTime(1710342000),
+          sinceTimestamp: new UnixTime(1706772791),
+          untilTimestamp: new UnixTime(1710342000),
         },
         _hackCostMultiplier: 0.7,
       },
@@ -597,7 +683,22 @@ export const starknet: Layer2 = {
           selector: '0xe85a6a28',
           functionSignature:
             'function verifyFRI(uint256[] proof,uint256[] friQueue,uint256 evaluationPoint,uint256 friStepSize,uint256 expectedRoot)',
-          sinceTimestampInclusive: new UnixTime(1710342000),
+          sinceTimestamp: new UnixTime(1710342000),
+          untilTimestamp: new UnixTime(1722197315),
+        },
+        _hackCostMultiplier: 0.65,
+      },
+      {
+        uses: [{ type: 'l2costs', subtype: 'proofSubmissions' }],
+        query: {
+          formula: 'functionCall',
+          address: EthereumAddress(
+            '0x30EfaAA99f8eFe310D9FdC83072e2a04c093d400',
+          ),
+          selector: '0xe85a6a28',
+          functionSignature:
+            'function verifyFRI(uint256[] proof,uint256[] friQueue,uint256 evaluationPoint,uint256 friStepSize,uint256 expectedRoot)',
+          sinceTimestamp: new UnixTime(1722197315),
         },
         _hackCostMultiplier: 0.65,
       },
@@ -611,8 +712,8 @@ export const starknet: Layer2 = {
           selector: '0x3fe317a6',
           functionSignature:
             'function verifyMerkle(uint256[] merkleView,uint256[] initialMerkleQueue,uint256 height,uint256 expectedRoot)',
-          sinceTimestampInclusive: new UnixTime(1706767355),
-          untilTimestampExclusive: new UnixTime(1710342000),
+          sinceTimestamp: new UnixTime(1706767355),
+          untilTimestamp: new UnixTime(1710342000),
         },
         _hackCostMultiplier: 0.7,
       },
@@ -626,25 +727,43 @@ export const starknet: Layer2 = {
           selector: '0x3fe317a6',
           functionSignature:
             'function verifyMerkle(uint256[] merkleView,uint256[] initialMerkleQueue,uint256 height,uint256 expectedRoot)',
-          sinceTimestampInclusive: new UnixTime(1710342000),
+          sinceTimestamp: new UnixTime(1710342000),
+          untilTimestamp: new UnixTime(1722197315),
+        },
+        _hackCostMultiplier: 0.65,
+      },
+      {
+        uses: [{ type: 'l2costs', subtype: 'proofSubmissions' }],
+        query: {
+          formula: 'functionCall',
+          address: EthereumAddress(
+            '0x32a91Ff604AB2aDCd832e91D68b2f3f25358FdAd',
+          ),
+          selector: '0x3fe317a6',
+          functionSignature:
+            'function verifyMerkle(uint256[] merkleView,uint256[] initialMerkleQueue,uint256 height,uint256 expectedRoot)',
+          sinceTimestamp: new UnixTime(1722197315),
         },
         _hackCostMultiplier: 0.65,
       },
     ],
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (blobs or calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_BLOBS_OR_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS_COMPRESSED,
+    }),
+  ],
+  riskView: {
     stateValidation: {
       ...RISK_VIEW.STATE_ZKP_ST,
+      secondLine: formatExecutionDelay(finalizationPeriod),
       sources: [
         {
           contract: 'Starknet',
           references: [
-            'https://etherscan.io/address/0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24#code',
+            'https://etherscan.io/address/0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC#code',
           ],
         },
         // we don't have a way to test against shared modules
@@ -662,7 +781,7 @@ export const starknet: Layer2 = {
         {
           contract: 'Starknet',
           references: [
-            'https://etherscan.io/address/0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24#code',
+            'https://etherscan.io/address/0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC#code',
           ],
         },
       ],
@@ -674,15 +793,13 @@ export const starknet: Layer2 = {
         {
           contract: 'Starknet',
           references: [
-            'https://etherscan.io/address/0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24#code',
+            'https://etherscan.io/address/0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC#code',
           ],
         },
       ],
     },
     proposerFailure: RISK_VIEW.PROPOSER_CANNOT_WITHDRAW,
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   stage: getStage(
     {
       stage0: {
@@ -762,6 +879,7 @@ export const starknet: Layer2 = {
       },
     ],
     proofVerification: {
+      shortDescription: 'Starknet is a ZK-CairoVM rollup on Ethereum.',
       aggregation: true,
       requiredTools: [],
       verifiers: [
@@ -771,17 +889,25 @@ export const starknet: Layer2 = {
             'Starknet utilizes STARKs for their system. The protocol makes use of recursive aggregation across multiple projects that share the same onchain verifier. SHARP stands for SHARed Prover. Different programs are represented onchain with different program hashes.',
           verified: 'no',
           contractAddress: EthereumAddress(
-            '0xd51A3D50d4D2f99a345a66971E650EEA064DD8dF',
+            '0x9fb7F48dCB26b7bFA4e580b2dEFf637B13751942',
           ),
           chainId: ChainId.ETHEREUM,
           subVerifiers: [
+            // TODO: change links when this is released: https://github.com/starkware-libs/cairo-lang/commit/0e4dab8a6065d80d1c726394f5d9d23cb451706a
             {
-              name: 'Final universal bootloader',
-              proofSystem: 'STARK',
-              mainArithmetization: 'AIR',
-              mainPCS: 'FRI',
-              trustedSetup: 'None',
+              name: 'Main bootloader',
+              ...PROOFS.PROGRAM,
               link: 'https://github.com/starkware-libs/cairo-lang/blob/v0.13.1/src/starkware/cairo/bootloaders/bootloader/bootloader.cairo',
+            },
+            {
+              name: 'Simple bootloader',
+              ...PROOFS.PROGRAM,
+              link: 'https://github.com/starkware-libs/cairo-lang/blob/v0.13.1/src/starkware/cairo/bootloaders/simple_bootloader/simple_bootloader.cairo',
+            },
+            {
+              name: 'Applicative bootloader',
+              ...PROOFS.PROGRAM,
+              link: 'https://github.com/starkware-libs/cairo-lang/blob/v0.13.2a0/src/starkware/cairo/bootloaders/applicative_bootloader/applicative_bootloader.cairo',
             },
             {
               name: 'Recursive Cairo verifier',
@@ -792,11 +918,8 @@ export const starknet: Layer2 = {
               link: 'https://github.com/starkware-libs/cairo-lang/tree/v0.13.1/src/starkware/cairo/cairo_verifier/layouts/all_cairo',
             },
             {
-              name: 'Main program',
-              proofSystem: 'STARK',
-              mainArithmetization: 'AIR',
-              mainPCS: 'FRI',
-              trustedSetup: 'None',
+              name: 'StarknetOS',
+              ...PROOFS.PROGRAM,
               link: 'https://github.com/starkware-libs/cairo-lang/tree/v0.13.1/src/starkware/starknet/core/os',
             },
           ],
@@ -920,6 +1043,10 @@ At present, the StarkNet Foundation hosts voting for STRK token holders (or thei
         'Can upgrade implementation of the ETH escrow, potentially gaining access to all funds stored in the bridge. ' +
         delayDescriptionFromSeconds(escrowETHDelaySeconds),
     },
+    ...discovery.getMultisigPermission(
+      'StarkgateETHSecurityAgentMultisig',
+      'Can enable the token withdrawal limit of the Starkgate escrow for ETH.',
+    ),
     {
       name: 'StarkGate WBTC owner',
       accounts: getProxyGovernance(discovery, ESCROW_WBTC_ADDRESS),
@@ -1017,6 +1144,7 @@ At present, the StarkNet Foundation hosts voting for STRK token holders (or thei
       link: 'https://twitter.com/Starknet/status/1767915153700290839',
       date: '2024-03-13T00:00:00Z',
       description: 'Starknet starts publishing data to blobs.',
+      type: 'general',
     },
     {
       name: 'Starknet Provisions',
@@ -1024,6 +1152,7 @@ At present, the StarkNet Foundation hosts voting for STRK token holders (or thei
       date: '2024-02-14T00:00:00Z',
       description:
         'Starknet begins allocating $STRK to early contributors and users.',
+      type: 'general',
     },
     {
       name: 'Starknet Alpha',
@@ -1031,6 +1160,7 @@ At present, the StarkNet Foundation hosts voting for STRK token holders (or thei
       date: '2021-11-29T00:00:00Z',
       description:
         'Rollup is live on mainnet, enabling general computation using ZK Rollup technology.',
+      type: 'general',
     },
     {
       name: 'StarkGate Alpha',
@@ -1038,7 +1168,14 @@ At present, the StarkNet Foundation hosts voting for STRK token holders (or thei
       date: '2022-05-09T00:00:00Z',
       description:
         'Bridge is live on mainnet, serving as gateway between Ethereum and Starknet.',
+      type: 'general',
     },
+  ],
+  badges: [
+    Badge.VM.CairoVM,
+    Badge.DA.EthereumBlobs,
+    Badge.Infra.SHARP,
+    Badge.Other.Governance,
   ],
   knowledgeNuggets: [...NUGGETS.STARKWARE],
 }

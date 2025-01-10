@@ -1,6 +1,9 @@
 import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import {
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
   NUGGETS,
@@ -19,13 +22,14 @@ export const aztecconnect: Layer2 = {
   isArchived: true,
   type: 'layer2',
   id: ProjectId('aztecconnect'),
+  createdAt: new UnixTime(1623153328), // 2021-06-08T11:55:28Z
   display: {
     name: 'Zk.Money v2 (Aztec Connect)',
     slug: 'aztecconnect',
     warning: `EOL: Aztec team shut down their offchain rollup infrastructure on March 31st, 2024. Onchain deposits are disabled and ownership of the rollup contract is irrevocably renounced. Assets in the escrow can be manually withdrawn with the [Aztec Connect Ejector](https://github.com/AztecProtocol/aztec-connect-ejector).`,
     description:
       'Aztec Connect is an open source layer 2 network that aims to enable affordable, private crypto payments via zero-knowledge proofs.',
-    purposes: ['DeFi'],
+    purposes: ['Payments', 'Privacy'],
     category: 'ZK Rollup',
     links: {
       websites: ['https://aztec.network/'],
@@ -64,17 +68,19 @@ export const aztecconnect: Layer2 = {
           ),
           selector: '0xf81cccbe',
           functionSignature: 'function processRollup(bytes ,bytes _signatures)',
-          sinceTimestampInclusive: new UnixTime(1654638194),
-          untilTimestampExclusive: new UnixTime(1712696939),
+          sinceTimestamp: new UnixTime(1654638194),
+          untilTimestamp: new UnixTime(1712696939),
         },
       },
     ],
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
   riskView: {
     stateValidation: {
       ...RISK_VIEW.STATE_ZKP_SN,
@@ -99,12 +105,6 @@ export const aztecconnect: Layer2 = {
     proposerFailure: {
       ...RISK_VIEW.PROPOSER_SELF_PROPOSE_ZK,
     },
-    sourceUpgradeability: {
-      description:
-        'The ownership of the rollup contract (ProxyAdmin) has been irrevocably renounced, which makes it immutable.',
-      sentiment: 'good',
-      value: 'Immutable',
-    },
     dataAvailability: {
       ...RISK_VIEW.DATA_ON_CHAIN,
       sources: [
@@ -128,8 +128,6 @@ export const aztecconnect: Layer2 = {
         },
       ],
     },
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
   },
   stage: getStage(
     {
@@ -175,7 +173,7 @@ export const aztecconnect: Layer2 = {
       references: [
         {
           text: 'Verifier28x32.sol#L150 - Etherscan source code',
-          href: 'https://etherscan.io/address/0xB656f4219f565b93DF57D531B574E17FE0F25939#code#F3#L150',
+          href: 'https://etherscan.io/address/0xb7baA1420f88b7758E341c93463426A2b7651CFB#code#F3#L150',
         },
       ],
     },
@@ -261,12 +259,10 @@ export const aztecconnect: Layer2 = {
       }),
       // rollupBeneficiary is encoded in proofData. Can be set arbitrarily for each rollup.
       // https://etherscan.io/address/0x7d657Ddcf7e2A5fD118dC8A6dDc3dC308AdC2728#code#F1#L704
-      {
-        address: EthereumAddress('0x4cf32670a53657596E641DFCC6d40f01e4d64927'),
-        description:
-          'Contract responsible for distributing fees and reimbursing gas to Rollup Providers.',
-        name: 'AztecFeeDistributor',
-      },
+      discovery.getContractDetails(
+        'AztecFeeDistributor',
+        'Contract responsible for distributing fees and reimbursing gas to Rollup Providers.',
+      ),
       discovery.getContractDetails(
         'DefiBridgeProxy',
         'Bridge Connector to various DeFi Bridges.',
@@ -292,6 +288,7 @@ export const aztecconnect: Layer2 = {
       link: 'https://medium.com/aztec-protocol/sunsetting-aztec-connect-a786edce5cae',
       description:
         'Aztec stops rollup operators, renouces ownership. Users must run the Rollup manually to withdraw.',
+      type: 'general',
     },
     {
       name: 'Mainnet Launch',
@@ -299,6 +296,7 @@ export const aztecconnect: Layer2 = {
       link: 'https://medium.com/aztec-protocol/aztec-network-launches-first-ever-private-defi-solution-for-ethereum-e5ec7624d430',
       description:
         'Aztec Connect is live on mainnet, enabling private DeFi on Ethereum.',
+      type: 'general',
     },
     {
       name: 'Introducing Noir',
@@ -306,6 +304,7 @@ export const aztecconnect: Layer2 = {
       link: 'https://medium.com/aztec-protocol/introducing-noir-the-universal-language-of-zero-knowledge-ff43f38d86d9',
       description:
         'Noir - programming language for zero-knowledge proofs, has been introduced.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [

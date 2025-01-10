@@ -1,7 +1,6 @@
-import { deepStrictEqual } from 'assert'
-import { assert } from '@l2beat/backend-tools'
-import { ChainId } from '@l2beat/shared-pure'
+import { assert, ChainId } from '@l2beat/shared-pure'
 
+import { isEqual } from 'lodash'
 import { chains } from '../../src'
 import { GeneratedToken } from '../../src/tokens/types'
 import { ScriptLogger } from './utils/ScriptLogger'
@@ -26,15 +25,14 @@ describe('tokens script', () => {
 
         assert(
           output,
-          `${chain}:${source.symbol} is missing in generated.json. Please run "yarn tokens"`,
+          `${chain}:${source.symbol} is missing in generated.json. Please run "pnpm tokens"`,
         )
 
         for (const [key, value] of Object.entries(source)) {
-          deepStrictEqual(
-            output[key as keyof typeof output],
-            value,
-            `${chain}:${source.symbol} has different ${key} in generated.json. Please run "yarn tokens"`,
-          )
+          if (!isEqual(output[key as keyof typeof output], value))
+            throw new Error(
+              `${chain}:${source.symbol} has different ${key} in generated.json. Please run "pnpm tokens"`,
+            )
         }
       }
     }
@@ -51,7 +49,7 @@ describe('tokens script', () => {
 
       assert(
         source,
-        `${chainName}:${output.symbol} is missing in tokens.json. Please run "yarn tokens"`,
+        `${chainName}:${output.symbol} is missing in tokens.json. Please run "pnpm tokens"`,
       )
     }
   })

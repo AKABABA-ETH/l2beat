@@ -24,6 +24,10 @@ export class Env {
     return value !== undefined ? { value, key } : value
   }
 
+  static key(...inputs: string[]): string {
+    return inputs.join('_').replace(/-/g, '').toUpperCase()
+  }
+
   string(key: string | string[], fallback?: string): string {
     const value = this.optionalString(key)
     if (value !== undefined) {
@@ -92,8 +96,12 @@ export class Env {
 
 function throwMissingEnvVar(keys: string | string[]): never {
   if (Array.isArray(keys)) {
-    throw new Error(`Missing environment variables: ${keys.join(', ')}!`)
+    throw new Error(
+      `Missing at least one required environment variable. Please provide one of the following: ${keys.join(
+        ', ',
+      )}`,
+    )
   } else {
-    throw new Error(`Missing environment variable: ${keys}!`)
+    throw new Error(`Missing environment variable: ${keys}`)
   }
 }

@@ -3,10 +3,14 @@ import { utils } from 'ethers'
 import * as z from 'zod'
 
 import { getErrorMessage } from '../../../utils/getErrorMessage'
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { Handler, HandlerResult } from '../Handler'
-import { getReferencedName, resolveReference } from '../reference'
+import {
+  ReferenceInput,
+  generateReferenceInput,
+  getReferencedName,
+  resolveReference,
+} from '../reference'
 import { SingleSlot } from '../storageCommon'
 import { bytes32ToContractValue } from '../utils/bytes32ToContractValue'
 import { valueToBigInt } from '../utils/valueToBigInt'
@@ -34,7 +38,6 @@ export class DynamicArrayHandler implements Handler {
   constructor(
     readonly field: string,
     private readonly definition: DynamicArrayHandlerDefinition,
-    readonly logger: DiscoveryLogger,
   ) {
     this.dependencies = getDependencies(definition)
   }
@@ -44,8 +47,12 @@ export class DynamicArrayHandler implements Handler {
     address: EthereumAddress,
     previousResults: Record<string, HandlerResult | undefined>,
   ): Promise<HandlerResult> {
-    this.logger.logExecution(this.field, ['Reading dynamic array storage'])
-    const resolved = resolveDependencies(this.definition, previousResults)
+    const referenceInput = generateReferenceInput(
+      previousResults,
+      provider,
+      address,
+    )
+    const resolved = resolveDependencies(this.definition, referenceInput)
 
     const elementStorages: Bytes[] = []
     try {
@@ -85,12 +92,12 @@ function getDependencies(definition: DynamicArrayHandlerDefinition): string[] {
 
 function resolveDependencies(
   definition: DynamicArrayHandlerDefinition,
-  previousResults: Record<string, HandlerResult | undefined>,
+  referenceInput: ReferenceInput,
 ): {
   slot: bigint
   returnType: 'number' | 'address' | 'bytes'
 } {
-  const resolved = resolveReference(definition.slot, previousResults)
+  const resolved = resolveReference(definition.slot, referenceInput)
   const slot = valueToBigInt(resolved)
 
   const returnType = definition.returnType ?? 'address'

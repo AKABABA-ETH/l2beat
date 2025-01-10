@@ -2,17 +2,17 @@
   "name": "beamer-bridge-v2",
   "chain": "ethereum",
   "blockNumber": 19531448,
-  "configHash": "0xf3b1fe36854fe7db011f4e2a3ed30fa740e86981816b395b308c2ab99a1e5f9d",
-  "version": 6,
+  "configHash": "0x5e96356951399b192fc4411a5c7173bc75fd8bea6ed1e6a5f9c9ac68ee432d7f",
   "contracts": [
     {
       "name": "EthereumL1Messenger",
       "address": "0x12B8489913E2afBCed131d52c345C380BBB65baf",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x53a70d11cd7796a36186bc6faf5761365984bd862be2a0a8e30f96d0510e40bc"
+      ],
       "sinceTimestamp": 1680258323,
       "values": {
+        "$immutable": true,
         "owner": "0x42405d66fdA09dbDaC90Ff25fC5a4C2353f43E70"
       },
       "derivedName": "EthereumL1Messenger"
@@ -20,11 +20,12 @@
     {
       "name": "EthereumL2Messenger",
       "address": "0x3222C9a1e5d7856FCBc551A30a63634e7Fd634Da",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x8ce69cb7eef1745342d1a5730155558e6a15cf3530e4d28816fb4d7c7301cea9"
+      ],
       "sinceTimestamp": 1680258335,
       "values": {
+        "$immutable": true,
         "owner": "0x42405d66fdA09dbDaC90Ff25fC5a4C2353f43E70",
         "resolver": "0xCb60516819a28431233195A8b7E0227C288B61AD"
       },
@@ -33,11 +34,12 @@
     {
       "name": "OptimismL1Messenger",
       "address": "0x4C366b0CA6F21BDFBb5c0554d818DD50C0519b34",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x4b9b7280455da961659b45ac59c98334d9cef746991718d2ec48b8e9a90a69d3"
+      ],
       "sinceTimestamp": 1680258563,
       "values": {
+        "$immutable": true,
         "nativeMessenger": "0x25ace71c97B33Cc4729CF772ae268934F7ab5fA1",
         "owner": "0x42405d66fdA09dbDaC90Ff25fC5a4C2353f43E70"
       },
@@ -46,11 +48,12 @@
     {
       "name": "ArbitrumL1Messenger",
       "address": "0x5911621aF8826d1AAA5B8B28d63c1e0096f7c0e3",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x95eb429107814a5f14a897acd61975d017790ae60ad9314ae5e35524a3ec1a5c"
+      ],
       "sinceTimestamp": 1680258503,
       "values": {
+        "$immutable": true,
         "bridge": "0x8315177aB297bA92A06054cE80a67Ed4DBd7ed3a",
         "inbox": "0x4Dbd4fc535Ac27206064B68FfCf827b0A60BAB3f",
         "owner": "0x42405d66fdA09dbDaC90Ff25fC5a4C2353f43E70"
@@ -60,12 +63,13 @@
     {
       "name": "EthereumRequestManager",
       "address": "0x7faEa6562a6cE991149F0167baF283E9aAc7Dc50",
+      "sourceHashes": [
+        "0xa82fa8fc1e5ff96f0cfb766de691af0d8f797facacd18dd6b472ac890c1f9ab9"
+      ],
       "ignoreInWatchMode": ["chains", "currentNonce"],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1680258347,
       "values": {
+        "$immutable": true,
         "chains": {
           "1": {
             "chainId": 1,
@@ -117,11 +121,12 @@
     {
       "name": "Resolver",
       "address": "0xCb60516819a28431233195A8b7E0227C288B61AD",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x6f0996aaa83416e4ef529a91847760e8b44f88c827adfeb579723ed0b708cbf3"
+      ],
       "sinceTimestamp": 1680258311,
       "values": {
+        "$immutable": true,
         "owner": "0x42405d66fdA09dbDaC90Ff25fC5a4C2353f43E70"
       },
       "derivedName": "Resolver"
@@ -129,11 +134,12 @@
     {
       "name": "EthereumFillManager",
       "address": "0xD5EF34B499b6d64817CC70C3b0B8D9f807F06C29",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xb8bd718248dbf8a521e10a055b52eb5ddcf6ddedf62a4259dbdf50574289ea5b"
+      ],
       "sinceTimestamp": 1680258395,
       "values": {
+        "$immutable": true,
         "l1Resolver": "0xCb60516819a28431233195A8b7E0227C288B61AD",
         "liquidityProviders": ["0xdC256EC77E97448d29D88118e55C82067150b768"],
         "messenger": "0x3222C9a1e5d7856FCBc551A30a63634e7Fd634Da",
@@ -142,7 +148,10 @@
       "derivedName": "FillManager"
     }
   ],
-  "eoas": ["0x42405d66fdA09dbDaC90Ff25fC5a4C2353f43E70"],
+  "eoas": [
+    { "address": "0x42405d66fdA09dbDaC90Ff25fC5a4C2353f43E70" },
+    { "address": "0xdC256EC77E97448d29D88118e55C82067150b768" }
+  ],
   "abis": {
     "0x12B8489913E2afBCed131d52c345C380BBB65baf": [
       "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
@@ -297,5 +306,6 @@
       "function setResolver(address _l1Resolver)",
       "function transferOwnership(address newOwner)"
     ]
-  }
+  },
+  "usedTemplates": {}
 }

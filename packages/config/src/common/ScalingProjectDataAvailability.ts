@@ -1,37 +1,21 @@
+import { DA_BRIDGES, DA_LAYERS, DA_MODES } from './dataAvailability'
+
 export interface DataAvailabilityConfig {
   layers: DataAvailabilityLayer[]
   bridge: DataAvailabilityBridge
   mode: DataAvailabilityMode
 }
 
-export type DataAvailabilityMode =
-  | 'State diffs'
-  | 'State diffs (compressed)'
-  | 'Transactions data'
-  | 'Transactions data (compressed)'
+export type DataAvailabilityMode = (typeof DA_MODES)[keyof typeof DA_MODES]
+export type DataAvailabilityLayer = (typeof DA_LAYERS)[keyof typeof DA_LAYERS]
 
-export type DataAvailabilityLayer =
-  | 'Ethereum (calldata)'
-  | 'Ethereum (blobs)'
-  | 'Ethereum (blobs or calldata)'
-  | 'MEMO'
-  | 'DAC'
-  | 'Celestia'
-  | 'External'
-  | 'MantleDA'
-  | 'FraxtalDA'
-  | 'RedstoneDA'
-  | 'EigenDA'
-  | 'NearDA'
-
+type MappedDataAvailabilityBridge = {
+  [key in keyof typeof DA_BRIDGES]: (typeof DA_BRIDGES)[key] extends (
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    ...args: any[]
+  ) => infer R
+    ? R
+    : (typeof DA_BRIDGES)[key]
+}
 export type DataAvailabilityBridge =
-  | { type: 'None' }
-  | { type: 'None + DA challenges' }
-  | { type: 'Enshrined' }
-  | { type: 'Optimistic' }
-  | { type: 'DAC Members'; requiredSignatures?: number; membersCount?: number }
-  | {
-      type: 'Staked Operators'
-      requiredSignatures: number
-      membersCount: number
-    }
+  MappedDataAvailabilityBridge[keyof MappedDataAvailabilityBridge]

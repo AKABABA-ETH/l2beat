@@ -1,6 +1,6 @@
 /*
   This file is a quick prototype and will be refactored if it's proven useful.
-  
+
   Do not INCLUDE this file - it immediately runs `updateDiffHistoryFile()`
 */
 
@@ -8,7 +8,6 @@ import { execSync } from 'child_process'
 import { existsSync, readFileSync, statSync, writeFileSync } from 'fs'
 import {
   ConfigReader,
-  DiscoveryConfig,
   DiscoveryDiff,
   diffDiscovery,
   discover,
@@ -23,30 +22,16 @@ import { updateDiffHistoryHash } from '../src/modules/update-monitor/utils/hashi
 
 const FIRST_SECTION_PREFIX = '# Diff at'
 
-// This is a CLI tool. Run logic immediately.
-void updateDiffHistoryFile()
-
-async function updateDiffHistoryFile() {
-  if (process.argv.filter((v) => v.startsWith('-')).length > 0) {
-    console.log(
-      'Discovery run with non-default configuration, skipping updating the diff history file...',
-    )
-    process.exit(0)
-  }
-
-  console.log('Updating diff history file...')
-  const params = process.argv.filter((v) => !v.startsWith('-'))
-  const [_node, _sourcefile, chain, projectName] = params
-  if (!chain || !projectName) {
-    console.error('Pass parameters: <chainName> <projectName>')
-    process.exit(1)
-  }
-
+export async function updateDiffHistory(
+  projectName: string,
+  chain: string,
+  description?: string,
+  overwriteCache: boolean = false,
+) {
   // Get discovered.json from main branch and compare to current
   console.log(`Project: ${projectName}`)
   const configReader = new ConfigReader()
-  const curDiscovery = await configReader.readDiscovery(projectName, chain)
-  const config = await configReader.readConfig(projectName, chain)
+  const curDiscovery = configReader.readDiscovery(projectName, chain)
   const discoveryFolder = `./discovery/${projectName}/${chain}`
   const { content: discoveryJsonFromMainBranch, mainBranchHash } =
     getFileVersionOnMainBranch(`${discoveryFolder}/discovered.json`)
@@ -55,21 +40,46 @@ async function updateDiffHistoryFile() {
       ? undefined
       : (JSON.parse(discoveryJsonFromMainBranch) as DiscoveryOutput)
 
-  const { prevDiscovery, codeDiff } = await performDiscoveryOnPreviousBlock(
-    discoveryFromMainBranch,
-    projectName,
-    chain,
-  )
+  const saveSources = process.argv.some((a) => a === '--save-sources')
 
-  const diff = diffDiscovery(
-    prevDiscovery?.contracts ?? [],
-    curDiscovery.contracts,
-  )
+  let diff: DiscoveryDiff[] = []
+  let codeDiff
+  let configRelatedDiff
 
-  let configRelatedDiff = diffDiscovery(
-    discoveryFromMainBranch?.contracts ?? [],
-    prevDiscovery?.contracts ?? [],
-  )
+  if ((discoveryFromMainBranch?.blockNumber ?? 0) > curDiscovery.blockNumber) {
+    throw new Error(
+      `Main branch discovery block number (${discoveryFromMainBranch?.blockNumber}) is higher than current discovery block number (${curDiscovery.blockNumber})`,
+    )
+  }
+
+  if ((discoveryFromMainBranch?.blockNumber ?? 0) < curDiscovery.blockNumber) {
+    const rerun = await performDiscoveryOnPreviousBlock(
+      discoveryFromMainBranch,
+      projectName,
+      chain,
+      saveSources,
+      overwriteCache,
+    )
+    codeDiff = rerun.codeDiff
+
+    diff = diffDiscovery(
+      rerun.prevDiscovery?.contracts ?? [],
+      curDiscovery.contracts,
+    )
+    configRelatedDiff = diffDiscovery(
+      discoveryFromMainBranch?.contracts ?? [],
+      rerun.prevDiscovery?.contracts ?? [],
+    )
+  } else {
+    console.log(
+      'Discovery was run on the same block as main branch, skipping rerun.',
+    )
+    configRelatedDiff = diffDiscovery(
+      discoveryFromMainBranch?.contracts ?? [],
+      curDiscovery?.contracts ?? [],
+    )
+  }
+
   removeIgnoredFields(configRelatedDiff)
   configRelatedDiff = filterOutEmptyDiffs(configRelatedDiff)
 
@@ -78,21 +88,23 @@ async function updateDiffHistoryFile() {
     getFileVersionOnMainBranch(diffHistoryPath)
 
   if (diff.length > 0 || configRelatedDiff.length > 0) {
-    let description = undefined
+    let previousDescription = undefined
     if (existsSync(diffHistoryPath) && statSync(diffHistoryPath).isFile()) {
       const diskDiffHistory = readFileSync(diffHistoryPath, 'utf-8')
-      description = findDescription(diskDiffHistory, historyFileFromMainBranch)
+      previousDescription = findDescription(
+        diskDiffHistory,
+        historyFileFromMainBranch,
+      )
     }
 
     const newHistoryEntry = generateDiffHistoryMarkdown(
       discoveryFromMainBranch?.blockNumber,
       curDiscovery.blockNumber,
       diff,
-      config,
       configRelatedDiff,
       mainBranchHash,
       codeDiff,
-      description,
+      description ?? previousDescription,
     )
 
     const diffHistory =
@@ -141,6 +153,8 @@ async function performDiscoveryOnPreviousBlock(
   discoveryFromMainBranch: DiscoveryOutput | undefined,
   projectName: string,
   chain: string,
+  saveSources: boolean,
+  overwriteCache: boolean,
 ) {
   if (discoveryFromMainBranch === undefined) {
     return { prevDiscovery: undefined, codeDiff: undefined }
@@ -162,6 +176,8 @@ async function performDiscoveryOnPreviousBlock(
     sourcesFolder: `.code@${blockNumberFromMainBranch}`,
     flatSourcesFolder: `.flat@${blockNumberFromMainBranch}`,
     discoveryFilename: `discovered@${blockNumberFromMainBranch}.json`,
+    saveSources,
+    overwriteCache,
   })
 
   const prevDiscoveryFile = readFileSync(
@@ -223,9 +239,19 @@ function getFileVersionOnMainBranch(filePath: string): {
 } {
   const mainBranch = getMainBranchName()
   try {
-    const content = execSync(
-      `git show ${mainBranch}:${filePath} 2>/dev/null`,
-    ).toString()
+    // NOTE(radomski): Node when starting a process reserves a buffer of around
+    // 200KB for STDIO output. This is not enough in cases where the
+    // discovered.json is really big (e.g. transporter). In that case the git
+    // command fails with "ENOBUFS" and we assume that there no old
+    // discovered.json. Which in turn always causes the diffHistory.md to
+    // include "all" the contracts as being created. To solve this problem we
+    // allocate a 10MB buffer upfront so all the data can be stored. At the
+    // time of writing this (21.10.2024) discovered.json of transporter is
+    // around 1.2MB.
+    const BUFFER_SIZE = 10 * 1024 * 1024
+    const content = execSync(`git show ${mainBranch}:${filePath} 2>/dev/null`, {
+      maxBuffer: BUFFER_SIZE,
+    }).toString()
     const mainBranchHash = execSync(`git rev-parse ${mainBranch}`)
       .toString()
       .trim()
@@ -257,7 +283,6 @@ function generateDiffHistoryMarkdown(
   blockNumberFromMainBranchDiscovery: number | undefined,
   curBlockNumber: number,
   diffs: DiscoveryDiff[],
-  discoveryConfig: DiscoveryConfig | undefined,
   configRelatedDiff: DiscoveryDiff[],
   mainBranchHash: string,
   codeDiff?: string,
@@ -280,12 +305,20 @@ function generateDiffHistoryMarkdown(
   result.push('')
   result.push('## Description')
   if (description) {
-    result.push(description)
+    result.push('')
+    result.push(description.trim())
+    result.push('')
   } else {
     result.push('')
-    result.push(
-      'Provide description of changes. This section will be preserved.',
-    )
+    if ((blockNumberFromMainBranchDiscovery ?? 0) !== curBlockNumber) {
+      result.push(
+        'Provide description of changes. This section will be preserved.',
+      )
+    } else {
+      result.push(
+        'Discovery rerun on the same block number with only config-related changes.',
+      )
+    }
     result.push('')
   }
 
@@ -296,7 +329,7 @@ function generateDiffHistoryMarkdown(
       result.push('## Watched changes')
     }
     result.push('')
-    result.push(discoveryDiffToMarkdown(diffs, discoveryConfig))
+    result.push(discoveryDiffToMarkdown(diffs))
     result.push('')
   }
 
@@ -319,7 +352,7 @@ or/and contracts becoming verified, not from differences found during
 discovery. Values are for block ${blockNumberFromMainBranchDiscovery} (main branch discovery), not current.`,
     )
     result.push('')
-    result.push(discoveryDiffToMarkdown(configRelatedDiff, discoveryConfig))
+    result.push(discoveryDiffToMarkdown(configRelatedDiff))
     result.push('')
   }
 

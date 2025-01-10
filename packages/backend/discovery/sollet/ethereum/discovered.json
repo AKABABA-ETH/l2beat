@@ -3,22 +3,22 @@
   "chain": "ethereum",
   "blockNumber": 16154924,
   "configHash": "0x55cbc16ba9446d3735b73865468a11d4f0fb92404912bf08048aae525a8029aa",
-  "version": 6,
   "contracts": [
     {
       "name": "SplTokenSwap",
       "address": "0xeae57ce9cc1984F202e15e038B964bb8bdF7229a",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xa9306a9cf233bd50fb86a2e4aa8e1346513fe1efc80a25bf5706100e2f75b972"
+      ],
       "sinceTimestamp": 1599794859,
       "values": {
+        "$immutable": true,
         "owner": "0x067D382e61c06Cea2815069D9D97fd3ee5df2361",
         "paused": false
       }
     }
   ],
-  "eoas": ["0x067D382e61c06Cea2815069D9D97fd3ee5df2361"],
+  "eoas": [{ "address": "0x067D382e61c06Cea2815069D9D97fd3ee5df2361" }],
   "abis": {
     "0xeae57ce9cc1984F202e15e038B964bb8bdF7229a": [
       "event NonceUsed(uint256 indexed nonce, bytes signature)",
@@ -40,5 +40,6 @@
       "function withdrawErc20(address token, address recipient, uint256 amount, uint256 nonce, bytes signature)",
       "function withdrawEth(address recipient, uint256 amount, uint256 nonce, bytes signature)"
     ]
-  }
+  },
+  "usedTemplates": {}
 }

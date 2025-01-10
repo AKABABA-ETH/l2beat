@@ -6,6 +6,7 @@ import { FieldDiff, diffContracts } from './diffContracts'
 export interface DiscoveryDiff {
   name: string
   address: EthereumAddress
+  description?: string
   diff?: FieldDiff[]
   type?: 'created' | 'deleted'
 }
@@ -25,6 +26,7 @@ export function diffDiscovery(
       modifiedOrDeleted.push({
         name: previousContract.name,
         address: previousContract.address,
+        description: previousContract.description,
         type: 'deleted',
       })
       continue
@@ -44,21 +46,15 @@ export function diffDiscovery(
     const ignored = [
       // temporarily ignoring meta fields to not trigger diffs
       'ignoreInWatchMode',
-      'template',
-      'descriptions',
-      'roles',
-      'permissions',
-      'categories',
-      'types',
-      'severity',
       ...ignoreValuesInWatchMode,
     ]
     const diff = diffContracts(previousContract, currentContract, ignored)
 
     if (diff.length > 0) {
       modifiedOrDeleted.push({
-        name: previousContract.name,
-        address: previousContract.address,
+        name: currentContract.name,
+        address: currentContract.address,
+        description: currentContract.description,
         diff,
       })
     }
@@ -74,6 +70,7 @@ export function diffDiscovery(
       created.push({
         name: currentContract.name,
         address: currentContract.address,
+        description: currentContract.description,
         type: 'created',
       })
     }

@@ -9,7 +9,6 @@ import {
   RISK_VIEW,
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
-  makeBridgeCompatible,
 } from '../../common'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { getSHARPVerifierContracts } from '../../discovery/starkware'
@@ -22,6 +21,7 @@ const upgradeDelay = 0
 export const layer2financezk: Layer2 = {
   type: 'layer2',
   id: ProjectId('layer2financezk'),
+  createdAt: new UnixTime(1654522914), // 2022-06-06T13:41:54Z
   isArchived: true,
   display: {
     name: 'L2.Finance-zk',
@@ -30,7 +30,7 @@ export const layer2financezk: Layer2 = {
       'Layer2.finance-ZK has been shut down, users are encouraged to use optimistic rollup version.',
     description:
       'Celer’s Layer2.finance in ZK proofs Mode Built with StarkEx from StarkWare.',
-    purposes: ['DeFi'],
+    purposes: ['Exchange'],
     provider: 'StarkEx',
     category: 'Validium',
     links: {
@@ -80,15 +80,13 @@ export const layer2financezk: Layer2 = {
       },
     ],
   },
-  riskView: makeBridgeCompatible({
+  riskView: {
     stateValidation: RISK_VIEW.STATE_ZKP_ST,
     dataAvailability: RISK_VIEW.DATA_EXTERNAL_DAC(),
     exitWindow: RISK_VIEW.EXIT_WINDOW(upgradeDelay, 0),
     sequencerFailure: RISK_VIEW.SEQUENCER_FORCE_VIA_L1(),
     proposerFailure: RISK_VIEW.PROPOSER_USE_ESCAPE_HATCH_MP,
-    destinationToken: RISK_VIEW.CANONICAL,
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   technology: {
     stateCorrectness: STATE_CORRECTNESS.STARKEX_VALIDITY_PROOFS,
     newCryptography: NEW_CRYPTOGRAPHY.ZK_STARKS,
@@ -99,35 +97,20 @@ export const layer2financezk: Layer2 = {
   },
   contracts: {
     addresses: [
-      {
+      discovery.getContractDetails('Proxy', {
         name: 'StarkExchange',
-        address: discovery.getContract('Proxy').address,
-        upgradeability: discovery.getContract('Proxy').upgradeability,
-      },
-      {
-        name: 'Committee',
-        address: EthereumAddress('0xF000A3B10e1920aDC6e7D829828e3357Fc5128A9'),
-      },
-      {
-        name: 'Broker',
-        description:
-          'Broker manages investment strategies on L1 for tokens deposited to the system. Strategies invest in specific protocols, e.g. Compound and they escrow LP tokens as custom Wrapped tokens.',
-        address: discovery.getContract('Broker').address,
-      },
-      {
-        name: 'StrategyCompound',
-        description:
-          'It is through this contract that groups of users interact with the Compound DeFi protocol.',
-        address: EthereumAddress('0x5b000954F70B0410685193B0afd3074B744B5C97'),
-      },
-      {
-        name: 'GpsFactRegistryAdapter',
-        address: EthereumAddress('0x6e3AbCE72A3CD5edc05E59283c733Fd4bF8B3baE'),
-      },
-      {
-        name: 'OrderRegistry',
-        address: discovery.getContract('OrderRegistry').address,
-      },
+      }),
+      discovery.getContractDetails('Committee'),
+      discovery.getContractDetails(
+        'Broker',
+        'Broker manages investment strategies on L1 for tokens deposited to the system. Strategies invest in specific protocols, e.g. Compound and they escrow LP tokens as custom Wrapped tokens.',
+      ),
+      discovery.getContractDetails(
+        'StrategyCompound',
+        'It is through this contract that groups of users interact with the Compound DeFi protocol.',
+      ),
+      discovery.getContractDetails('GpsFactRegistryAdapter'),
+      discovery.getContractDetails('OrderRegistry'),
       ...getSHARPVerifierContracts(
         discovery,
         discovery.getAddressFromValue('GpsFactRegistryAdapter', 'gpsContract'),

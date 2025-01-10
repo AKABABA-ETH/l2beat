@@ -16,28 +16,46 @@ export type Layer2TrackedTxUse = {
   subtype: TrackedTxsConfigSubtype
 }
 
-type TrackedTxQuery = FunctionCall | Transfer | SharpSubmission
+type TrackedTxQuery = FunctionCall | Transfer | SharpSubmission | SharedBridge
 
 interface FunctionCall {
   formula: 'functionCall'
   address: EthereumAddress
   selector: `0x${string}`
   functionSignature: `function ${string}`
-  sinceTimestampInclusive: UnixTime
-  untilTimestampExclusive?: UnixTime
+  /** Inclusive */
+  sinceTimestamp: UnixTime
+  /** Inclusive */
+  untilTimestamp?: UnixTime
 }
 
 interface Transfer {
   formula: 'transfer'
   from: EthereumAddress
   to: EthereumAddress
-  sinceTimestampInclusive: UnixTime
-  untilTimestampExclusive?: UnixTime
+  /** Inclusive */
+  sinceTimestamp: UnixTime
+  /** Inclusive */
+  untilTimestamp?: UnixTime
 }
 
 interface SharpSubmission {
   formula: 'sharpSubmission'
   programHashes: string[]
-  sinceTimestampInclusive: UnixTime
-  untilTimestampExclusive?: UnixTime
+  /** Inclusive */
+  sinceTimestamp: UnixTime
+  /** Inclusive */
+  untilTimestamp?: UnixTime
+}
+
+interface SharedBridge {
+  formula: 'sharedBridge'
+  chainId: number
+  address: EthereumAddress
+  selector: `0x${string}`
+  functionSignature: `function ${string}`
+  /** Inclusive */
+  sinceTimestamp: UnixTime
+  /** Inclusive */
+  untilTimestamp?: UnixTime
 }

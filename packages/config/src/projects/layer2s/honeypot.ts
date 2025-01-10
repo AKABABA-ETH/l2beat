@@ -1,15 +1,19 @@
 import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import {
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   OPERATOR,
   RISK_VIEW,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
 import { OPTIMISTIC_ROLLUP_STATE_UPDATES_WARNING } from './common/liveness'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
@@ -19,10 +23,19 @@ const discovery = new ProjectDiscovery('honeypot')
 export const honeypot: Layer2 = {
   type: 'layer2',
   id: ProjectId('honeypot'),
+  createdAt: new UnixTime(1683905088), // 2023-05-12T15:24:48Z
+  badges: [
+    Badge.VM.CartesiVM,
+    Badge.VM.AppChain,
+    Badge.DA.EthereumCalldata,
+    Badge.Stack.Cartesi,
+  ],
   display: {
+    reasonsForBeingOther: [REASON_FOR_BEING_OTHER.NO_PROOFS],
     name: 'Honeypot (Cartesi)',
     shortName: 'Honeypot',
     slug: 'cartesi-honeypot',
+    provider: 'Cartesi Rollups',
     description:
       'Honeypot is an application-specific rollup designed to challenge the security of Cartesi Rollups. It provides a gamified battlefield to incentivize bug hunters to hack the application to obtain the funds locked in the rollup contract.',
     purposes: ['Bug bounty'],
@@ -102,17 +115,19 @@ export const honeypot: Layer2 = {
           selector: '0xddfdfbb0',
           functionSignature:
             'function submitClaim(bytes calldata _claimData) external onlyOwner',
-          sinceTimestampInclusive: new UnixTime(1694467715),
+          sinceTimestamp: new UnixTime(1694467715),
         },
       },
     ],
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'Transactions data',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.TRANSACTION_DATA,
+    }),
+  ],
+  riskView: {
     stateValidation: {
       ...RISK_VIEW.STATE_NONE,
       value: 'None',
@@ -131,9 +146,7 @@ export const honeypot: Layer2 = {
     exitWindow: RISK_VIEW.EXIT_WINDOW_NON_UPGRADABLE,
     sequencerFailure: RISK_VIEW.SEQUENCER_SELF_SEQUENCE(0),
     proposerFailure: RISK_VIEW.PROPOSER_CANNOT_WITHDRAW,
-    destinationToken: RISK_VIEW.CANONICAL,
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   technology: {
     stateCorrectness: {
       name: 'Fraud proofs are in development',
@@ -167,7 +180,7 @@ export const honeypot: Layer2 = {
       references: [],
     },
     forceTransactions: {
-      ...FORCE_TRANSACTIONS.CANONICAL_ORDERING,
+      ...FORCE_TRANSACTIONS.CANONICAL_ORDERING('smart contract'),
       references: [],
     },
     exitMechanisms: [
@@ -210,18 +223,28 @@ export const honeypot: Layer2 = {
     ],
     risks: [],
   },
+  permissions: [
+    {
+      name: 'Authority owner',
+      description:
+        'The Authority owner can submit claims to the Honeypot DApp.',
+      accounts: [discovery.getPermissionedAccount('Authority', 'owner')],
+    },
+  ],
   milestones: [
     {
       name: 'Honeypot announcement',
       link: 'https://medium.com/cartesi/cartesi-ecosystem-update-2023-124b384401cc#:~:text=Honeypot%20DApp%20on%20Mainnet',
       date: '2023-04-11T00:00:00Z',
       description: 'Honeypot first announced to the community.',
+      type: 'general',
     },
     {
       name: 'Honeypot launch',
       link: 'https://x.com/cartesiproject/status/1706685141421047982',
       date: '2023-09-26T00:00:00Z',
       description: 'Honeypot launched on mainnet.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [

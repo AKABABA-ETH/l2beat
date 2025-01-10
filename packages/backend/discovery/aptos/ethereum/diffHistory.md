@@ -1,4 +1,249 @@
-Generated with discovered.json: 0x380f37b8df9b4789cba64d0beb08540befc759f0
+Generated with discovered.json: 0x5d6fd095a412c796fc5087708ebbb26c8c2397e4
+
+# Diff at Tue, 10 Dec 2024 10:36:54 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@9ed5a41ddcad978cfdf826bc7a4827bf4a91c814 block: 21264260
+- current block number: 21264260
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 21264260 (main branch discovery), not current.
+
+```diff
++   Status: CREATED
+    contract LayerZero Proof Library (0x07245eEa05826F5984c7c3C8F478b04892e4df89)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract LayerZero Oracle (0x5a54fe5234E811466D5366846283323c954310B2)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract  (0x76A15d86FbBe691557C8b7A9C4BebF1d8AFE00A7)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract LayerZero Relayer (0x902F09715B6303d4173037652FA7377e5b98089E)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract ProxyAdmin (0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract  (0xA0Cc33Dd6f4819D473226257792AFe230EC3c67f)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract ProxyAdmin (0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9)
+    +++ description: None
+```
+
+Generated with discovered.json: 0xb1eda2ab4c32b9d300756514b39f9386692c669c
+
+# Diff at Mon, 25 Nov 2024 10:45:06 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@62a44faa52866a55f9881cb2852ac75b1fcc60b0 block: 21027624
+- current block number: 21264260
+
+## Description
+
+MS signer change.
+
+## Watched changes
+
+```diff
+    contract Aptos Multisig (0x65bb797c2B9830d891D87288F029ed8dACc19705) {
+    +++ description: None
+      values.$members.4:
+-        "0xF05F4211ad15A8e49b49C0436067CFFfEa783aA4"
++        "0x7C8D1Db01130acEEc5fF892c99a18c4b4BAdC326"
+    }
+```
+
+Generated with discovered.json: 0x52d4c1a2aa58abc622344ec257b2ed0e550efb8b
+
+# Diff at Wed, 23 Oct 2024 10:15:33 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@2734bfe28641dfdb3277a5800faf0a057c08a58f block: 19531425
+- current block number: 21027624
+
+## Description
+
+LayerZero Multisig: One signer removed.
+
+## Watched changes
+
+```diff
+    contract LayerZero Multisig (0xCDa8e3ADD00c95E5035617F970096118Ca2F4C92) {
+    +++ description: None
+      values.$members.4:
+-        "0x67FC8c432448f9a8d541C17579EF7a142378d5aD"
+      values.$members.3:
+-        "0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e"
++        "0x67FC8c432448f9a8d541C17579EF7a142378d5aD"
+      values.$members.2:
+-        "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936"
++        "0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e"
+      values.$members.1:
+-        "0xe095F2590eF1Ab39601445025847Ed8E4B40D687"
++        "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936"
+      values.multisigThreshold:
+-        "2 of 5 (40%)"
++        "2 of 4 (50%)"
+    }
+```
+
+Generated with discovered.json: 0x5edefcbfaee2dc55e54c4726350fe9d4b8e0e572
+
+# Diff at Mon, 14 Oct 2024 10:49:20 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 19531425
+- current block number: 19531425
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19531425 (main branch discovery), not current.
+
+```diff
+    contract TreasuryV2 (0x3773E1E9Deb273fCdf9f80bc88bB387B1e6Ce34d) {
+    +++ description: None
+      sourceHashes:
++        ["0x8b908351f18fdaeaf600ae46ef1450c535f741fc95bb25acade77f8b59fdc168"]
+    }
+```
+
+```diff
+    contract UltraLightNodeV2 (0x4D73AdB72bC3DD368966edD0f0b2148401A178E2) {
+    +++ description: None
+      sourceHashes:
++        ["0x38c85ab54f670eaa1fc2b351aee39913bc12e2b26c460ee31cf89d3f1f7d59b9"]
+    }
+```
+
+```diff
+    contract TokenBridge (0x50002CdFe7CCb0C41F519c6Eb0653158d11cd907) {
+    +++ description: None
+      sourceHashes:
++        ["0xe59a44fb1b8121ccc17fa92e39fdd2b677d3ad575587692f8b1e4351878230d7"]
+    }
+```
+
+```diff
+    contract NonceContract (0x5B905fE05F81F3a8ad8B28C6E17779CFAbf76068) {
+    +++ description: None
+      sourceHashes:
++        ["0x895867397d61409de8476975bae4d871fec1c289e52fe97b31872726808dae38"]
+    }
+```
+
+```diff
+    contract Aptos Multisig (0x65bb797c2B9830d891D87288F029ed8dACc19705) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+```diff
+    contract Endpoint (0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675) {
+    +++ description: None
+      sourceHashes:
++        ["0x945c3299d0cf62b9ea7a77d6328295d54327299d6a153e1e7b48d85fa9b77215"]
+    }
+```
+
+```diff
+    contract LayerZero Multisig (0xCDa8e3ADD00c95E5035617F970096118Ca2F4C92) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+Generated with discovered.json: 0xe2d563e6f99b0b71e968bb74481d131c4782d1f3
+
+# Diff at Fri, 09 Aug 2024 10:08:34 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 19531425
+- current block number: 19531425
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19531425 (main branch discovery), not current.
+
+```diff
+    contract Aptos Multisig (0x65bb797c2B9830d891D87288F029ed8dACc19705) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "3 of 6 (50%)"
+      values.getOwners:
+-        ["0x2E1078e128e8AA6A70eC8d1B17A79Fc4B457d437","0x565cFd7224bbc2a81a6e2a1464892ecB27efB070","0x1D7C6783328C145393e84fb47a7f7C548f5Ee28d","0x79e2b9C1F6C9ed1375C93AaF139e6C4537f48523","0xF05F4211ad15A8e49b49C0436067CFFfEa783aA4","0xf02CC4dc84aC59Bd6089BAddcEB9d4Ef3AEFb0f0"]
+      values.getThreshold:
+-        3
+      values.$members:
++        ["0x2E1078e128e8AA6A70eC8d1B17A79Fc4B457d437","0x565cFd7224bbc2a81a6e2a1464892ecB27efB070","0x1D7C6783328C145393e84fb47a7f7C548f5Ee28d","0x79e2b9C1F6C9ed1375C93AaF139e6C4537f48523","0xF05F4211ad15A8e49b49C0436067CFFfEa783aA4","0xf02CC4dc84aC59Bd6089BAddcEB9d4Ef3AEFb0f0"]
+      values.$threshold:
++        3
+      values.multisigThreshold:
++        "3 of 6 (50%)"
+    }
+```
+
+```diff
+    contract LayerZero Multisig (0xCDa8e3ADD00c95E5035617F970096118Ca2F4C92) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "2 of 5 (40%)"
+      values.getOwners:
+-        ["0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327","0xe095F2590eF1Ab39601445025847Ed8E4B40D687","0xBb6633cc267951E938F9B6421E4F54aa5b2c1936","0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e","0x67FC8c432448f9a8d541C17579EF7a142378d5aD"]
+      values.getThreshold:
+-        2
+      values.$members:
++        ["0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327","0xe095F2590eF1Ab39601445025847Ed8E4B40D687","0xBb6633cc267951E938F9B6421E4F54aa5b2c1936","0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e","0x67FC8c432448f9a8d541C17579EF7a142378d5aD"]
+      values.$threshold:
++        2
+      values.multisigThreshold:
++        "2 of 5 (40%)"
+    }
+```
+
+Generated with discovered.json: 0xcd95aac8d7fd5421aadb26681604d7422d65f018
 
 # Diff at Thu, 28 Mar 2024 08:29:46 GMT:
 

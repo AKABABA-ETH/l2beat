@@ -1,41 +1,56 @@
 {
   "name": "aztec",
   "chain": "ethereum",
-  "blockNumber": 19811607,
-  "configHash": "0x9eb1a3eb20decdb8382eb8b7f5f17850cb57d755c28eb61bdabb00d662d70212",
-  "version": 6,
+  "blockNumber": 21387141,
+  "configHash": "0xec46c1b3eddec8a6dcee1039be66b846af2c0702da8fc6b3c260cdf9312ce30f",
   "contracts": [
     {
       "name": "AztecFeeDistributor",
       "address": "0x41A57F5581aDf11b25F3eDb7C1DB19f18bb76734",
+      "template": "aztecv1/AztecFeeDistributor",
+      "sourceHashes": [
+        "0x13139c06d2946718f6b4470f6346e54f4e2b26075fe5daa3b3a631092f7dd76e"
+      ],
+      "description": "Contract responsible for collecting transaction fees and reimbursing gas to whitelisted Rollup Providers.",
       "ignoreInWatchMode": ["txFeeBalance"],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1619631231,
       "values": {
+        "$immutable": true,
         "convertConstant": 3155360,
         "factory": "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
         "owner": "0xE298a76986336686CC3566469e3520d23D1a8aaD",
         "reimburseConstant": 0,
         "rollupProcessor": "0x737901bea3eeb88459df9ef1BE8fF3Ae1B42A2ba",
         "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-        "txFeeBalance": ["5509405460290161018", 0, 59000],
+        "txFeeBalance": ["5339097179978451320", 0, 59000],
         "WETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+      },
+      "fieldMeta": {
+        "reimburseConstant": {
+          "severity": "LOW",
+          "description": "Tip that gets added to a gas reimbursement for processing the rollup."
+        }
       },
       "derivedName": "AztecFeeDistributor"
     },
     {
       "name": "TurboVerifier",
       "address": "0x48Cb7BA00D087541dC8E2B3738f80fDd1FEe8Ce8",
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1707995675
+      "template": "aztecv1/TurboVerifier",
+      "sourceHashes": [
+        "0x72846aa5544e4499c54463014cbacb03ad291385be297b56c638ccfb15717b8b"
+      ],
+      "description": "Turbo Plonk ZK verifier.",
+      "sinceTimestamp": 1707995675,
+      "values": { "$immutable": true }
     },
     {
       "name": "RollupProcessor",
       "address": "0x737901bea3eeb88459df9ef1BE8fF3Ae1B42A2ba",
+      "template": "aztecv1/RollupProcessor",
+      "sourceHashes": [
+        "0xc055a6555317d1508d60d0c1bf5b2332973126ca1ba545b095e733d95e490844"
+      ],
       "ignoreInWatchMode": [
         "dataRoot",
         "dataSize",
@@ -52,21 +67,19 @@
         "totalPendingDeposit",
         "totalWithdrawn"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1614799636,
       "values": {
-        "dataRoot": "0x06d9b18d3023d526f333fa8e0f74262f66262743b724c43369978cfe024932ef",
-        "dataSize": 937868,
+        "$immutable": true,
+        "dataRoot": "0x147e58409694d7d1dfcc8b727753e682bbb6aabdb7f3f22ae464d5de1bd34405",
+        "dataSize": 938028,
         "escapeBlockLowerBound": 4560,
         "escapeBlockUpperBound": 4800,
         "ethAssetId": 0,
         "feeDistributor": "0x41A57F5581aDf11b25F3eDb7C1DB19f18bb76734",
         "getAssetPermitSupport": [false, false, false],
-        "getEscapeHatchStatus": [false, 2553],
+        "getEscapeHatchStatus": [false, 1419],
         "getTotalDeposited": [
-          "35761624133451296404343",
+          "35761937719451296404343",
           "19481078867265097315675826",
           6576737691
         ],
@@ -76,17 +89,17 @@
           4559522
         ],
         "getTotalPendingDeposit": [
-          "75215377733427981245",
+          "74951791733427981245",
           "9030790745687623743968",
           300
         ],
         "getTotalWithdrawn": [
-          "34347168048720911319526",
+          "34349308699720911319526",
           "19283912609776049374020383",
           6525215174
         ],
-        "nextRollupId": 4425,
-        "nullRoot": "0x0ca7721c0c6b2b3911f382de433cb7259cf29359e79a4a91fdbbbe5e9ff632d1",
+        "nextRollupId": 4465,
+        "nullRoot": "0x08a711d730567bcf2be2f5906a04dc3c56073572041022f9155aa5764204b093",
         "numberOfAssets": 4,
         "owner": "0x0000000000000000000000000000000000000000",
         "paused": false,
@@ -94,9 +107,9 @@
         "rollupNumPubInputs": 14,
         "rollupProviders": ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"],
         "rollupPubInputLength": 448,
-        "rootRoot": "0x2392b471d60567c5e13413f29f881cd2806256b8e703e56b7d025dd1ac003642",
+        "rootRoot": "0x26df1e6cfb8b21afaab4b0e5f0672c667194ce627a85357c0ed2ca7c91319a4c",
         "totalDeposited": [
-          "35761624133451296404343",
+          "35761937719451296404343",
           "19481078867265097315675826",
           6576737691
         ],
@@ -106,12 +119,12 @@
           4559522
         ],
         "totalPendingDeposit": [
-          "75215377733427981245",
+          "74951791733427981245",
           "9030790745687623743968",
           300
         ],
         "totalWithdrawn": [
-          "34347168048720911319526",
+          "34349308699720911319526",
           "19283912609776049374020383",
           6525215174
         ],
@@ -119,50 +132,55 @@
         "txPubInputLength": 384,
         "verifier": "0x48Cb7BA00D087541dC8E2B3738f80fDd1FEe8Ce8"
       },
-      "derivedName": "RollupProcessor"
+      "fieldMeta": {
+        "rollupProviders": {
+          "severity": "LOW",
+          "description": "Can call the ProcessRollup function"
+        },
+        "verifier": {
+          "severity": "LOW",
+          "description": "Address of the ZK verifier."
+        }
+      }
     },
     {
-      "name": "HistoricalTurboVerifier",
-      "address": "0xd3a6D9De4cbC2CC7529361941e85b1c3269CcBb1",
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1639321684,
-      "derivedName": "TurboVerifier"
-    },
-    {
-      "name": "Aztec Multisig",
+      "name": "AztecMultisig",
       "address": "0xE298a76986336686CC3566469e3520d23D1a8aaD",
       "template": "GnosisSafe",
+      "sourceHashes": [
+        "0xd5a33441170541b7df25812e0e3dff6562b2f09ab835a6b431cb9e7198a47605",
+        "0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"
+      ],
+      "proxyType": "gnosis safe",
       "ignoreInWatchMode": ["nonce"],
-      "upgradeability": {
-        "type": "gnosis safe",
-        "masterCopy": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
-        "modules": [],
-        "threshold": "1 of 2 (50%)"
-      },
-      "implementations": ["0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"],
       "sinceTimestamp": 1610552620,
       "values": {
-        "domainSeparator": "0xf37d5181cb1c7c67c7e79d1dd66f78e41f525d498f652270e8f68c486406872b",
-        "getChainId": 1,
-        "getOwners": [
+        "$immutable": false,
+        "$implementation": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+        "$members": [
           "0x1D93fE338A035f297819EA867275661a4f5B4fdD",
           "0x7fb9f93Cc6614dDd76c893EC8b5310674aC3Fc5f"
         ],
-        "getThreshold": 1,
-        "nonce": 284,
+        "$threshold": 1,
+        "domainSeparator": "0xf37d5181cb1c7c67c7e79d1dd66f78e41f525d498f652270e8f68c486406872b",
+        "getChainId": 1,
+        "GnosisSafe_modules": [],
+        "multisigThreshold": "1 of 2 (50%)",
+        "nonce": 288,
         "VERSION": "1.3.0"
       },
       "derivedName": "GnosisSafe"
     }
   ],
   "eoas": [
-    "0x0000000000000000000000000000000000000000",
-    "0x1D93fE338A035f297819EA867275661a4f5B4fdD",
-    "0x7fb9f93Cc6614dDd76c893EC8b5310674aC3Fc5f",
-    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-    "0xFcF75295f242C4E87203Abb5d7C9BbEda90a8895"
+    { "address": "0x0000000000000000000000000000000000000000" },
+    { "address": "0x1D93fE338A035f297819EA867275661a4f5B4fdD" },
+    { "address": "0x7fb9f93Cc6614dDd76c893EC8b5310674aC3Fc5f" },
+    {
+      "name": "FirstAnvilAddress",
+      "address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+    },
+    { "address": "0xFcF75295f242C4E87203Abb5d7C9BbEda90a8895" }
   ],
   "abis": {
     "0x41A57F5581aDf11b25F3eDb7C1DB19f18bb76734": [
@@ -248,9 +266,6 @@
       "function userPendingDeposits(uint256, address) view returns (uint256)",
       "function verifier() view returns (address)"
     ],
-    "0xd3a6D9De4cbC2CC7529361941e85b1c3269CcBb1": [
-      "function verify(bytes, uint256 rollup_size)"
-    ],
     "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552": [
       "constructor()",
       "event AddedOwner(address owner)",
@@ -303,5 +318,11 @@
     "0xE298a76986336686CC3566469e3520d23D1a8aaD": [
       "constructor(address _masterCopy)"
     ]
+  },
+  "usedTemplates": {
+    "aztecv1/AztecFeeDistributor": "0xedc7c3f140ccb6ec916f9d50a54715eb762103b891dbb0d10f4b7f83a5fdee7d",
+    "aztecv1/RollupProcessor": "0x294ae2b8c724fa3b8d10e1a3a987a34f6157a2eee3a32b15068043041408dcda",
+    "aztecv1/TurboVerifier": "0x4901c8820d2fb46564d8a361a7af5abb2f60cc6a7b7431ee60f3b92015333138",
+    "GnosisSafe": "0x18527e82c3800311291da7323caa876f588cde67692c1c84d5ecb5161da61359"
   }
 }

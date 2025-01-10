@@ -9,16 +9,14 @@ const discovery = new ProjectDiscovery('gravity')
 export const gravity: Bridge = {
   type: 'bridge',
   id: ProjectId('gravity'),
+  createdAt: new UnixTime(1662628329), // 2022-09-08T09:12:09Z
   display: {
     name: 'Gravity',
     slug: 'gravity',
     category: 'Token Bridge',
     links: {
       websites: ['https://gravitybridge.net/'],
-      explorers: [
-        'https://mintscan.io/gravity-bridge',
-        'https://skynetexplorers.com/gravity-bridge',
-      ],
+      explorers: ['https://mintscan.io/gravity-bridge'],
       apps: [
         'https://spacestation.zone/',
         'https://bridge.blockscape.network/',
@@ -95,7 +93,7 @@ export const gravity: Bridge = {
     {
       name: 'Cosmos Validators',
       description:
-        'Control Gravity contract on Ethereum, funds cannot be transfer without the signature of at least 2/3 of the validators set.',
+        'Control Gravity contract on Ethereum, funds cannot be transfer without the signature of at least 2/3 of the validator set.',
       accounts: [],
     },
   ],

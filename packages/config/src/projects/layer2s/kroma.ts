@@ -8,27 +8,38 @@ import {
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NUGGETS,
   OPERATOR,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
 import { subtractOne } from '../../common/assessCount'
+import { ESCROW } from '../../common/escrow'
+import { formatChallengePeriod } from '../../common/formatDelays'
 import { RISK_VIEW } from '../../common/riskView'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { HARDCODED } from '../../discovery/values/hardcoded'
+import { Badge } from '../badges'
 import { OPTIMISTIC_ROLLUP_STATE_UPDATES_WARNING } from './common/liveness'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('kroma')
 
-const proposerRoundDurationSeconds = discovery.getContractValue<number>(
+const proposerRoundDurationSecondsOLD = discovery.getContractValue<number>(
   'ValidatorPool',
   'ROUND_DURATION',
+)
+
+const proposerRoundDurationSeconds = discovery.getContractValue<number>(
+  'ValidatorManager',
+  'ROUND_DURATION_SECONDS',
 )
 
 const rootsSubmissionIntervalBlocks = discovery.getContractValue<number>(
@@ -70,14 +81,21 @@ const SCThreshold = `${SCNumConfirmationsRequired} / ${SCMembersSize}`
 export const kroma: Layer2 = {
   type: 'layer2',
   id: ProjectId('kroma'),
+  createdAt: new UnixTime(1686820004), // 2023-06-15T09:06:44Z
+  badges: [
+    Badge.VM.EVM,
+    Badge.DA.EthereumBlobs,
+    Badge.Stack.OPStack,
+    Badge.Infra.Superchain,
+  ],
   display: {
+    reasonsForBeingOther: [REASON_FOR_BEING_OTHER.NO_PROOFS],
     name: 'Kroma',
     slug: 'kroma',
     description:
       'Kroma aims to develop an universal ZK Rollup based on the Optimism Bedrock architecture. Currently, Kroma operates as an Optimistic Rollup with ZK fault proofs, utilizing a zkEVM based on Scroll.',
     purposes: ['Universal'],
     category: 'Optimistic Rollup',
-
     provider: 'OP Stack',
     links: {
       websites: ['https://kroma.network/'],
@@ -92,7 +110,7 @@ export const kroma: Layer2 = {
       ],
       repositories: ['https://github.com/kroma-network/'],
       socialMedia: [
-        'https://discord.gg/kroma',
+        'https://discord.com/invite/kroma-network',
         'https://twitter.com/kroma_network',
         'https://medium.com/@kroma-network',
       ],
@@ -122,6 +140,7 @@ export const kroma: Layer2 = {
   chainConfig: {
     name: 'kroma',
     chainId: 255,
+    coingeckoPlatform: 'kroma',
     explorerUrl: 'https://kromascan.com',
     explorerApi: {
       url: 'https://api.kromascan.com/api',
@@ -131,6 +150,7 @@ export const kroma: Layer2 = {
     minTimestampForTvl: UnixTime.fromDate(new Date('2023-09-05T03:00:00Z')),
   },
   config: {
+    associatedTokens: ['KRO'],
     escrows: [
       discovery.getEscrowDetails({
         address: EthereumAddress('0x31F648572b67e60Ec6eb8E197E1848CC5F5558de'),
@@ -149,6 +169,7 @@ export const kroma: Layer2 = {
         address: EthereumAddress('0x7e1Bdb9ee75B6ef1BCAAE3B1De1c616C7B11ef6e'),
         sinceTimestamp: new UnixTime(1700122827),
         tokens: ['USDC'],
+        ...ESCROW.CANONICAL_EXTERNAL,
         description: 'Main entry point for users depositing USDC.',
       }),
     ],
@@ -173,7 +194,7 @@ export const kroma: Layer2 = {
           to: EthereumAddress(
             discovery.getContractValue('SystemConfig', 'sequencerInbox'),
           ),
-          sinceTimestampInclusive: new UnixTime(1693883663),
+          sinceTimestamp: new UnixTime(1693883663),
         },
       },
       {
@@ -189,29 +210,35 @@ export const kroma: Layer2 = {
           selector: '0x5a045f78',
           functionSignature:
             'function submitL2Output(bytes32 _outputRoot,uint256 _l2BlockNumber,bytes32 _l1BlockHash,uint256 _l1BlockNumber)',
-          sinceTimestampInclusive: new UnixTime(1693880579),
+          sinceTimestamp: new UnixTime(1693880579),
         },
       },
     ],
     finality: {
-      type: 'OPStack',
+      type: 'OPStack-blob',
+      // timestamp of the first blob tx
+      minTimestamp: new UnixTime(1714032407),
+      l2BlockTimeSeconds: 2,
+      genesisTimestamp: new UnixTime(1693880389),
       lag: 0,
       stateUpdate: 'disabled',
     },
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (blobs or calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'Transactions data',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_BLOBS_OR_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.TRANSACTION_DATA,
+    }),
+  ],
+  riskView: {
     stateValidation: {
       ...RISK_VIEW.STATE_FP_INT_ZK,
       description:
         RISK_VIEW.STATE_FP_INT_ZK.description +
         " The challenge protocol can be subject to delay attacks and can fail under certain conditions. The current system doesn't use posted L2 txs batches on L1 as inputs to prove a fault, meaning that DA is not enforced.",
       sentiment: 'bad',
-      secondLine: `${formatSeconds(finalizationPeriod)} challenge period`,
+      secondLine: formatChallengePeriod(finalizationPeriod),
     },
     dataAvailability: {
       ...RISK_VIEW.DATA_ON_CHAIN,
@@ -254,14 +281,12 @@ export const kroma: Layer2 = {
         {
           contract: 'L2OutputOracle',
           references: [
-            'https://etherscan.io/address/0x14126FFa3889a026A79F0f99FaE80B3dc9E38095#code#F1#L197',
+            'https://etherscan.io/address/0x4B68F22d96a04F6d80e284C20A648f8Da2fD569b#code#F1#L197',
           ],
         },
       ],
     },
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   stage: getStage(
     {
       stage0: {
@@ -292,22 +317,22 @@ export const kroma: Layer2 = {
       name: 'Fraud Proofs ensure state correctness',
       description:
         'Kroma uses an interactive fraud proof system to find a single block of disagreement, which is then ZK proven. The zkEVM used is based on Scroll.\
-        Once the single block of disagreement is found, the challenger is required to present ZK proof of the fraud. When the proof is validated, the incorrect\
+        Once the single block of disagreement is found, the challenger is required to present a ZK proof of the fraud. If the proof is validated, the incorrect\
         state output is deleted. The Security Council can always override the result of the challenge, it can also delete any L2 state root at any time. If\
-        the malicious attester and challenger collude and are willing to spend bonds, they can perform a delay attack by engaging in continuous challenge\
-        resulting in lack of finalization of the L2 state root on L1. The protocol can also fail under certain conditions.',
+        the malicious attester and challenger collude and are willing to spend bonds, they can perform a delay attack by engaging in continuous challenges\
+        resulting in a lack of finalization of the L2 state root on L1. The protocol can also fail under certain conditions.',
       references: [
         {
           text: 'Colosseum.sol#L300 - Etherscan source code, createChallenge function',
-          href: 'https://etherscan.io/address/0x7526F997ea040B3949415c3a44e708273863AA2b#code#F1#L300',
+          href: 'https://etherscan.io/address/0xAB54b3e775f645cf4486039bfA4dA539E70c9f99#code#F1#L437',
         },
         {
           text: 'Colosseum.sol#L378 - Etherscan source code, bisect function',
-          href: 'https://etherscan.io/address/0x7526F997ea040B3949415c3a44e708273863AA2b#code#F1#L378',
+          href: 'https://etherscan.io/address/0xAB54b3e775f645cf4486039bfA4dA539E70c9f99#code#F1#L514',
         },
         {
           text: 'Colosseum.sol#L434 - Etherscan source code, proveFault function',
-          href: 'https://etherscan.io/address/0x7526F997ea040B3949415c3a44e708273863AA2b#code#F1#L434',
+          href: 'https://etherscan.io/address/0xAB54b3e775f645cf4486039bfA4dA539E70c9f99#code#F1#L570',
         },
         {
           text: 'KROMA-020: lack of validation segments and proofs in Colosseum.sol - ChainLight security audit',
@@ -352,7 +377,7 @@ export const kroma: Layer2 = {
       ],
     },
     forceTransactions: {
-      ...FORCE_TRANSACTIONS.CANONICAL_ORDERING,
+      ...FORCE_TRANSACTIONS.CANONICAL_ORDERING('smart contract'),
       references: [
         {
           text: 'Sequencing Window - Kroma specs',
@@ -465,6 +490,10 @@ export const kroma: Layer2 = {
       description:
         'Actor allowed to pause withdrawals. Currently set to the Security Council.',
     },
+    ...discovery.getMultisigPermission(
+      'KromaRewardVaultMultisig',
+      'Escrows a pool of KRO used as validator rewards by the AssetManager.',
+    ),
   ],
   contracts: {
     addresses: [
@@ -519,8 +548,17 @@ export const kroma: Layer2 = {
       }),
       discovery.getContractDetails('ValidatorPool', {
         description: `Contract used to manage the Proposers. Anyone can submit a deposit and bond to a state root, or create a challenge. It also manages the Proposer rotation for each submittable block using a random selection. If the selected proposer fails to publish a root within ${formatSeconds(
-          proposerRoundDurationSeconds,
+          proposerRoundDurationSecondsOLD,
         )}, then the submission becomes open to everyone.`,
+        ...upgradesProxy,
+      }),
+      discovery.getContractDetails('ValidatorManager', {
+        description: `Manages the set of Proposers (Validators in Kroma) and selects the next proposer with the window to submit the output root within ${formatSeconds(proposerRoundDurationSeconds)}, after which anyone propose for them. It is also the entry point for other contracts, such as the L2OutputOracle and the Colosseum, which distribute output rewards and slash challenge losers. It makes successive calls to the AssetManager to apply changes to the proposers' assets.`,
+        ...upgradesProxy,
+      }),
+      discovery.getContractDetails('AssetManager', {
+        description:
+          'Manages the delegation and undelegation of KRO tokens and Kroma Guardian House (KGH) NFTs for Proposers (Kroma Validators) and distributes rewards.',
         ...upgradesProxy,
       }),
       discovery.getContractDetails('ZKMerkleTrie', {
@@ -542,17 +580,35 @@ export const kroma: Layer2 = {
   },
   milestones: [
     {
+      name: 'Chain fork #2 - Output root replaced',
+      link: 'https://x.com/kroma_network/status/1774683208753590506',
+      date: '2024-04-05T00:00:00Z',
+      description:
+        'The chain forked and an L2 output on Ethereum has to be replaced by the Security Council.',
+      type: 'incident',
+    },
+    {
+      name: 'Chain fork - Output root replaced',
+      link: 'https://x.com/kroma_network/status/1767478100819153009',
+      date: '2024-03-18T00:00:00Z',
+      description:
+        'The chain forked and an L2 output on Ethereum has to be replaced by the Security Council.',
+      type: 'incident',
+    },
+    {
       name: 'Ecotone upgrade',
       link: 'https://twitter.com/kroma_network/status/1783410075346063564',
       date: '2024-04-25T00:00:00.00Z',
       description:
         'Introduces EIP-4844 data blobs for L1 data availability and more L2 opcodes.',
+      type: 'general',
     },
     {
       name: 'Kroma Mainnet Launch',
       link: 'https://twitter.com/kroma_network/status/1699267271968055305?s=20',
       date: '2023-09-06T00:00:00Z',
       description: 'Kroma is live on mainnet.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [

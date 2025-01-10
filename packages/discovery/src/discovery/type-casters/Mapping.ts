@@ -1,5 +1,5 @@
-import { assert } from '@l2beat/backend-tools'
 import { ContractValue } from '@l2beat/discovery-types'
+import { assert } from '@l2beat/shared-pure'
 import { z } from 'zod'
 import { ArgType, BaseTypeCaster } from './BaseTypeCaster'
 
@@ -16,7 +16,6 @@ export const Mapping: BaseTypeCaster = {
     const validated = Validator.parse(arg)
     const mapped = validated[incomingValue.toString()]
     if (mapped === undefined) {
-      console.log(`Value (${incomingValue}) not found in mapping`)
       return incomingValue
     }
 

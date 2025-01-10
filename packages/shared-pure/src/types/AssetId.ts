@@ -1,31 +1,24 @@
-export interface AssetId extends String {
+import { EthereumAddress } from './EthereumAddress'
+
+export type AssetId = string & {
   _AssetIdBrand: string
 }
 
 export function AssetId(value: string) {
-  if (value === '') {
-    throw new TypeError('Invalid AssetId')
-  }
   return value as unknown as AssetId
 }
 
-AssetId.WETH = AssetId('weth-wrapped-ether')
-AssetId.DAI = AssetId('dai-dai-stablecoin')
-AssetId.USDT = AssetId('usdt-tether-usd')
-AssetId.USDC = AssetId('usdc-usd-coin')
-AssetId.USDC_ON_ARBITRUM = AssetId('arbitrum:usdc-usd-coin')
-AssetId.USDC_ON_OPTIMISM = AssetId('optimism:usdc-usd-coin')
-AssetId.USDC_ON_BASE = AssetId('base:usdc-usd-coin')
-AssetId.USDC_ON_LYRA = AssetId('lyra:usdc-usd-coin')
-AssetId.ETH = AssetId('eth-ether')
-AssetId.OP = AssetId('op-optimism')
-AssetId.ARB = AssetId('arb-arbitrum')
-
-AssetId.fake = function fake(name?: string) {
-  if (name) {
-    return AssetId(`fake-${name}`)
-  }
-  const letters = 'abcdefghijklmnopqrstuvwxyz'
-  const letter = () => letters[Math.floor(Math.random() * letters.length)]
-  return AssetId('fake-' + Array.from({ length: 10 }).map(letter).join(''))
+AssetId.create = function (
+  chain: string,
+  address: EthereumAddress | 'native' | undefined,
+) {
+  return AssetId(`${chain}-${(address ?? 'native').toString()}`)
 }
+
+AssetId.ETH = AssetId('ethereum-native')
+AssetId.WUSDM = AssetId('ethereum-0x57F5E098CaD7A3D1Eed53991D4d66C45C9AF7812')
+AssetId.OKB = AssetId('ethereum-0x75231F58b43240C9718Dd58B4967c5114342a86c')
+AssetId.GPT = AssetId('ethereum-0xCdb4A8742ed7D0259b51E3454C46C9D6C48d5e88')
+AssetId.WETH = AssetId('ethereum-0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2')
+AssetId.YBETH = AssetId('ethereum-0x76bf2D1e6dFda645c0c17440B17Eccc181dfC351')
+AssetId.ZKCRO = AssetId('ethereum-0x28Ff2E4dD1B58efEB0fC138602A28D5aE81e44e2')

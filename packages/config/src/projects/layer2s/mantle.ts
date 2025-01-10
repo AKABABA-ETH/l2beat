@@ -1,15 +1,13 @@
 import { EthereumAddress, UnixTime } from '@l2beat/shared-pure'
 
+import { DA_BRIDGES, DA_LAYERS } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
 import { opStackL2 } from './templates/opStack'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('mantle')
-
-const regularUpgrades = {
-  upgradableBy: ['OwnerMultisig'],
-  upgradeDelay: 'No delay',
-}
 
 const committeeMembers = discovery.getContractValue<number>(
   'BLSRegistry',
@@ -23,17 +21,18 @@ const threshold =
   ) / 1000 // Quorum threshold is in basis points, but stake is equal for all members (100k MNT)
 
 export const mantle: Layer2 = opStackL2({
+  createdAt: new UnixTime(1680782525), // 2023-04-06T12:02:05Z
+  additionalBadges: [Badge.DA.CustomDA],
   daProvider: {
-    name: 'MantleDA',
-    bridge: {
-      type: 'Staked Operators',
+    layer: DA_LAYERS.MANTLE_DA,
+    bridge: DA_BRIDGES.STAKED_OPERATORS({
       requiredSignatures: threshold,
       membersCount: committeeMembers,
-    },
+    }),
     riskView: {
       value: 'External',
       description:
-        'Proof construction and state derivation rely fully on data that is NOT published on chain. MantleDA contracts are forked from EigenDA with significant modifications, most importantly removal of slashing conditions. DA fraud proof mechanism is not live yet.',
+        'Proof construction and state derivation rely fully on data that is NOT published on chain. Mantle DA contracts are forked from EigenDA with significant modifications, most importantly removal of slashing conditions. DA fraud proof mechanism is not live yet.',
       sentiment: 'bad',
     },
     technology: {
@@ -60,15 +59,18 @@ export const mantle: Layer2 = opStackL2({
     },
   },
   associatedTokens: ['MNT'],
+  nonTemplateExcludedTokens: ['SolvBTC', 'SolvBTC.BBN', 'FBTC'],
   discovery,
   display: {
+    reasonsForBeingOther: [
+      REASON_FOR_BEING_OTHER.NO_PROOFS,
+      REASON_FOR_BEING_OTHER.SMALL_DAC,
+    ],
     name: 'Mantle',
     slug: 'mantle',
+    architectureImage: 'mantle',
     description:
       'Mantle is an under development EVM compatible Optimium, based on the OP Stack.',
-    warning:
-      'Fraud proof system is currently under development. Users need to trust the block proposer to submit correct L1 state roots.',
-    purposes: ['Universal'],
     links: {
       websites: ['https://mantle.xyz/'],
       apps: ['https://bridge.mantle.xyz'],
@@ -105,68 +107,28 @@ export const mantle: Layer2 = opStackL2({
     ],
     coingeckoPlatform: 'mantle',
   },
-  nonTemplateContracts: [
-    discovery.getContractDetails('DataLayrServiceManager', {
-      description:
-        'This contract is the main entry point for data availability. It is responsible for storing transaction data headers and confirming the data store by verifying operators signatures.',
-    }),
-    discovery.getContractDetails('BLSRegistry', {
-      description:
-        'This contract stores the number of Mantle DA operators and their public keys. It also store the quorum threshold and the minimum stake required to be part of the quorum.',
-    }),
-    discovery.getContractDetails('InvestmentManager', {
-      description:
-        'Contract managing different investment strategies, forked from EigenLayer StrategyManager.',
-    }),
-    discovery.getContractDetails('MantleFirstStrat', {
-      description: 'Basic do-nothing investment strategy.',
-    }),
-    discovery.getContractDetails('MantleSecondStrat', {
-      description: 'Basic do-nothing investment strategy.',
-    }),
-    discovery.getContractDetails('AddressManager', {
-      description:
-        'This is a library that stores the mappings between names and their addresses. Changing the values effectively upgrades the system. It is controlled by the OwnerMultisig.',
-      ...regularUpgrades,
-    }),
-    discovery.getContractDetails('PubkeyCompendium'),
-    discovery.getContractDetails('RegistryPermission'),
-    discovery.getContractDetails('Delegation'),
-    discovery.getContractDetails('PauserRegistry'),
-    discovery.getContractDetails('PauserRegistry2'),
-    discovery.getContractDetails('L1MantleToken', {
-      description:
-        'Mantle uses Mantle (MNT) as the designated gas token, allowing users to utilize MNT to pay for blockspace.',
-    }),
-  ],
-  nonTemplatePermissions: [
-    ...discovery.getMultisigPermission(
-      'OwnerMultisig',
-      'This address can upgrade the following contracts: L1CrossDomainMessenger, L1StandardBridge, AddressManager, L1MantleToken, EigenDataLayerChain, SystemConfig.',
-    ),
-    ...discovery.getMultisigPermission(
-      'Owner2Multisig',
-      'This address is the owner of the following contracts: EigenDataLayerChain, DataLayrServiceManager, BLSRegistry, Delegation. It is also designated as a Challenger and Guardian of the OptimismPortal, meaning it can halt withdrawals and change incorrect state roots.',
-    ),
-  ],
+  discoveryDrivenData: true,
   milestones: [
     {
       name: 'Mainnet launch',
       link: 'https://www.mantle.xyz/blog/announcements/mantle-network-mainnet-alpha',
       date: '2023-07-14T00:00:00.00Z',
       description: 'Mantle is live on mainnet.',
+      type: 'general',
     },
     {
       name: 'Mainnet v2 Tectonic Upgrade',
       link: 'https://www.mantle.xyz/blog/announcements/mantle-completes-mainnet-v2-tectonic-upgrade',
       date: '2024-03-15T00:00:00.00Z',
       description: 'Mantle completes Mainnet v2 Tectonic Upgrade.',
+      type: 'general',
     },
     {
       name: 'MNT token migration begins',
       link: 'https://www.mantle.xyz/blog/announcements/bit-to-mnt-user-guide',
       date: '2023-07-11T00:00:00.00Z',
       description: 'User can exchange their BIT tokens to MNT tokens.',
+      type: 'general',
     },
   ],
   nonTemplateOptimismPortalEscrowTokens: ['MNT'],

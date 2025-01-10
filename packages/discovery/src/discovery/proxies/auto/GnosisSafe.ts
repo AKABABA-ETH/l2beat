@@ -1,6 +1,5 @@
-import { assert } from '@l2beat/backend-tools'
 import { ProxyDetails } from '@l2beat/discovery-types'
-import { EthereumAddress } from '@l2beat/shared-pure'
+import { assert, EthereumAddress } from '@l2beat/shared-pure'
 
 import { IProvider } from '../../provider/IProvider'
 import { getModules } from '../../utils/getSafeModules'
@@ -22,16 +21,17 @@ async function getMasterCopy(
   }
 }
 
-async function getOwnersCount(
+async function getOwners(
   provider: IProvider,
   address: EthereumAddress,
-): Promise<number | undefined> {
-  const owners = await provider.callMethod<string[]>(
+): Promise<EthereumAddress[]> {
+  const owners = await provider.callMethod<EthereumAddress[]>(
     address,
     'function getOwners() view returns (address[])',
     [],
   )
-  return owners?.length
+  assert(owners !== undefined, 'Cannot retrieve owners')
+  return owners
 }
 
 async function getThreshold(
@@ -58,24 +58,26 @@ export async function detectGnosisSafe(
   const modules = await getModules(provider, address)
   assert(modules, 'Could not find modules for GnosisSafe')
 
-  const ownerCount = await getOwnersCount(provider, address)
+  const owners = await getOwners(provider, address)
+  const ownerCount = owners.length
   const threshold = await getThreshold(provider, address)
-  assert(ownerCount !== undefined, 'Cannot retrieve owner count')
   assert(threshold !== undefined, 'Cannot retrieve threshold')
 
   const thresholdString = `${threshold} of ${ownerCount} (${(
-    (threshold / ownerCount) *
-    100
+    (threshold / ownerCount) * 100
   ).toFixed()}%)`
 
   return {
-    implementations: [masterCopy],
-    relatives: modules,
-    upgradeability: {
-      type: 'gnosis safe',
-      masterCopy,
-      modules,
-      threshold: thresholdString,
+    type: 'gnosis safe',
+    values: {
+      // TODO: (sz-piotr) Is it always the case for safes?
+      $immutable: false,
+      $implementation: masterCopy.toString(),
+      // TODO: (sz-piotr) Why here, and not in the template?
+      multisigThreshold: thresholdString,
+      $threshold: Number(threshold),
+      $members: owners.map((o) => o.toString()),
+      GnosisSafe_modules: modules.map((m) => m.toString()),
     },
   }
 }

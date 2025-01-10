@@ -1,36 +1,25 @@
-import {
-  DatabaseMiddleware,
-  DatabaseTransaction,
-} from '../../peripherals/database/DatabaseMiddleware'
-import { IndexerConfigurationRepository } from './IndexerConfigurationRepository'
-import {
-  IndexerStateRecord,
-  IndexerStateRepository,
-} from './IndexerStateRepository'
-import { SavedConfiguration } from './multi/types'
+import { Database, IndexerStateRecord } from '@l2beat/database'
+import { Configuration, SavedConfiguration } from './multi/types'
 
 export class IndexerService {
-  constructor(
-    private readonly indexerStateRepository: IndexerStateRepository,
-    private readonly indexerConfigurationRepository: IndexerConfigurationRepository,
-  ) {}
+  constructor(private readonly db: Database) {}
 
   // #region ManagedChildIndexer & ManagedMultiIndexer
 
   async getSafeHeight(indexerId: string): Promise<number | undefined> {
-    const record = await this.indexerStateRepository.findIndexerState(indexerId)
+    const record = await this.db.indexerState.findByIndexerId(indexerId)
     return record?.safeHeight
   }
 
   async getIndexerState(
     indexerId: string,
   ): Promise<IndexerStateRecord | undefined> {
-    const record = await this.indexerStateRepository.findIndexerState(indexerId)
+    const record = await this.db.indexerState.findByIndexerId(indexerId)
     return record
   }
 
   async setSafeHeight(indexerId: string, safeHeight: number) {
-    await this.indexerStateRepository.setSafeHeight(indexerId, safeHeight)
+    await this.db.indexerState.updateSafeHeight(indexerId, safeHeight)
   }
 
   async setInitialState(
@@ -38,7 +27,7 @@ export class IndexerService {
     safeHeight: number,
     configHash?: string,
   ) {
-    await this.indexerStateRepository.addOrUpdate({
+    await this.db.indexerState.upsert({
       indexerId,
       safeHeight,
       configHash,
@@ -46,7 +35,22 @@ export class IndexerService {
   }
 
   // #endregion
+
   // #region ManagedMultiIndexer
+
+  async insertConfigurations<T>(
+    indexerId: string,
+    configurations: Configuration<T>[],
+    encode: (value: T) => string,
+  ): Promise<void> {
+    const encoded = configurations.map((config) => ({
+      ...config,
+      properties: encode(config.properties),
+    }))
+    await this.db.indexerConfiguration.insertMany(
+      encoded.map((e) => ({ ...e, indexerId, currentHeight: null })),
+    )
+  }
 
   async upsertConfigurations<T>(
     indexerId: string,
@@ -58,53 +62,34 @@ export class IndexerService {
       properties: encode(config.properties),
     }))
 
-    await this.indexerConfigurationRepository.addOrUpdateMany(
+    await this.db.indexerConfiguration.upsertMany(
       encoded.map((e) => ({ ...e, indexerId })),
     )
   }
 
-  async getSavedConfigurations<T>(
+  async getSavedConfigurations(
     indexerId: string,
-  ): Promise<Omit<SavedConfiguration<T>, 'properties'>[]> {
-    const configurations: (Omit<SavedConfiguration<T>, 'properties'> & {
-      indexerId?: string
-      properties?: string
-    })[] =
-      await this.indexerConfigurationRepository.getSavedConfigurations(
-        indexerId,
-      )
-
-    for (const config of configurations) {
-      // biome-ignore lint/performance/noDelete: not a performance problem
-      delete config.indexerId
-      // biome-ignore lint/performance/noDelete: not a performance problem
-      delete config.properties
-    }
-
-    return configurations
+  ): Promise<SavedConfiguration<string>[]> {
+    return await this.db.indexerConfiguration.getConfigurationsWithoutIndexerId(
+      indexerId,
+    )
   }
 
-  async updateSavedConfigurations(
+  async updateConfigurationsCurrentHeight(
     indexerId: string,
-    configurationIds: string[],
     currentHeight: number | null,
-    dbMiddleware: DatabaseMiddleware,
   ): Promise<void> {
-    await dbMiddleware.add(async (trx?: DatabaseTransaction) => {
-      await this.indexerConfigurationRepository.updateSavedConfigurations(
-        indexerId,
-        configurationIds,
-        currentHeight,
-        trx,
-      )
-    })
+    await this.db.indexerConfiguration.updateCurrentHeights(
+      indexerId,
+      currentHeight,
+    )
   }
 
-  async persistOnlyUsedConfigurations(
+  async deleteConfigurations(
     indexerId: string,
     configurationIds: string[],
   ): Promise<void> {
-    await this.indexerConfigurationRepository.deleteConfigurationsExcluding(
+    await this.db.indexerConfiguration.deleteConfigurations(
       indexerId,
       configurationIds,
     )

@@ -1,7 +1,6 @@
 import { EthereumAddress } from '@l2beat/shared-pure'
 import { expect, mockObject } from 'earl'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { EXEC_REVERT_MSG } from '../utils/callMethod'
 import { CallHandler } from './CallHandler'
@@ -17,7 +16,6 @@ describe(CallHandler.name, () => {
           args: [1, 2],
         },
         [],
-        DiscoveryLogger.SILENT,
       )
 
       expect(handler.dependencies).toEqual([])
@@ -33,10 +31,25 @@ describe(CallHandler.name, () => {
           args: [1, '{{ foo }}', 2, '{{ bar }}'],
         },
         [],
-        DiscoveryLogger.SILENT,
       )
 
       expect(handler.dependencies).toEqual(['foo', 'bar'])
+    })
+
+    it('detects dependencies in inAddress', () => {
+      const handler = new CallHandler(
+        'someName',
+        {
+          type: 'call',
+          method:
+            'function foo(uint a, uint b, uint c, uint d) view returns (uint)',
+          args: [1, 2, 3, 4],
+          address: '{{ quax }}',
+        },
+        [],
+      )
+
+      expect(handler.dependencies).toEqual(['quax'])
     })
   })
 
@@ -50,7 +63,6 @@ describe(CallHandler.name, () => {
           args: [1],
         },
         [],
-        DiscoveryLogger.SILENT,
       )
 
       expect(handler.getMethod()).toEqual(
@@ -69,7 +81,6 @@ describe(CallHandler.name, () => {
               args: [1],
             },
             [],
-            DiscoveryLogger.SILENT,
           ),
       ).toThrow('Invalid method abi')
     })
@@ -85,23 +96,17 @@ describe(CallHandler.name, () => {
               args: [1, 2],
             },
             [],
-            DiscoveryLogger.SILENT,
           ),
       ).toThrow('Invalid method abi')
     })
 
     it('finds the method by field name', () => {
-      const handler = new CallHandler(
-        'someName',
-        { type: 'call', args: [] },
-        [
-          'function foo() view returns (uint256)',
-          'function someName(uint256 i) view returns (uint256)',
-          'function someName(uint256 a, uint256 b) view returns (uint256)',
-          'function someName() view returns (uint256)',
-        ],
-        DiscoveryLogger.SILENT,
-      )
+      const handler = new CallHandler('someName', { type: 'call', args: [] }, [
+        'function foo() view returns (uint256)',
+        'function someName(uint256 i) view returns (uint256)',
+        'function someName(uint256 a, uint256 b) view returns (uint256)',
+        'function someName() view returns (uint256)',
+      ])
 
       expect(handler.getMethod()).toEqual(
         'function someName() view returns (uint256)',
@@ -118,7 +123,6 @@ describe(CallHandler.name, () => {
           'function someName(uint256 a, uint256 b) view returns (uint256)',
           'function someName() view returns (uint256)',
         ],
-        DiscoveryLogger.SILENT,
       )
 
       expect(handler.getMethod()).toEqual(
@@ -129,16 +133,11 @@ describe(CallHandler.name, () => {
     it('throws if it cannot find the method by field name', () => {
       expect(
         () =>
-          new CallHandler(
-            'someName',
-            { type: 'call', args: [] },
-            [
-              'function foo(uint256 i) view returns (uint256)',
-              'function someName(uint256 i) view returns (uint256)',
-              'function someName(uint256 a, uint256 b) view returns (uint256)',
-            ],
-            DiscoveryLogger.SILENT,
-          ),
+          new CallHandler('someName', { type: 'call', args: [] }, [
+            'function foo(uint256 i) view returns (uint256)',
+            'function someName(uint256 i) view returns (uint256)',
+            'function someName(uint256 a, uint256 b) view returns (uint256)',
+          ]),
       ).toThrow('Cannot find a matching method for someName')
     })
 
@@ -155,7 +154,6 @@ describe(CallHandler.name, () => {
           'function bar(uint256 a, uint256 b) view returns (uint256)',
           'function bar() view returns (uint256)',
         ],
-        DiscoveryLogger.SILENT,
       )
 
       expect(handler.getMethod()).toEqual(
@@ -177,7 +175,6 @@ describe(CallHandler.name, () => {
               'function bar(uint256 i) view returns (uint256)',
               'function bar(uint256 a, uint256 b) view returns (uint256)',
             ],
-            DiscoveryLogger.SILENT,
           ),
       ).toThrow('Cannot find a matching method for bar')
     })
@@ -189,6 +186,8 @@ describe(CallHandler.name, () => {
 
     it('calls the method with the provided parameters', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -205,7 +204,41 @@ describe(CallHandler.name, () => {
         'add',
         { type: 'call', method, args: [1, 2] },
         [],
-        DiscoveryLogger.SILENT,
+      )
+      const result = await handler.execute(provider, address, {})
+      expect(result).toEqual({
+        field: 'add',
+        value: 3,
+        ignoreRelative: undefined,
+      })
+    })
+
+    it('calls the method with the provided parameters and address', async () => {
+      const inAddress = EthereumAddress.random()
+      const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
+        async callMethod<T>(
+          passedAddress: EthereumAddress,
+          _abi: string,
+          data: unknown[],
+        ) {
+          expect(passedAddress).toEqual(inAddress)
+          expect(data).toEqual([1, 2])
+
+          return 3 as T
+        },
+      })
+
+      const handler = new CallHandler(
+        'add',
+        {
+          type: 'call',
+          method,
+          args: [1, 2],
+          address: inAddress.toString(),
+        },
+        [],
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
@@ -217,6 +250,8 @@ describe(CallHandler.name, () => {
 
     it('calls the method with the resolved parameters', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -233,7 +268,6 @@ describe(CallHandler.name, () => {
         'add',
         { type: 'call', method, args: ['{{ foo }}', '{{ bar }}'] },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {
         foo: { field: 'foo', value: 1 },
@@ -246,8 +280,50 @@ describe(CallHandler.name, () => {
       })
     })
 
+    it('calls the method with the provided parameters and address as dependency', async () => {
+      const inAddress = EthereumAddress.random()
+      const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
+        async callMethod<T>(
+          passedAddress: EthereumAddress,
+          _abi: string,
+          data: unknown[],
+        ) {
+          expect(passedAddress).toEqual(inAddress)
+          expect(data).toEqual([1, 2])
+
+          return 3 as T
+        },
+      })
+
+      const handler = new CallHandler(
+        'add',
+        {
+          type: 'call',
+          method,
+          args: [1, 2],
+          address: '{{ someDependentAddress }}',
+        },
+        [],
+      )
+      const result = await handler.execute(provider, address, {
+        someDependentAddress: {
+          field: 'someDependentAddress',
+          value: inAddress.toString(),
+        },
+      })
+      expect(result).toEqual({
+        field: 'add',
+        value: 3,
+        ignoreRelative: undefined,
+      })
+    })
+
     it('handles errors', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod() {
           throw new Error('oops')
         },
@@ -257,7 +333,6 @@ describe(CallHandler.name, () => {
         'add',
         { type: 'call', method, args: [1, 2] },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
@@ -269,6 +344,8 @@ describe(CallHandler.name, () => {
 
     it('passes ignoreRelative', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>() {
           return 3 as T
         },
@@ -278,7 +355,6 @@ describe(CallHandler.name, () => {
         'add',
         { type: 'call', method, args: [1, 2], ignoreRelative: true },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
@@ -290,6 +366,8 @@ describe(CallHandler.name, () => {
 
     it('should catch revert error', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod() {
           return undefined
         },
@@ -299,7 +377,6 @@ describe(CallHandler.name, () => {
         'add',
         { type: 'call', method, args: [1, 2], expectRevert: true },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
@@ -311,6 +388,8 @@ describe(CallHandler.name, () => {
 
     it('should not catch revert error when expectRevert is false', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod() {
           return undefined
         },
@@ -320,7 +399,6 @@ describe(CallHandler.name, () => {
         'add',
         { type: 'call', method, args: [1, 2], expectRevert: false },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({

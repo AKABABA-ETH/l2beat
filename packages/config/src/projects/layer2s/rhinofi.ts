@@ -7,6 +7,9 @@ import {
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -16,8 +19,9 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
+import { formatDelay } from '../../common/formatDelays'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import {
   getCommittee,
@@ -27,12 +31,13 @@ import {
   getSHARPVerifierUpgradeDelay,
 } from '../../discovery/starkware'
 import { delayDescriptionFromString } from '../../utils/delayDescription'
+import { Badge } from '../badges'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('deversifi')
-const upgradeDelaySeconds = discovery.getContractUpgradeabilityParam(
+const upgradeDelaySeconds = discovery.getContractValue<number>(
   'StarkExchange',
-  'upgradeDelay',
+  'StarkWareDiamond_upgradeDelay',
 )
 const includingSHARPUpgradeDelaySeconds = Math.min(
   upgradeDelaySeconds,
@@ -54,7 +59,15 @@ const committee = getCommittee(discovery)
 export const rhinofi: Layer2 = {
   type: 'layer2',
   id: ProjectId('deversifi'),
+  createdAt: new UnixTime(1623153328), // 2021-06-08T11:55:28Z
+  badges: [
+    Badge.VM.AppChain,
+    Badge.DA.DAC,
+    Badge.Stack.StarkEx,
+    Badge.Infra.SHARP,
+  ],
   display: {
+    reasonsForBeingOther: [REASON_FOR_BEING_OTHER.LOW_DAC_THRESHOLD],
     name: 'rhino.fi',
     slug: 'rhinofi',
     description: 'rhino.fi is a Validium based on the StarkEx technology.',
@@ -122,16 +135,17 @@ export const rhinofi: Layer2 = {
     //   },
     // ],
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['DAC'],
-    bridge: {
-      type: 'DAC Members',
-      membersCount: committee.accounts.length,
-      requiredSignatures: committee.minSigners,
-    },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.DAC],
+      bridge: DA_BRIDGES.DAC_MEMBERS({
+        membersCount: committee.accounts.length,
+        requiredSignatures: committee.minSigners,
+      }),
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: RISK_VIEW.STATE_ZKP_ST,
     dataAvailability: {
       ...RISK_VIEW.DATA_EXTERNAL_DAC({
@@ -156,14 +170,14 @@ export const rhinofi: Layer2 = {
     exitWindow: RISK_VIEW.EXIT_WINDOW(
       includingSHARPUpgradeDelaySeconds,
       freezeGracePeriod,
-      undefined,
-      true,
+      { existsBlocklist: true },
     ),
-    sequencerFailure: RISK_VIEW.SEQUENCER_FORCE_VIA_L1(freezeGracePeriod),
+    sequencerFailure: {
+      ...RISK_VIEW.SEQUENCER_FORCE_VIA_L1(freezeGracePeriod),
+      secondLine: formatDelay(freezeGracePeriod),
+    },
     proposerFailure: RISK_VIEW.PROPOSER_USE_ESCAPE_HATCH_MP,
-    destinationToken: RISK_VIEW.CANONICAL,
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   technology: {
     stateCorrectness: STATE_CORRECTNESS.STARKEX_VALIDITY_PROOFS,
     newCryptography: NEW_CRYPTOGRAPHY.ZK_STARKS,
@@ -210,7 +224,7 @@ export const rhinofi: Layer2 = {
     discovery.contractAsPermissioned(
       // this multisig does not get recognized as such (because of the old proxy?)
       discovery.getContract('DeversiFiTreasuryMultisig'),
-      'Is the BlockAdmin: Can add addresses to a blocklist in the bridge, blocking the finalization of their withdrawals on L1.',
+      'Is the BlockAdmin: Can add owner keys to a blocklist in the bridge, blocking their withdrawals on L1. After 2 weeks, this multisig can manually withdraw even for blocked actors.',
     ),
   ],
   milestones: [
@@ -220,6 +234,7 @@ export const rhinofi: Layer2 = {
       link: 'https://rhino.fi/blog/introducing-rhino-fi-the-first-frictionless-gateway-to-multi-chain-defi/',
       description:
         'DeversiFi becomes rhino.fi: multi-chain platform gathering DeFi in one place.',
+      type: 'general',
     },
     {
       name: 'DeversiFi Relaunched using Starkware',
@@ -227,6 +242,7 @@ export const rhinofi: Layer2 = {
       link: 'https://rhino.fi/blog/introducing-rhino-fi-the-first-frictionless-gateway-to-multi-chain-defi/',
       description:
         'DeversiFi is live, bringing first STARKex Validium for spot trading.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [...NUGGETS.STARKWARE],

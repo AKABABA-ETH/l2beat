@@ -1,14 +1,17 @@
+import { Logger } from '@l2beat/backend-tools'
+import { HttpClient, RpcClient } from '@l2beat/shared'
+import { BlobClient } from '@l2beat/shared'
 import { assert } from '@l2beat/shared-pure'
 import { providers } from 'ethers'
 import { DiscoveryChainConfig } from '../../config/types'
-import { EtherscanLikeClient } from '../../utils/EtherscanLikeClient'
-import { HttpClient } from '../../utils/HttpClient'
+import { getExplorerClient } from '../../utils/IEtherscanClient'
 import { BatchingAndCachingProvider } from './BatchingAndCachingProvider'
+import { DiscoveryCache } from './DiscoveryCache'
 import { HighLevelProvider } from './HighLevelProvider'
 import { IProvider, RawProviders } from './IProvider'
 import { LowLevelProvider } from './LowLevelProvider'
-import { DiscoveryCache, ReorgAwareCache } from './ReorgAwareCache'
-import { AllProviderStats, addStats, getZeroStats } from './Stats'
+import { ReorgAwareCache } from './ReorgAwareCache'
+import { AllProviderStats, ProviderStats } from './Stats'
 import { getBlockNumberTwoProviders } from './getBlockNumberTwoProviders'
 import { MulticallClient } from './multicall/MulticallClient'
 
@@ -26,7 +29,7 @@ export class AllProviders {
 
   constructor(
     chainConfigs: DiscoveryChainConfig[],
-    httpClient: HttpClient,
+    http: HttpClient,
     private discoveryCache: DiscoveryCache,
   ) {
     for (const config of chainConfigs) {
@@ -41,19 +44,38 @@ export class AllProviders {
               config.eventRpcUrl,
               config.chainId,
             )
-      const etherscanLikeClient = EtherscanLikeClient.createForDiscovery(
-        httpClient,
-        config.etherscanUrl,
-        config.etherscanApiKey,
-        config.etherscanUnsupported,
-      )
+
+      const etherscanClient = getExplorerClient(http, config.explorer)
+      let blobClient: BlobClient | undefined
+
+      const ethereumRpc = new RpcClient({
+        url: config.rpcUrl,
+        retryStrategy: 'SCRIPT',
+        callsPerMinute: 60,
+        sourceName: 'ethereum',
+        logger: Logger.SILENT,
+        http,
+      })
+
+      if (config.beaconApiUrl) {
+        blobClient = new BlobClient({
+          beaconApiUrl: config.beaconApiUrl,
+          logger: Logger.SILENT,
+          rpcClient: ethereumRpc,
+          retryStrategy: 'SCRIPT',
+          sourceName: 'beaconAPI',
+          callsPerMinute: 60,
+          http,
+        })
+      }
 
       this.config.set(config.name, {
         config,
         providers: {
           baseProvider,
           eventProvider,
-          etherscanLikeClient,
+          etherscanClient,
+          blobClient,
         },
       })
     }
@@ -70,14 +92,18 @@ export class AllProviders {
 
   get(chain: string, blockNumber: number): IProvider {
     const config = this.config.get(chain)
-    assert(config !== undefined, `Unknown chain: ${chain}`)
+    assert(
+      config !== undefined,
+      `Chain [${chain}] has not been configured or is missing .env variables.`,
+    )
 
     const lowLevelProvider =
       this.lowLevelProviders.get(chain) ??
       new LowLevelProvider(
         config.providers.baseProvider,
         config.providers.eventProvider,
-        config.providers.etherscanLikeClient,
+        config.providers.etherscanClient,
+        config.providers.blobClient,
       )
     this.lowLevelProviders.set(chain, lowLevelProvider)
 
@@ -116,17 +142,20 @@ export class AllProviders {
   }
 
   getStats(chain: string): AllProviderStats {
-    const highLevelCounts = [...this.highLevelProviders.keys()]
+    const highLevelMeasurements = [...this.highLevelProviders.keys()]
       .filter((key) => key.startsWith(chain))
-      .map((key) => this.highLevelProviders.get(key)?.stats ?? getZeroStats())
-      .reduce((a, b) => addStats(a, b), getZeroStats())
+      .map(
+        (key) => this.highLevelProviders.get(key)?.stats ?? new ProviderStats(),
+      )
+      .reduce((a, b) => ProviderStats.add(a, b), new ProviderStats())
 
     return {
-      highLevelCounts: highLevelCounts,
-      cacheCounts:
-        this.batchingAndCachingProviders.get(chain)?.stats ?? getZeroStats(),
-      lowLevelCounts:
-        this.lowLevelProviders.get(chain)?.stats ?? getZeroStats(),
+      highLevelMeasurements,
+      cacheMeasurements:
+        this.batchingAndCachingProviders.get(chain)?.stats ??
+        new ProviderStats(),
+      lowLevelMeasurements:
+        this.lowLevelProviders.get(chain)?.stats ?? new ProviderStats(),
     }
   }
 }

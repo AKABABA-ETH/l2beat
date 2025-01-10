@@ -1,29 +1,24 @@
 import { ProxyDetails } from '@l2beat/discovery-types'
 import { EthereumAddress } from '@l2beat/shared-pure'
 import { expect, mockObject } from 'earl'
-import { DiscoveryLogger } from '../DiscoveryLogger'
 import { IProvider } from '../provider/IProvider'
 import { MANUAL_DETECTORS, ProxyDetector } from './ProxyDetector'
 
 describe(ProxyDetector.name, () => {
   const FIRST_DETAILS: ProxyDetails = {
-    upgradeability: {
-      type: 'EIP1967 proxy',
-      admin: EthereumAddress.random(),
-      implementation: EthereumAddress.random(),
+    type: 'EIP1967 proxy',
+    values: {
+      $admin: EthereumAddress.random().toString(),
+      $implementation: EthereumAddress.random().toString(),
     },
-    implementations: [],
-    relatives: [],
   }
 
   const SECOND_DETAILS: ProxyDetails = {
-    upgradeability: {
-      type: 'EIP1967 proxy',
-      admin: EthereumAddress.random(),
-      implementation: EthereumAddress.random(),
+    type: 'EIP1967 proxy',
+    values: {
+      $admin: EthereumAddress.random().toString(),
+      $implementation: EthereumAddress.random().toString(),
     },
-    implementations: [],
-    relatives: [],
   }
 
   it('can detect no proxy', async () => {
@@ -35,7 +30,6 @@ describe(ProxyDetector.name, () => {
     const result = await detector.detectProxy(
       provider,
       EthereumAddress.random(),
-      DiscoveryLogger.SILENT,
     )
 
     expect(result).toEqual(undefined)
@@ -52,7 +46,6 @@ describe(ProxyDetector.name, () => {
     const result = await detector.detectProxy(
       provider,
       EthereumAddress.random(),
-      DiscoveryLogger.SILENT,
     )
     expect(result).toEqual(FIRST_DETAILS)
   })
@@ -66,7 +59,6 @@ describe(ProxyDetector.name, () => {
     const result = await detector.detectProxy(
       provider,
       EthereumAddress.random(),
-      DiscoveryLogger.SILENT,
       'call implementation proxy',
     )
 

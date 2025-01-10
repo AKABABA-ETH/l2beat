@@ -21,26 +21,33 @@ const thresholdPerc = thresholdArray.num_
 
 const operatorsString = `${thresholdPerc}% out of ${operatorsCount}`
 
+const paused =
+  discovery.getContractValue<boolean>('MainchainGateway', 'paused') === true
+const warningText = paused ? 'The bridge is currently paused.' : undefined
+
+const pausable = {
+  paused,
+  pausableBy: ['MainchainGatewayV3 Sentry Account'],
+}
+
 export const ronin: Bridge = {
   type: 'bridge',
   id: ProjectId('ronin'),
+  createdAt: new UnixTime(1662628329), // 2022-09-08T09:12:09Z
   display: {
     name: 'Ronin V3',
     slug: 'ronin',
+    warning: warningText,
     links: {
       websites: ['https://bridge.roninchain.com/'],
       apps: ['https://bridge.roninchain.com/'],
-      documentation: [
-        'https://docs.roninchain.com/docs/components/ronin-bridge-v2',
-      ],
+      documentation: ['https://docs.roninchain.com/get-started'],
       explorers: ['https://explorer.roninchain.com/'],
       socialMedia: [
         'https://discord.gg/axie',
         'https://twitter.com/ronin_network',
         'https://twitter.com/SkyMavisHQ',
       ],
-      // Repository is private. Repo url fetched from audit.
-      // repositories: ['https://github.com/axieinfinity/ronin-smart-contracts-v2']
     },
     description:
       'Ronin Bridge V3 is the official bridge for the Axie Infinity chain (Ronin chain). It uses external validators to confirm deposits for a typical Token Bridge swap.',
@@ -98,30 +105,26 @@ export const ronin: Bridge = {
         'A Ronin Bridge service watches for events on Ethereum and transmits those events to a contract on Ronin chain (Axie Infinity chain). Designated group of weighted validators vote on the validity of those events, and when acknowledged, a "representation token" is minted on the Ronin chain. To withdraw tokens, user needs to deposit them to a contract on the Ronin chain, which will generate an event to be picked by the validators. When validators acknowledge the event, they generate signature, which can be submitted to the Ethereum bridge contract to finalize the withdrawal. Ronin V2 introduced multi-tier withdrawal limits dependent on the overall value of the transaction and the token used. The higher value of transaction, the more validators need to vote to approve withdrawal request. There is a separate group of actors called "governors" who are able to change thresholds, add/remove validators and update contracts. Each validator has a corresponding weighted governor account. There is also a daily withdrawal limit. If it\'s crossed, an address from a list of "Withdrawal unlockers" needs to participate in the transaction.',
       references: [
         {
-          text: 'Token transfer flows',
-          href: 'https://docs.roninchain.com/docs/flows/token-transfer-flow',
+          text: 'Token withdrawals',
+          href: 'https://docs.roninchain.com/apps/ronin-bridge/withdraw-token',
         },
       ],
       risks: [
         {
           category: 'Users can be censored if',
           text: 'validators decide to not approve a token mint after observing an event on Ethereum.',
-          isCritical: true,
         },
         {
           category: 'Users can be censored if',
           text: 'validators decide not to sign withdrawal requests.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'validators allow to mint more tokens than there are locked on Ethereum thus preventing some existing holders from being able to bring their funds back to Ethereum.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'malicious validators generate signature of a fake withdrawal request.',
-          isCritical: true,
         },
         {
           category: 'Funds can be frozen if',
@@ -148,6 +151,7 @@ export const ronin: Bridge = {
         ),
         upgradableBy: ['MainchainBridgeManager Governors'],
         upgradeDelay: 'No delay',
+        pausable,
       },
       discovery.getContractDetails(
         'MainchainBridgeManager',
@@ -155,7 +159,7 @@ export const ronin: Bridge = {
       ),
       discovery.getContractDetails(
         'PauseEnforcer',
-        `Contract allowing PAUSER to pause the bridge.`,
+        `Contract owning the emergencyPauser role in the MainchainGateway and managing its access control.`,
       ),
     ],
     risks: [CONTRACTS.UPGRADE_NO_DELAY_RISK],
@@ -178,10 +182,10 @@ export const ronin: Bridge = {
       description: `List of governors that can update their corresponding operators, upgrade and change bridge parameters.`,
     },
     {
-      name: 'Ronin Bridge AdminMultiSig', // non-standard MultiSig
+      name: 'RoninManagerMultiSig', // non-standard MultiSig
       accounts: [
         {
-          address: discovery.getContract('RoninBridgeAdminMultiSig').address,
+          address: discovery.getContract('RoninManagerMultiSig').address,
           type: 'MultiSig',
         },
       ],
@@ -189,20 +193,41 @@ export const ronin: Bridge = {
         'Admin of the Ronin Bridge, can change Sentry Account and accounts able to unlock withdrawals. This is a non-standard MultiSig with 2 / 3 threshold.',
     },
     {
-      name: 'Ronin Bridge AdminMultiSig participants', // non-standard MultiSig owners
+      name: 'RoninManagerMultiSig participants', // non-standard MultiSig owners
       accounts: discovery.getPermissionedAccounts(
-        'RoninBridgeAdminMultiSig',
+        'RoninManagerMultiSig',
         'getOwners',
       ),
 
       description: 'Those are the participants of the AdminMultisig.',
     },
+    ...discovery.getMultisigPermission(
+      'RoninAdminMultisig',
+      'Can upgrade the bridge and the MainchainBridgeManager instantly by being Admin of the latter. Can add and remove sentries (un-/pausers).',
+    ),
     {
       name: 'MainchainGatewayV3 Sentry Account',
       accounts: [
         discovery.getPermissionedAccount('MainchainGateway', 'emergencyPauser'),
       ],
-      description: 'An address that can pause the bridge in case of emergency.',
+      description:
+        'An address that can pause the bridge in case of emergency (can be another contract).',
+    },
+    {
+      name: 'PauseEnforcer Sentries',
+      accounts: discovery.getAccessControlRolePermission(
+        'PauseEnforcer',
+        'SENTRY_ROLE',
+      ),
+      description: `These accounts can pause and unpause the bridge through the PauseEnforcer.`,
+    },
+    {
+      name: 'PauseEnforcer Admins',
+      accounts: discovery.getAccessControlRolePermission(
+        'PauseEnforcer',
+        'DEFAULT_ADMIN_ROLE',
+      ),
+      description: `These accounts can add and remove sentries (bridge pause-/unpausers) in the PauseEnforcer.`,
     },
     {
       name: 'MainchainGatewayV3 Withdrawal Unlockers',
@@ -211,6 +236,20 @@ export const ronin: Bridge = {
         'WITHDRAWAL_UNLOCKER_ROLE',
       ),
       description: 'Addresses that can unlock withdrawals.',
+    },
+  ],
+  milestones: [
+    {
+      name: 'Whitehat hack for $12M',
+      date: '2024-08-06T00:00:00Z',
+      link: 'https://x.com/Ronin_Network/status/1820804772917588339',
+      type: 'incident',
+    },
+    {
+      name: 'Ronin bridge hacked for ~$625M',
+      date: '2022-03-23T00:00:00Z',
+      link: 'https://web.archive.org/web/20230518085104/https://blog.roninchain.com/p/back-to-building-ronin-security-breach',
+      type: 'incident',
     },
   ],
 }

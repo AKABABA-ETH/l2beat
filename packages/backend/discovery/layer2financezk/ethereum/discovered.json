@@ -2,29 +2,47 @@
   "name": "layer2financezk",
   "chain": "ethereum",
   "blockNumber": 19825376,
-  "configHash": "0x6fd4301a2c9e4ae00ed8224575e08660581e9726e77386f40cd7a19a38b45d4d",
-  "version": 6,
+  "configHash": "0x53c8f3f24907aa0433b0804552e5690bb007d92b67e91b923e4cb6d43b1c690a",
   "contracts": [
     {
       "name": "OrderRegistry",
       "address": "0x518c4A79a1102eEDc987005CA8cE6B87Ca14dDf8",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x1e28fda3c245bc1fc13d0ddc7b108be510d1e0220fc67552921c87724bb45a4c"
+      ],
       "sinceTimestamp": 1626352379,
       "values": {
+        "$immutable": true,
         "hasRegisteredFact": true,
         "identify": "StarkWare_OrderRegistry_2021_1"
       }
     },
     {
+      "name": "StrategyCompound",
+      "address": "0x5b000954F70B0410685193B0afd3074B744B5C97",
+      "sourceHashes": [
+        "0xd4db48e0b7efb71ded88f8c4a839b0175d98cfd365e8beaf4630e60dfb8ea404"
+      ],
+      "sinceTimestamp": 1648452775,
+      "values": {
+        "$immutable": true,
+        "broker": "0xe7c753895d492f8D4B06a2A1B16c1aEF2A7d16E5",
+        "comp": "0xc00e94Cb662C3520282E6f5717214004A7f26888",
+        "owner": "0xe0b79Cf6311E72caF7D31a552BFec67841Dd5988",
+        "uniswap": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+        "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+      },
+      "derivedName": "StrategyCompound"
+    },
+    {
       "name": "GpsFactRegistryAdapter",
       "address": "0x6e3AbCE72A3CD5edc05E59283c733Fd4bF8B3baE",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x3c0fff412189244728e9be021e2c7a1084326cc80e71f930221094909caafec0"
+      ],
       "sinceTimestamp": 1640107463,
       "values": {
+        "$immutable": true,
         "gpsContract": "0x47312450B3Ac8b5b8e247a6bB6d523e7605bDb60",
         "hasRegisteredFact": true,
         "identify": "StarkWare_GpsFactRegistryAdapter_2020_1",
@@ -34,32 +52,66 @@
     {
       "name": "Proxy",
       "address": "0x82123571C8a5e0910280C066bc634c4945FFcbC8",
-      "upgradeability": {
-        "type": "StarkWare diamond",
-        "implementation": "0x4EDD62189732e9fF476ABa880b48c29432A7AC9B",
-        "upgradeDelay": 0,
-        "isFinal": false,
-        "facets": {
-          "StarkWare_AllVerifiers_2020_1": "0x62BCA4DB742A99c834e2c24b609656A70EA25379",
-          "StarkWare_TokensAndRamping_2020_1": "0x8536850750956c2FEebeCAB786d82271a5467687",
-          "StarkWare_StarkExState_2021_1": "0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2",
-          "StarkWare_ForcedActions_2020_1": "0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1",
-          "StarkWare_OnchainVaults_2021_1": "0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339",
-          "StarkWare_ProxyUtils_2021_1": "0xB3788a88F063B217227E27ae16Ba550db3132bE6"
-        },
-        "proxyGovernance": ["0x1E153596BceB29c6EAE88DDB290eBeCC3FE9735e"]
-      },
-      "implementations": [
-        "0x4EDD62189732e9fF476ABa880b48c29432A7AC9B",
-        "0x62BCA4DB742A99c834e2c24b609656A70EA25379",
-        "0x8536850750956c2FEebeCAB786d82271a5467687",
-        "0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2",
-        "0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1",
-        "0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339",
-        "0xB3788a88F063B217227E27ae16Ba550db3132bE6"
+      "sourceHashes": [
+        "0x87045c081a3bd84c271153c36a9a503f84bc3035077d34144332c329d3fcb92d",
+        "0x54407214d4211e41ecb742c3df7564e352844c1f5da38ef2e206b0465bd5345b",
+        "0x497eebe95d8d7611823ffcb6cc098a9c3c71e91941026f2b4c4989d6f9fa944d",
+        "0x452c4b92e2f090f2979fe1dec4ee28bf8b9c431b96b67966a3c2279f9e332684",
+        "0xf615d0291aa23f36d8cb749e3950b549d57d38bfef0c342331d0cedd7d769026",
+        "0x7e358cdedbf8af25ae12a5fe965db091c7751aafa68c2460ab43e81a8eb364b9",
+        "0x105353ea24f9e10459c2487f227bc285c4ca2317fac8e12a8b936bc92329aea5",
+        "0x93b21bfbef09c4e60d6a17309877245220508c54478159a8f2b9dbfb60576c4b"
+      ],
+      "proxyType": "StarkWare diamond",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x1E153596BceB29c6EAE88DDB290eBeCC3FE9735e",
+          "via": []
+        }
       ],
       "sinceTimestamp": 1645130774,
       "values": {
+        "$admin": "0x1E153596BceB29c6EAE88DDB290eBeCC3FE9735e",
+        "$immutable": false,
+        "$implementation": [
+          "0x4EDD62189732e9fF476ABa880b48c29432A7AC9B",
+          "0x62BCA4DB742A99c834e2c24b609656A70EA25379",
+          "0x8536850750956c2FEebeCAB786d82271a5467687",
+          "0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2",
+          "0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1",
+          "0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339",
+          "0xB3788a88F063B217227E27ae16Ba550db3132bE6"
+        ],
+        "$pastUpgrades": [
+          [
+            "2022-02-17T20:46:14.000Z",
+            "0xc1986fcfa9adba1076e31573ea760b1b64e5dca5954623c3306f7f90f76fd3f9",
+            [
+              "0x4EDD62189732e9fF476ABa880b48c29432A7AC9B",
+              "0x62BCA4DB742A99c834e2c24b609656A70EA25379",
+              "0x8536850750956c2FEebeCAB786d82271a5467687",
+              "0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2",
+              "0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1",
+              "0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339",
+              "0xB3788a88F063B217227E27ae16Ba550db3132bE6"
+            ]
+          ],
+          [
+            "2022-04-25T08:12:19.000Z",
+            "0x880c2620a1b1c1bc539b81f1533ca188c76cc94cfc5288bd1f19af042ea51805",
+            [
+              "0x4EDD62189732e9fF476ABa880b48c29432A7AC9B",
+              "0x62BCA4DB742A99c834e2c24b609656A70EA25379",
+              "0x8536850750956c2FEebeCAB786d82271a5467687",
+              "0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2",
+              "0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1",
+              "0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339",
+              "0xB3788a88F063B217227E27ae16Ba550db3132bE6"
+            ]
+          ]
+        ],
+        "$upgradeCount": 2,
         "defaultVaultWithdrawalLock": 0,
         "DEPOSIT_CANCEL_DELAY": 172800,
         "FREEZE_GRACE_PERIOD": 604800,
@@ -95,6 +147,7 @@
         "PROXY_GOVERNANCE_TAG": "StarkEx.Proxy.2019.GovernorsInformation",
         "PROXY_VERSION": "3.0.1",
         "STARKEX_MAX_DEFAULT_VAULT_LOCK": 604800,
+        "StarkWareDiamond_upgradeDelay": 0,
         "UNFREEZE_DELAY": 31536000,
         "UPGRADE_DELAY_SLOT": "0xc21dbb3089fcb2c4f4c6a67854ab4db2b0f233ea4b21b21f912d52d18fc5db1f",
         "VERIFIER_REMOVAL_DELAY": 2419200,
@@ -102,13 +155,31 @@
       }
     },
     {
+      "name": "Comp",
+      "address": "0xc00e94Cb662C3520282E6f5717214004A7f26888",
+      "sourceHashes": [
+        "0xface33f588d07cf7b8c64c6200efc11c45d45332a47c27e8c49859d6bc5c8001"
+      ],
+      "sinceTimestamp": 1583280535,
+      "values": {
+        "$immutable": true,
+        "decimals": 18,
+        "DELEGATION_TYPEHASH": "0xe48329057bfd03d55e49b547132e39cffd9c1820ad7b9d4c5307691425d15adf",
+        "DOMAIN_TYPEHASH": "0x8cad95687ba82c2ce50e74f7b754645e5117c3a5bec8151c0726d5857980a866",
+        "name": "Compound",
+        "symbol": "COMP",
+        "totalSupply": "10000000000000000000000000"
+      }
+    },
+    {
       "name": "Broker",
       "address": "0xe7c753895d492f8D4B06a2A1B16c1aEF2A7d16E5",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xd9040d82f39aa8ff258f35b318bdf0fc513f4d8844c61c34f6c8ce81eee40b55"
+      ],
       "sinceTimestamp": 1648452641,
       "values": {
+        "$immutable": true,
         "EXP_TIME": 2000000,
         "nonce": 23,
         "onchainVaults": "0x82123571C8a5e0910280C066bc634c4945FFcbC8",
@@ -118,19 +189,26 @@
       }
     },
     {
-      "name": "",
+      "name": "Committee",
       "address": "0xF000A3B10e1920aDC6e7D829828e3357Fc5128A9",
       "unverified": true,
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1650870230
+      "sinceTimestamp": 1650870230,
+      "values": { "$immutable": true },
+      "derivedName": ""
     }
   ],
   "eoas": [
-    "0x1E153596BceB29c6EAE88DDB290eBeCC3FE9735e",
-    "0x85A732d8e21f1890BdeA4eDddCf4Dd0E70a31EA5",
-    "0xe0b79Cf6311E72caF7D31a552BFec67841Dd5988"
+    {
+      "address": "0x1E153596BceB29c6EAE88DDB290eBeCC3FE9735e",
+      "receivedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x82123571C8a5e0910280C066bc634c4945FFcbC8"
+        }
+      ]
+    },
+    { "address": "0x85A732d8e21f1890BdeA4eDddCf4Dd0E70a31EA5" },
+    { "address": "0xe0b79Cf6311E72caF7D31a552BFec67841Dd5988" }
   ],
   "abis": {
     "0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339": [
@@ -273,6 +351,24 @@
       "function isValid(bytes32 fact) view returns (bool)",
       "function registerLimitOrder(address exchangeAddress, uint256 tokenIdSell, uint256 tokenIdBuy, uint256 tokenIdFee, uint256 amountSell, uint256 amountBuy, uint256 amountFee, uint256 vaultIdSell, uint256 vaultIdBuy, uint256 vaultIdFee, uint256 nonce, uint256 expirationTimestamp)",
       "function registerMessage(address to, bytes32 messageHash)"
+    ],
+    "0x5b000954F70B0410685193B0afd3074B744B5C97": [
+      "constructor(address _broker, address _comp, address _uniswap, address _weth)",
+      "event BrokerUpdated(address broker)",
+      "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
+      "event WrapTokenUpdated(address wrapToken, bool enabled)",
+      "function broker() view returns (address)",
+      "function comp() view returns (address)",
+      "function owner() view returns (address)",
+      "function renounceOwnership()",
+      "function sellErc(address inputToken, address outputToken, uint256 inputAmt) returns (uint256 outputAmt)",
+      "function sellEth(address outputToken) payable returns (uint256 outputAmt)",
+      "function setSupportedWrapToken(address _wrapToken, bool _enabled)",
+      "function supportedWrapTokens(address) view returns (bool)",
+      "function transferOwnership(address newOwner)",
+      "function uniswap() view returns (address)",
+      "function updateBroker(address _broker)",
+      "function weth() view returns (address)"
     ],
     "0x62BCA4DB742A99c834e2c24b609656A70EA25379": [
       "event LogFrozen()",
@@ -438,6 +534,32 @@
       "function proxyRemoveGovernor(address governorForRemoval)",
       "function updateImplementationActivationTime(address implementation, bytes data, bool finalize)"
     ],
+    "0xc00e94Cb662C3520282E6f5717214004A7f26888": [
+      "constructor(address account)",
+      "event Approval(address indexed owner, address indexed spender, uint256 amount)",
+      "event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate)",
+      "event DelegateVotesChanged(address indexed delegate, uint256 previousBalance, uint256 newBalance)",
+      "event Transfer(address indexed from, address indexed to, uint256 amount)",
+      "function DELEGATION_TYPEHASH() view returns (bytes32)",
+      "function DOMAIN_TYPEHASH() view returns (bytes32)",
+      "function allowance(address account, address spender) view returns (uint256)",
+      "function approve(address spender, uint256 rawAmount) returns (bool)",
+      "function balanceOf(address account) view returns (uint256)",
+      "function checkpoints(address, uint32) view returns (uint32 fromBlock, uint96 votes)",
+      "function decimals() view returns (uint8)",
+      "function delegate(address delegatee)",
+      "function delegateBySig(address delegatee, uint256 nonce, uint256 expiry, uint8 v, bytes32 r, bytes32 s)",
+      "function delegates(address) view returns (address)",
+      "function getCurrentVotes(address account) view returns (uint96)",
+      "function getPriorVotes(address account, uint256 blockNumber) view returns (uint96)",
+      "function name() view returns (string)",
+      "function nonces(address) view returns (uint256)",
+      "function numCheckpoints(address) view returns (uint32)",
+      "function symbol() view returns (string)",
+      "function totalSupply() view returns (uint256)",
+      "function transfer(address dst, uint256 rawAmount) returns (bool)",
+      "function transferFrom(address src, address dst, uint256 rawAmount) returns (bool)"
+    ],
     "0xe7c753895d492f8D4B06a2A1B16c1aEF2A7d16E5": [
       "constructor(address _onchainVaults)",
       "event CancelSell(uint256 rideId, uint256 cancelShareAmt)",
@@ -474,5 +596,6 @@
       "function slippages(uint256) view returns (uint256)",
       "function transferOwnership(address newOwner)"
     ]
-  }
+  },
+  "usedTemplates": {}
 }

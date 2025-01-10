@@ -1,5 +1,6 @@
 import {
   assert,
+  ChainId,
   EthereumAddress,
   ProjectId,
   UnixTime,
@@ -8,6 +9,9 @@ import {
 import { utils } from 'ethers'
 
 import {
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -16,9 +20,11 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { formatExecutionDelay } from '../../common/formatDelays'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
+import { PROOFS } from '../zk-catalog/common/proofSystems'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
 
@@ -50,6 +56,7 @@ const delay1 = discovery.getContractValue<number>('TimeLock1', 'MINIMUM_DELAY')
 const delay2 = discovery.getContractValue<number>('TimeLock2', 'MINIMUM_DELAY')
 
 const upgradeDelay = Math.min(delay1, delay2)
+const finalizationPeriod = 0
 
 const timelockUpgrades1 = {
   upgradableBy: ['Degate HomeDAO2 Multisig'],
@@ -64,12 +71,18 @@ const timelockUpgrades2 = {
 export const degate3: Layer2 = {
   type: 'layer2',
   id: ProjectId('degate3'),
+  createdAt: new UnixTime(1684838286), // 2023-05-23T10:38:06Z
+  badges: [
+    Badge.VM.AppChain,
+    Badge.DA.EthereumCalldata,
+    Badge.Fork.LoopringFork,
+  ],
   display: {
     name: 'DeGate V1',
     slug: 'degate3',
     description:
       'DeGate is a ZK Rollup enabling a decentralized order book exchange. DeGate smart contracts are forked from Loopring V3.',
-    purposes: ['Exchange'],
+    purposes: ['Exchange', 'NFT'],
     provider: 'Loopring',
     category: 'ZK Rollup',
 
@@ -93,7 +106,7 @@ export const degate3: Layer2 = {
         'DeGate is a ZK rollup based on Loopring’s code base that posts state diffs to the L1. For a transaction to be considered final, the state diffs have to be submitted and validity proof should be generated, submitted, and verified. ',
     },
     finality: {
-      finalizationPeriod: 0,
+      finalizationPeriod,
     },
   },
   config: {
@@ -106,7 +119,7 @@ export const degate3: Layer2 = {
       }),
     ],
     transactionApi: {
-      type: 'degate',
+      type: 'degate3',
       defaultUrl: 'https://v1-mainnet-backend.degate.com/order-book-api',
       defaultCallsPerMinute: 120,
     },
@@ -130,7 +143,7 @@ export const degate3: Layer2 = {
           selector: '0x377bb770',
           functionSignature:
             'function submitBlocks(bool isDataCompressed,bytes data)',
-          sinceTimestampInclusive: new UnixTime(1699747007),
+          sinceTimestamp: new UnixTime(1699747007),
         },
       },
     ],
@@ -147,13 +160,18 @@ export const degate3: Layer2 = {
       stateUpdate: 'disabled',
     },
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
-    stateValidation: RISK_VIEW.STATE_ZKP_SN,
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
+    stateValidation: {
+      ...RISK_VIEW.STATE_ZKP_SN,
+      secondLine: formatExecutionDelay(finalizationPeriod),
+    },
     dataAvailability: RISK_VIEW.DATA_ON_CHAIN,
     exitWindow: RISK_VIEW.EXIT_WINDOW(upgradeDelay, forcedWithdrawalDelay),
     sequencerFailure: {
@@ -183,9 +201,7 @@ export const degate3: Layer2 = {
         },
       ],
     },
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   stage: getStage(
     {
       stage0: {
@@ -316,6 +332,58 @@ export const degate3: Layer2 = {
     dataFormat:
       'DeGate bundles off-chain transactions into [zkBlocks](https://github.com/degatedev/protocols/blob/degate_mainnet/Circuit%20Design.md#zkblock) and submits them to the blockchain. zkBlock data definition is documented [here](https://github.com/degatedev/protocols/blob/degate_mainnet/Smart%20Contract%20Design.md#zkblock-data-definition).',
   },
+  stateValidation: {
+    description:
+      'Each update to the system state must be accompanied by a ZK proof that ensures that the new state was derived by correctly applying a series of valid user transactions to the previous state. These proofs are then verified on Ethereum by a smart contract.',
+    categories: [
+      {
+        title: 'ZK Circuits',
+        description:
+          'DeGate utilizes Groth16 for their proving system. The source code of the circuits can be found [here](https://github.com/degatedev/protocols/tree/degate_mainnet/packages/loopring_v3/circuit).',
+        risks: [
+          {
+            category: 'Funds can be lost if',
+            text: 'the proof system is implemented incorrectly.',
+          },
+        ],
+      },
+      {
+        title: 'Verification Keys Generation',
+        description:
+          'Groth16 requires a circuit specific trusted setup, so they run their own ceremony. The first phase is run using Powers of Tau ceremony. Some of the instructions on how to regenerate the verification keys can be found [here](https://github.com/degatedev/trusted_setup/tree/master).',
+      },
+    ],
+    proofVerification: {
+      shortDescription:
+        'DeGate is a DEX rollup on Ethereum, based on Loopring V3.',
+      aggregation: false,
+      requiredTools: [
+        {
+          name: 'Custom tool',
+          version: 'v1.1.0',
+          link: 'https://github.com/degatedev/trusted_setup/tree/master',
+        },
+      ],
+      verifiers: [
+        {
+          name: 'BlockVerifier',
+          description: 'DeGate utilizes Groth16 for their proving system.',
+          verified: 'no',
+          contractAddress: EthereumAddress(
+            '0xE3B7fE3ce0fa54C5AC7F48E7ED9E52dA045bE4d6',
+          ),
+          chainId: ChainId.ETHEREUM,
+          subVerifiers: [
+            {
+              name: 'Main circuit',
+              ...PROOFS.GROTH16('?'),
+              link: 'https://github.com/degatedev/protocols/tree/degate_mainnet/packages/loopring_v3/circuit',
+            },
+          ],
+        },
+      ],
+    },
+  },
   permissions: [
     {
       name: 'BlockVerifier Owner',
@@ -409,9 +477,10 @@ export const degate3: Layer2 = {
     {
       name: 'DeGate Mainnet Beta Redeploy',
       link: 'https://medium.com/degate/degate-mainnet-beta-redeployment-oct-2023-e07c8eeaec4c',
-      date: '2023-10-27T00:00:00Z',
+      date: '2023-11-13T00:00:00Z',
       description:
-        'DeGate redeploy Mainnet Beta with the ability to upgrade the smart contracts, with a time delay.',
+        'DeGate redeploys Mainnet Beta due to a bug, with the ability to upgrade the smart contracts.',
+      type: 'incident',
     },
   ],
 }

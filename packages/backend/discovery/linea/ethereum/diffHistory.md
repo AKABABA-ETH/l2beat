@@ -1,4 +1,1058 @@
-Generated with discovered.json: 0x585a6f3254193eab6aa5cf5bd9c4a56e5be5b810
+Generated with discovered.json: 0x74f47ec6a3c97a5b8c864a863be7f2284e8f319b
+
+# Diff at Thu, 19 Dec 2024 06:41:43 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@ba3abe5bc7194f8b3495f894c1b7e7b769bcdbb1 block: 21078909
+- current block number: 21434844
+
+## Description
+
+Linea upgrades to [alpha v4](https://docs.linea.build/release-notes#alpha-v4)!
+
+This upgrade adds new roles, deprecates `finalizeBlocksWithoutProof` and adds self-proposing/-proving if there weren't any finalized batches by the operator in the previous 6 months, among smaller changes.
+
+## Watched changes
+
+```diff
+    contract TokenBridge (0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319) {
+    +++ description: Contract used to bridge and escrow ERC-20 tokens.
+      sourceHashes.1:
+-        "0x4c5d4e5696bc435eefd0ba909c6a8a7748c4c49260fcb51a360f07af3c38d76f"
++        "0x49bdbe79d2cc9cefee03245e4b48260f4a71e7976af51741005758e7236d687d"
+      values.$implementation:
+-        "0xd52c09E67aF3BE0977B52b4817366e9BaB5dCFA2"
++        "0x2B6A2F8880220a66DfB9059FCB76F7dB54104a34"
+      values.$pastUpgrades.2:
++        ["2024-12-16T13:52:11.000Z","0x96b88112de2e594cb763bc625cc2dcb6920825bb642eb1a62ff577f0c29f616d",["0x2B6A2F8880220a66DfB9059FCB76F7dB54104a34"]]
+      values.$upgradeCount:
+-        2
++        3
+      values.accessControl.DEFAULT_ADMIN_ROLE.members.0:
++        "0x892bb7EeD71efB060ab90140e7825d8127991DD3"
+      values.accessControl.PAUSE_ALL_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.UNPAUSE_ALL_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.PAUSE_INITIATE_TOKEN_BRIDGING_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.UNPAUSE_INITIATE_TOKEN_BRIDGING_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.PAUSE_COMPLETE_TOKEN_BRIDGING_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.UNPAUSE_COMPLETE_TOKEN_BRIDGING_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.SET_CUSTOM_CONTRACT_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.REMOVE_RESERVED_TOKEN_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.SET_MESSAGE_SERVICE_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.SET_REMOTE_TOKENBRIDGE_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.SET_RESERVED_TOKEN_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.owner:
+-        "0x892bb7EeD71efB060ab90140e7825d8127991DD3"
+      values.paused:
+-        false
+      values.pendingOwner:
+-        "0x0000000000000000000000000000000000000000"
+      values.CONTRACT_VERSION:
++        "1.0"
+      values.DEFAULT_ADMIN_ROLE:
++        "0x0000000000000000000000000000000000000000000000000000000000000000"
+      values.PAUSE_ALL_ROLE:
++        "0x56bdc3c9ec86cb7db110a7699b2ade72f0b8819727d9f7d906b012641505fa77"
+      values.PAUSE_COMPLETE_TOKEN_BRIDGING_ROLE:
++        "0x50962b2d10066f5051f78d5ea04a3ab09b9c87dd1002962f0b1e30e66eeb80a5"
+      values.PAUSE_INITIATE_TOKEN_BRIDGING_ROLE:
++        "0x3900d9d72d5177a154375317154fdc0e08377e3134a8a5d21cadccf831cc231c"
+      values.REMOVE_RESERVED_TOKEN_ROLE:
++        "0x19bf281d118073c159a713666aba52e0d403520cd01e03f42e0f62a0b3bd4a35"
+      values.SET_CUSTOM_CONTRACT_ROLE:
++        "0x550554a677c8e7b73b62db78b0ef06c5f237da4ef30b88196a899ccf591041fe"
+      values.SET_MESSAGE_SERVICE_ROLE:
++        "0x77974cc9cb5bafc9bb265be792d93fa46355c05701895b82f6d3b4b448c8ce00"
+      values.SET_REMOTE_TOKENBRIDGE_ROLE:
++        "0xbf094fe3c005c553ff0d33c7dff9d1273add12fb3f258b992f8d36224dd35b24"
+      values.SET_RESERVED_TOKEN_ROLE:
++        "0xeaf25fcc6b7d45bda16c56628df3f435e20319ef53b065c11ee4510083f0ae2d"
+      values.UNPAUSE_ALL_ROLE:
++        "0xd8b4c34c2ec1f3194471108c64ad2beda340c0337ee4ca35592f9ef270f4228b"
+      values.UNPAUSE_COMPLETE_TOKEN_BRIDGING_ROLE:
++        "0x8a7b208fd13ab36d18025be4f62b53d46aeb2cbe8958d2e13de74c040dddcddd"
+      values.UNPAUSE_INITIATE_TOKEN_BRIDGING_ROLE:
++        "0x46e34517dc946faf87aabe65eb5b4fa06b974e5c8d72c5df73b9fb6ff7b6d802"
+    }
+```
+
+```diff
+    contract LineaRollup (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: The main contract of the Linea zkEVM rollup. Contains state roots, the verifier addresses and manages messages between L1 and the L2.
+      sourceHashes.1:
+-        "0x6eace22f38b33b52c0608ca553753365c7aaa2ac2e9efba018e6f2c4864b9e40"
++        "0xd9038151917d14b4d25257789abe9a10cecf3a5b4c0c2520860ce1338757ceff"
+      values.$implementation:
+-        "0x1825242411792536469Cbb5843fd27Ce3e9e583A"
++        "0x07ddce60658A61dc1732Cacf2220FcE4A01C49B0"
+      values.$pastUpgrades.8:
++        ["2024-12-16T13:52:11.000Z","0x96b88112de2e594cb763bc625cc2dcb6920825bb642eb1a62ff577f0c29f616d",["0x07ddce60658A61dc1732Cacf2220FcE4A01C49B0"]]
+      values.$upgradeCount:
+-        8
++        9
+      values.accessControl.PAUSE_MANAGER_ROLE:
+-        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.PAUSE_MANAGER:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.PAUSE_ALL_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.PAUSE_L1_L2_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.PAUSE_L2_L1_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.UNPAUSE_ALL_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.UNPAUSE_L1_L2_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.UNPAUSE_L2_L1_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.PAUSE_BLOB_SUBMISSION_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.UNPAUSE_BLOB_SUBMISSION_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.PAUSE_FINALIZATION_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.UNPAUSE_FINALIZATION_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.USED_RATE_LIMIT_RESETTER_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.accessControl.VERIFIER_UNSETTER_ROLE:
++        {"adminRole":"DEFAULT_ADMIN_ROLE","members":["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]}
+      values.GENERAL_PAUSE_TYPE:
+-        1
+      values.L1_L2_PAUSE_TYPE:
+-        2
+      values.L2_L1_PAUSE_TYPE:
+-        3
+      values.PAUSE_MANAGER_ROLE:
+-        "0x356a809dfdea9198dd76fb76bf6d403ecf13ea675eb89e1eda2db2c4a4676a26"
+      values.PROVING_SYSTEM_PAUSE_TYPE:
+-        4
+      values.CONTRACT_VERSION:
++        "6.0"
+      values.fallbackOperator:
++        "0x3697bD0bC6C050135b8321F989a5316eACbF367D"
+      values.PAUSE_ALL_ROLE:
++        "0x56bdc3c9ec86cb7db110a7699b2ade72f0b8819727d9f7d906b012641505fa77"
+      values.PAUSE_BLOB_SUBMISSION_ROLE:
++        "0x67c2dca7476ee0fe1dd3cba13428c6760bfe2599a6dfe26a9ad7ef27317c6e77"
+      values.PAUSE_FINALIZATION_ROLE:
++        "0xe37c272ea30e2bb381ad7cf89ae754b49153250609f36d0cbdad8b64c184bb5c"
+      values.PAUSE_L1_L2_ROLE:
++        "0x430a7f0cb00b5ebbe63cecc96e82cf959a883e7c13a95110854f1fa6b3fbf598"
+      values.PAUSE_L2_L1_ROLE:
++        "0xe1fce82838dd7a42cfe783f60dc6233c8aa2c4fc66e77817805e767ec5e349b6"
+      values.UNPAUSE_ALL_ROLE:
++        "0xd8b4c34c2ec1f3194471108c64ad2beda340c0337ee4ca35592f9ef270f4228b"
+      values.UNPAUSE_BLOB_SUBMISSION_ROLE:
++        "0xe4831f9e4316ac2c65117d1f602fbf56d38128a9973d5e3fdbc5b77265c18d40"
+      values.UNPAUSE_FINALIZATION_ROLE:
++        "0x1ab87f7458c0e3d07e9881c14ee67f0141703614fd48ea5b15ed987e5f4b030e"
+      values.UNPAUSE_L1_L2_ROLE:
++        "0xe8cb6172fcf5cbaae022b7c910224a4f0c20d53227e630056efff182155a5abc"
+      values.UNPAUSE_L2_L1_ROLE:
++        "0xb6cc65f42901ed602aec1619cc1ead29d487cd489094a37615153eaeb991d770"
+      values.USED_RATE_LIMIT_RESETTER_ROLE:
++        "0x0cf0d2deb70d7bdac2fa48c4ac99bc558170be0ce5fcb994caefa4bf7b96edf9"
+      values.VERIFIER_UNSETTER_ROLE:
++        "0x6b5661ddfbd1fbd525c902a513e0f47d9c74f1c1ee8a2d4f1937ad305fb8f41a"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract CallForwardingProxy (0x3697bD0bC6C050135b8321F989a5316eACbF367D)
+    +++ description: A proxy contract forwarding calls to a predefined (immutable) target contract.
+```
+
+## Source code changes
+
+```diff
+.../linea/ethereum/.flat/CallForwardingProxy.sol   |   23 +
+ .../LineaRollup/LineaRollup.sol                    | 2267 +++++++++++---------
+ .../TokenBridge/TokenBridge.sol                    | 1798 +++++++++++++---
+ 3 files changed, 2743 insertions(+), 1345 deletions(-)
+```
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 21078909 (main branch discovery), not current.
+
+```diff
+    contract TokenBridge (0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319) {
+    +++ description: Contract used to bridge and escrow ERC-20 tokens.
+      name:
+-        "ERC20Bridge"
++        "TokenBridge"
+      issuedPermissions.1:
++        {"permission":"upgrade","target":"0xF24f1DC519d88246809B660eb56D94048575d083","via":[{"address":"0x892bb7EeD71efB060ab90140e7825d8127991DD3","delay":0},{"address":"0xd6B95c960779c72B8C6752119849318E5d550574","delay":0},{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6","delay":0}]}
+      issuedPermissions.0.target:
+-        "0xd6B95c960779c72B8C6752119849318E5d550574"
++        "0x892bb7EeD71efB060ab90140e7825d8127991DD3"
+      issuedPermissions.0.via.1:
++        {"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6","delay":0}
+      issuedPermissions.0.via.0.address:
+-        "0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"
++        "0xd6B95c960779c72B8C6752119849318E5d550574"
+      values.accessControl:
++        {"DEFAULT_ADMIN_ROLE":{"adminRole":"DEFAULT_ADMIN_ROLE","members":[]}}
+      template:
++        "linea/TokenBridge"
+      description:
++        "Contract used to bridge and escrow ERC-20 tokens."
+    }
+```
+
+```diff
+    contract LineaAdminMultisig (0x892bb7EeD71efB060ab90140e7825d8127991DD3) {
+    +++ description: None
+      name:
+-        "AdminMultisig"
++        "LineaAdminMultisig"
+      receivedPermissions:
++        [{"permission":"configure","target":"0xd6B95c960779c72B8C6752119849318E5d550574","description":"propose transactions in the Timelock."},{"permission":"upgrade","target":"0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319","via":[{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"},{"address":"0xd6B95c960779c72B8C6752119849318E5d550574"}]},{"permission":"upgrade","target":"0xd19d4B5d358258f05D7B411E21A1460D11B0876F","via":[{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"},{"address":"0xd6B95c960779c72B8C6752119849318E5d550574"}]}]
+      directlyReceivedPermissions:
++        [{"permission":"act","target":"0xd6B95c960779c72B8C6752119849318E5d550574"}]
+    }
+```
+
+```diff
+    contract LineaRollup (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: The main contract of the Linea zkEVM rollup. Contains state roots, the verifier addresses and manages messages between L1 and the L2.
+      name:
+-        "zkEVM"
++        "LineaRollup"
+      issuedPermissions.3:
++        {"permission":"upgrade","target":"0xF24f1DC519d88246809B660eb56D94048575d083","via":[{"address":"0x892bb7EeD71efB060ab90140e7825d8127991DD3","delay":0},{"address":"0xd6B95c960779c72B8C6752119849318E5d550574","delay":0},{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6","delay":0}]}
+      issuedPermissions.2:
++        {"permission":"upgrade","target":"0x892bb7EeD71efB060ab90140e7825d8127991DD3","via":[{"address":"0xd6B95c960779c72B8C6752119849318E5d550574","delay":0},{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6","delay":0}]}
+      issuedPermissions.1:
++        {"permission":"operateLinea","target":"0x52FF08F313A00A54e3Beffb5C4a7F7446eFb6754","via":[]}
+      issuedPermissions.0.permission:
+-        "upgrade"
++        "operateLinea"
+      issuedPermissions.0.target:
+-        "0xd6B95c960779c72B8C6752119849318E5d550574"
++        "0x46d2F319fd42165D4318F099E143dEA8124E9E3e"
+      issuedPermissions.0.via.0:
+-        {"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6","delay":0}
+      values.generalPause:
+-        false
+      values.l1l2Pause:
+-        false
+      values.l2l1Pause:
+-        false
+      values.provenCompressedBlocksWithoutProof:
+-        [2242752]
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.19:
++        "0x0000000000000000000000000000000000000000"
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.18:
++        "0x0000000000000000000000000000000000000000"
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.17:
++        "0x0000000000000000000000000000000000000000"
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.16:
++        "0x0000000000000000000000000000000000000000"
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.15:
++        "0x0000000000000000000000000000000000000000"
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.14:
++        "0x0000000000000000000000000000000000000000"
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.13:
++        "0x0000000000000000000000000000000000000000"
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.12:
++        "0x0000000000000000000000000000000000000000"
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.11:
++        "0x0000000000000000000000000000000000000000"
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.10:
++        "0x0000000000000000000000000000000000000000"
+      values.isPaused_BLOB_SUBMISSION:
++        false
+      values.isPaused_CALLDATA_SUBMISSION:
++        false
+      values.isPaused_COMPLETE_TOKEN_BRIDGING:
++        false
+      values.isPaused_FINALIZATION:
++        false
+      values.isPaused_GENERAL:
++        false
+      values.isPaused_INITIATE_TOKEN_BRIDGING:
++        false
+      values.isPaused_L1_L2:
++        false
+      values.isPaused_L2_L1:
++        false
+      values.Operators:
++        ["0x46d2F319fd42165D4318F099E143dEA8124E9E3e","0x52FF08F313A00A54e3Beffb5C4a7F7446eFb6754"]
+      template:
++        "linea/LineaRollup"
+      description:
++        "The main contract of the Linea zkEVM rollup. Contains state roots, the verifier addresses and manages messages between L1 and the L2."
+    }
+```
+
+```diff
+    contract Timelock (0xd6B95c960779c72B8C6752119849318E5d550574) {
+    +++ description: A Timelock with currently 0s minimum delay.
+      receivedPermissions:
+-        [{"permission":"upgrade","target":"0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319","via":[{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"}]},{"permission":"upgrade","target":"0xd19d4B5d358258f05D7B411E21A1460D11B0876F","via":[{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"}]}]
+      values.Canceller:
++        ["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]
+      values.delayFormatted:
++        "0s"
+      values.Executor:
++        ["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]
+      values.Proposer:
++        ["0x892bb7EeD71efB060ab90140e7825d8127991DD3"]
+      template:
++        "linea/Timelock"
+      description:
++        "A Timelock with currently 0s minimum delay."
+      issuedPermissions:
++        [{"permission":"configure","target":"0x892bb7EeD71efB060ab90140e7825d8127991DD3","via":[]},{"permission":"configure","target":"0xF24f1DC519d88246809B660eb56D94048575d083","via":[{"address":"0x892bb7EeD71efB060ab90140e7825d8127991DD3","delay":0,"description":"propose transactions in the Timelock."}]}]
+    }
+```
+
+```diff
+    contract Roles (0xF24f1DC519d88246809B660eb56D94048575d083) {
+    +++ description: The Zodiac roles module for Safe multisigs allows defining roles that are allowed to call preconfigured targets on behalf of the Gnosis Safe.
+      description:
++        "The Zodiac roles module for Safe multisigs allows defining roles that are allowed to call preconfigured targets on behalf of the Gnosis Safe."
+      receivedPermissions:
++        [{"permission":"configure","target":"0xd6B95c960779c72B8C6752119849318E5d550574","description":"propose transactions in the Timelock.","via":[{"address":"0x892bb7EeD71efB060ab90140e7825d8127991DD3"}]},{"permission":"upgrade","target":"0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319","via":[{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"},{"address":"0xd6B95c960779c72B8C6752119849318E5d550574"},{"address":"0x892bb7EeD71efB060ab90140e7825d8127991DD3"}]},{"permission":"upgrade","target":"0xd19d4B5d358258f05D7B411E21A1460D11B0876F","via":[{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"},{"address":"0xd6B95c960779c72B8C6752119849318E5d550574"},{"address":"0x892bb7EeD71efB060ab90140e7825d8127991DD3"}]}]
+    }
+```
+
+Generated with discovered.json: 0x36a3a62508cac2618869c642a34cd0abe5d19e63
+
+# Diff at Wed, 30 Oct 2024 14:01:12 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@0a8a53530022c6c5edd257c3682a3e7f80d0c550 block: 20997821
+- current block number: 21078909
+
+## Description
+
+Minor (2 lines) upgrade to the assembly part of `_computePublicInput()`.
+
+The old discovery value depending on `BlockFinalized` is removed as it was empty and the event was deprecated in the contracts some time ago.
+
+## Watched changes
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
+      sourceHashes.1:
+-        "0x9107909af0d0c9abd3904984ff1b8b0824d489b8b1ac2902b805ce7d417e2e9f"
++        "0x6eace22f38b33b52c0608ca553753365c7aaa2ac2e9efba018e6f2c4864b9e40"
+      values.$implementation:
+-        "0x53fC68bFfC03D17804e5A901DE42d1eeF2e64562"
++        "0x1825242411792536469Cbb5843fd27Ce3e9e583A"
+      values.$pastUpgrades.7:
++        ["2024-10-29T15:35:47.000Z","0x0970f422c80627f28916f9c5583ff6298070893debd191ead0cf39778e4bae14",["0x1825242411792536469Cbb5843fd27Ce3e9e583A"]]
+      values.$upgradeCount:
+-        7
++        8
+    }
+```
+
+## Source code changes
+
+```diff
+.../ethereum/{.flat@20997821 => .flat}/zkEVM/LineaRollup.sol     | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+```
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20997821 (main branch discovery), not current.
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
+      values.provenNonCompressedBlocksWithoutProof:
+-        []
+    }
+```
+
+Generated with discovered.json: 0xd2a3b998732812ae4b169116d1e878b0136cc29e
+
+# Diff at Mon, 21 Oct 2024 11:07:14 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@8895d33866f5665c4c710f4ddaa32bfa63cc3c78 block: 20997821
+- current block number: 20997821
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20997821 (main branch discovery), not current.
+
+```diff
+    contract ERC20Bridge (0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319) {
+    +++ description: None
+      values.$pastUpgrades.1.2:
++        ["0xd52c09E67aF3BE0977B52b4817366e9BaB5dCFA2"]
+      values.$pastUpgrades.1.1:
+-        ["0xd52c09E67aF3BE0977B52b4817366e9BaB5dCFA2"]
++        "0x497bdab1d3fb97eed72a55fc6e3672694195b08f949c2e0e84ea4b36428ee9c6"
+      values.$pastUpgrades.0.2:
++        ["0x6ccfD65b0b14F67259C77Ca6267104e058dDB292"]
+      values.$pastUpgrades.0.1:
+-        ["0x6ccfD65b0b14F67259C77Ca6267104e058dDB292"]
++        "0xbc08c4596eeee0a2e2527f03c0f2e85ec9e76e062b5f86eb435a67bca8f21122"
+    }
+```
+
+```diff
+    contract USDCBridge (0x504A330327A089d8364C4ab3811Ee26976d388ce) {
+    +++ description: None
+      values.$pastUpgrades.1.2:
++        ["0x0eC393209674090368C592A591B25811e490BF36"]
+      values.$pastUpgrades.1.1:
+-        ["0x0eC393209674090368C592A591B25811e490BF36"]
++        "0xe752ce539119fc11af6239e8b26a79d80c9e84cec19ac6aca060f466853f5b7d"
+      values.$pastUpgrades.0.2:
++        ["0x16Db542C30fB3519D11CF8F632077c62c1a944fd"]
+      values.$pastUpgrades.0.1:
+-        ["0x16Db542C30fB3519D11CF8F632077c62c1a944fd"]
++        "0xa93648a8d01d65bea363bc2f6e19897e42f9af999370c07cb2a0ea6a5401b6b0"
+    }
+```
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
+      values.$pastUpgrades.6.2:
++        ["0x53fC68bFfC03D17804e5A901DE42d1eeF2e64562"]
+      values.$pastUpgrades.6.1:
+-        ["0x53fC68bFfC03D17804e5A901DE42d1eeF2e64562"]
++        "0x497bdab1d3fb97eed72a55fc6e3672694195b08f949c2e0e84ea4b36428ee9c6"
+      values.$pastUpgrades.5.2:
++        ["0x934Dd4C63E285551CEceF8459103554D0096c179"]
+      values.$pastUpgrades.5.1:
+-        ["0x934Dd4C63E285551CEceF8459103554D0096c179"]
++        "0x565c77e109aac4df41d81457bdfbdd17782d8bca9a1330c68a271c64f35d05e5"
+      values.$pastUpgrades.4.2:
++        ["0xAA4b3a9515c921996Abe7930bF75Eff7466a4457"]
+      values.$pastUpgrades.4.1:
+-        ["0xAA4b3a9515c921996Abe7930bF75Eff7466a4457"]
++        "0xb4ed5b2646e45744945a4fc51da0e5e687ffe26f570b7aa3abb7b1fd4a460ea4"
+      values.$pastUpgrades.3.2:
++        ["0xb32c3D0dDb0063FfB15E8a50b40cC62230D820B3"]
+      values.$pastUpgrades.3.1:
+-        ["0xb32c3D0dDb0063FfB15E8a50b40cC62230D820B3"]
++        "0xdff29a7f65b6bec4e8288673a5ca55e12081b4d55879e600817484f28c5a80b1"
+      values.$pastUpgrades.2.2:
++        ["0x4c8d4Ce72afAA417d1F7E833725FdB4E793cd6b3"]
+      values.$pastUpgrades.2.1:
+-        ["0x4c8d4Ce72afAA417d1F7E833725FdB4E793cd6b3"]
++        "0x628efc29f5b2267f23cf613720003fafe671ee47db60b4f6610f5ae1ab838555"
+      values.$pastUpgrades.1.2:
++        ["0xE8f627df6Cb02e415b2e6d6e112323BD269b4706"]
+      values.$pastUpgrades.1.1:
+-        ["0xE8f627df6Cb02e415b2e6d6e112323BD269b4706"]
++        "0x8ee4253600d68665e8d52a522d8ba7136639187b87f8079b881de9e6d1f20d2a"
+      values.$pastUpgrades.0.2:
++        ["0xE8f627df6Cb02e415b2e6d6e112323BD269b4706"]
+      values.$pastUpgrades.0.1:
+-        ["0xE8f627df6Cb02e415b2e6d6e112323BD269b4706"]
++        "0x3564f15a274bdc49a6ad8af161113d20a678d87efbd3d708540a9b4d026f1122"
+    }
+```
+
+Generated with discovered.json: 0xe090f9a24a0d1e75044c61472210a93dbe843519
+
+# Diff at Sat, 19 Oct 2024 06:28:17 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@493c96785a6a32c6417182bb9548d3a990297dbe block: 20934247
+- current block number: 20997821
+
+## Description
+
+The two operator addresses are changed, which will be reflected in the permissions section.
+Context: Team also helpfully notified us in advance on telegram.
+
+## Watched changes
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
+      values.accessControl.OPERATOR_ROLE.members.1:
+-        "0xa9268341831eFa4937537bc3e9EB36DbecE83C7e"
++        "0x52FF08F313A00A54e3Beffb5C4a7F7446eFb6754"
+      values.accessControl.OPERATOR_ROLE.members.0:
+-        "0x9228624C3185FCBcf24c1c9dB76D8Bef5f5DAd64"
++        "0x46d2F319fd42165D4318F099E143dEA8124E9E3e"
+    }
+```
+
+Generated with discovered.json: 0x5f40de8e0cb83216d42503be0c8d068da862a1db
+
+# Diff at Fri, 18 Oct 2024 10:56:54 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@0295165a89d86b7450439f24f100d1baa74381fc block: 20934247
+- current block number: 20934247
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20934247 (main branch discovery), not current.
+
+```diff
+    contract Roles (0xF24f1DC519d88246809B660eb56D94048575d083) {
+    +++ description: None
+      directlyReceivedPermissions:
++        [{"permission":"act","target":"0x892bb7EeD71efB060ab90140e7825d8127991DD3"}]
+    }
+```
+
+Generated with discovered.json: 0x88c0a18d920ef566720eea6c23276ed64b5884f5
+
+# Diff at Mon, 14 Oct 2024 10:52:28 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 20934247
+- current block number: 20934247
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20934247 (main branch discovery), not current.
+
+```diff
+    contract ERC20Bridge (0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319) {
+    +++ description: None
+      issuedPermissions.0.target:
+-        "0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"
++        "0xd6B95c960779c72B8C6752119849318E5d550574"
+      issuedPermissions.0.via.0:
++        {"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6","delay":0}
+      sourceHashes:
++        ["0x36a2777510f3b20063560bdcb7f657da283bcfdc484a19b0a0f77d18f6a8b5e1","0x4c5d4e5696bc435eefd0ba909c6a8a7748c4c49260fcb51a360f07af3c38d76f"]
+    }
+```
+
+```diff
+    contract BridgedToken (0x36f274C1C197F277EA3C57859729398FCc8a3763) {
+    +++ description: None
+      sourceHashes:
++        ["0x8a6c3f5b047664111c8f981a4cb5d8a79c5652771665343ffdd15ae64fa253bf"]
+    }
+```
+
+```diff
+    contract USDCBridgeProxyAdmin (0x41fAD3Df1B07B647D120D055259E474fE8046eb5) {
+    +++ description: None
+      sourceHashes:
++        ["0x31b987ba8db4fc147856ec1375d9df4f40d58c4dc97e16be5b38ee2e3c3cc6f9"]
+    }
+```
+
+```diff
+    contract USDCBridge (0x504A330327A089d8364C4ab3811Ee26976d388ce) {
+    +++ description: None
+      sourceHashes:
++        ["0x6d1bbfb1ed7d88848e594dc11366fbed3d53c5a507022c04dbeea72ef549cd6a","0x27a9694e3bfad3a6ec23be7f15d8e6093b4d3a12eba4d10de0d9c660f5a47d30"]
+    }
+```
+
+```diff
+    contract AdminMultisig (0x892bb7EeD71efB060ab90140e7825d8127991DD3) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+```diff
+    contract ERC20UpgradableBeacon (0x971f46a2852d11D59dbF0909e837cfd06f357DeB) {
+    +++ description: None
+      sourceHashes:
++        ["0x02777a2575f23718a66224f10ac65db704c8c844f66d08dd5f9afd58b869f133"]
+    }
+```
+
+```diff
+    contract MultiSend (0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761) {
+    +++ description: None
+      sourceHashes:
++        ["0x3b1182a0432445f884d447d11823ec4b120a198eeaa3d9f3024384d87ee77cf1"]
+    }
+```
+
+```diff
+    contract VerifierProofType3 (0xBfF4a03A355eEF7dA720bBC7878F9BdBBE81fe6F) {
+    +++ description: None
+      sourceHashes:
++        ["0x47f89dc90dfffe4c8914bdac8b7c92bc4cbee0df1bf52f3926e43fe0934a2ff4"]
+    }
+```
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
+      issuedPermissions.0.target:
+-        "0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"
++        "0xd6B95c960779c72B8C6752119849318E5d550574"
+      issuedPermissions.0.via.0:
++        {"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6","delay":0}
+      sourceHashes:
++        ["0x36a2777510f3b20063560bdcb7f657da283bcfdc484a19b0a0f77d18f6a8b5e1","0x9107909af0d0c9abd3904984ff1b8b0824d489b8b1ac2902b805ce7d417e2e9f"]
+    }
+```
+
+```diff
+    contract Timelock (0xd6B95c960779c72B8C6752119849318E5d550574) {
+    +++ description: None
+      sourceHashes:
++        ["0xaf04cf94ef4bf759d6466fa262a5e8e54f6d5c9652286fe5d71c9a904de27e5c"]
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319","via":[{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"}]},{"permission":"upgrade","target":"0xd19d4B5d358258f05D7B411E21A1460D11B0876F","via":[{"address":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"}]}]
+      directlyReceivedPermissions:
++        [{"permission":"act","target":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6"}]
+    }
+```
+
+```diff
+    contract Roles (0xF24f1DC519d88246809B660eb56D94048575d083) {
+    +++ description: None
+      sourceHashes:
++        ["0x699a67bde09c0d73c29ec9de66133bfee484544494865d954ac01f9736efed30"]
+    }
+```
+
+```diff
+    contract ProxyAdmin (0xF5058616517C068C7b8c7EbC69FF636Ade9066d6) {
+    +++ description: None
+      receivedPermissions:
+-        [{"permission":"upgrade","target":"0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319"},{"permission":"upgrade","target":"0xd19d4B5d358258f05D7B411E21A1460D11B0876F"}]
+      template:
++        "global/ProxyAdmin"
+      sourceHashes:
++        ["0x68f689a23d3badd91255602a1eb13d4789baedc16d904c3103244642fc78ca8f"]
+      directlyReceivedPermissions:
++        [{"permission":"upgrade","target":"0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319"},{"permission":"upgrade","target":"0xd19d4B5d358258f05D7B411E21A1460D11B0876F"}]
+    }
+```
+
+Generated with discovered.json: 0xa513efaf6e24057f268b8cace31dbb24a947c021
+
+# Diff at Thu, 10 Oct 2024 09:15:27 GMT:
+
+- author: sekuba (<sekuba@users.noreply.github.com>)
+- comparing to: main@cb5ff535ffc194baf7396bd6db8232883e2ad088 block: 20389671
+- current block number: 20934247
+
+## Description
+
+Signer swapped in AdminMultisig.
+
+## Watched changes
+
+```diff
+    contract AdminMultisig (0x892bb7EeD71efB060ab90140e7825d8127991DD3) {
+    +++ description: None
+      values.$members.4:
+-        "0x36a0b60162d7F407d74bd1def01410D20437F87B"
++        "0x9376c137AF5124FFc39bD8940A3D88D1cd508992"
+    }
+```
+
+Generated with discovered.json: 0xe6232787bad87e3865c174553e77fde10d29dcbf
+
+# Diff at Tue, 01 Oct 2024 10:52:12 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@bd754dc73c66120164006054f8d25c5fae9cd910 block: 20389671
+- current block number: 20389671
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20389671 (main branch discovery), not current.
+
+```diff
+    contract ERC20Bridge (0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2023-08-03T13:04:35.000Z",["0x6ccfD65b0b14F67259C77Ca6267104e058dDB292"]],["2024-06-05T11:49:35.000Z",["0xd52c09E67aF3BE0977B52b4817366e9BaB5dCFA2"]]]
+    }
+```
+
+```diff
+    contract USDCBridge (0x504A330327A089d8364C4ab3811Ee26976d388ce) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2023-08-03T18:11:11.000Z",["0x16Db542C30fB3519D11CF8F632077c62c1a944fd"]],["2023-09-01T20:25:47.000Z",["0x0eC393209674090368C592A591B25811e490BF36"]]]
+    }
+```
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2023-07-12T11:05:23.000Z",["0xE8f627df6Cb02e415b2e6d6e112323BD269b4706"]],["2023-07-12T12:57:47.000Z",["0xE8f627df6Cb02e415b2e6d6e112323BD269b4706"]],["2023-07-15T13:31:23.000Z",["0x4c8d4Ce72afAA417d1F7E833725FdB4E793cd6b3"]],["2023-08-08T16:58:47.000Z",["0xb32c3D0dDb0063FfB15E8a50b40cC62230D820B3"]],["2024-02-13T08:39:59.000Z",["0xAA4b3a9515c921996Abe7930bF75Eff7466a4457"]],["2024-03-26T10:29:47.000Z",["0x934Dd4C63E285551CEceF8459103554D0096c179"]],["2024-06-05T11:49:35.000Z",["0x53fC68bFfC03D17804e5A901DE42d1eeF2e64562"]]]
+    }
+```
+
+Generated with discovered.json: 0xf202e5cd4d42d8539223ef886681136b305c0e8a
+
+# Diff at Fri, 30 Aug 2024 07:53:27 GMT:
+
+- author: Adrian Adamiak (<adrian@adamiak.net>)
+- comparing to: main@6c1bd1f41fadf5f2cb1c1805b5a2c6138a3ed35a block: 20389671
+- current block number: 20389671
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20389671 (main branch discovery), not current.
+
+```diff
+    contract USDCBridgeProxyAdmin (0x41fAD3Df1B07B647D120D055259E474fE8046eb5) {
+    +++ description: None
+      receivedPermissions.0.via:
+-        []
+    }
+```
+
+```diff
+    contract ProxyAdmin (0xF5058616517C068C7b8c7EbC69FF636Ade9066d6) {
+    +++ description: None
+      receivedPermissions.1.via:
+-        []
+      receivedPermissions.0.via:
+-        []
+    }
+```
+
+Generated with discovered.json: 0x999c5e9f0ead3074d6ddcafb48f46ad103b1e4ac
+
+# Diff at Fri, 23 Aug 2024 09:53:00 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@67597c7d6c810bc726594446890178150240711e block: 20389671
+- current block number: 20389671
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20389671 (main branch discovery), not current.
+
+```diff
+    contract ERC20Bridge (0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319) {
+    +++ description: None
+      values.$upgradeCount:
++        2
+    }
+```
+
+```diff
+    contract USDCBridge (0x504A330327A089d8364C4ab3811Ee26976d388ce) {
+    +++ description: None
+      values.$upgradeCount:
++        2
+    }
+```
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
+      values.$upgradeCount:
++        7
+    }
+```
+
+Generated with discovered.json: 0xe4b4499b3735909ae2274d239b8770be989fb87d
+
+# Diff at Wed, 21 Aug 2024 10:03:46 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@2f6dde3357bf5d79196b6e94f79d853a6c4ec72b block: 20389671
+- current block number: 20389671
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20389671 (main branch discovery), not current.
+
+```diff
+    contract ERC20Bridge (0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6","via":[]}]
+    }
+```
+
+```diff
+    contract USDCBridgeProxyAdmin (0x41fAD3Df1B07B647D120D055259E474fE8046eb5) {
+    +++ description: None
+      assignedPermissions:
+-        {"upgrade":["0x504A330327A089d8364C4ab3811Ee26976d388ce"]}
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0x504A330327A089d8364C4ab3811Ee26976d388ce","via":[]}]
+    }
+```
+
+```diff
+    contract USDCBridge (0x504A330327A089d8364C4ab3811Ee26976d388ce) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0x41fAD3Df1B07B647D120D055259E474fE8046eb5","via":[]}]
+    }
+```
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0xF5058616517C068C7b8c7EbC69FF636Ade9066d6","via":[]}]
+    }
+```
+
+```diff
+    contract ProxyAdmin (0xF5058616517C068C7b8c7EbC69FF636Ade9066d6) {
+    +++ description: None
+      assignedPermissions:
+-        {"upgrade":["0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319","0xd19d4B5d358258f05D7B411E21A1460D11B0876F"]}
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319","via":[]},{"permission":"upgrade","target":"0xd19d4B5d358258f05D7B411E21A1460D11B0876F","via":[]}]
+    }
+```
+
+Generated with discovered.json: 0x1633d2e251676018188de3c5690fc5885afc96b4
+
+# Diff at Fri, 09 Aug 2024 10:10:15 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 20389671
+- current block number: 20389671
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20389671 (main branch discovery), not current.
+
+```diff
+    contract USDCBridgeProxyAdmin (0x41fAD3Df1B07B647D120D055259E474fE8046eb5) {
+    +++ description: None
+      assignedPermissions.admin:
+-        ["0x504A330327A089d8364C4ab3811Ee26976d388ce"]
+      assignedPermissions.upgrade:
++        ["0x504A330327A089d8364C4ab3811Ee26976d388ce"]
+    }
+```
+
+```diff
+    contract AdminMultisig (0x892bb7EeD71efB060ab90140e7825d8127991DD3) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "4 of 8 (50%)"
+      values.getOwners:
+-        ["0x497515578b0BE54d2f0f32cF3F08B85Bf8cEB6aB","0x239d9B860399366F8d25F6e2962Fb2B9D070aEFE","0x12d674b7eCc0302977E956Cd2d5AC8D030fdbea9","0x5822D8457c00FB82203918ED92907b935B9D40AE","0x36a0b60162d7F407d74bd1def01410D20437F87B","0x4CB4da1D1C198E506031C0Aa8480BA8b57C0fAD4","0xab23f8E6c3288952fdf193A17ad49b15F5EE55A1","0xB4dAebe4D01f467701F95f0196fc29033c54dBcb"]
+      values.getThreshold:
+-        4
+      values.$members:
++        ["0x497515578b0BE54d2f0f32cF3F08B85Bf8cEB6aB","0x239d9B860399366F8d25F6e2962Fb2B9D070aEFE","0x12d674b7eCc0302977E956Cd2d5AC8D030fdbea9","0x5822D8457c00FB82203918ED92907b935B9D40AE","0x36a0b60162d7F407d74bd1def01410D20437F87B","0x4CB4da1D1C198E506031C0Aa8480BA8b57C0fAD4","0xab23f8E6c3288952fdf193A17ad49b15F5EE55A1","0xB4dAebe4D01f467701F95f0196fc29033c54dBcb"]
+      values.$threshold:
++        4
+      values.multisigThreshold:
++        "4 of 8 (50%)"
+    }
+```
+
+```diff
+    contract ProxyAdmin (0xF5058616517C068C7b8c7EbC69FF636Ade9066d6) {
+    +++ description: None
+      assignedPermissions.admin:
+-        ["0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319","0xd19d4B5d358258f05D7B411E21A1460D11B0876F"]
+      assignedPermissions.upgrade:
++        ["0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319","0xd19d4B5d358258f05D7B411E21A1460D11B0876F"]
+    }
+```
+
+Generated with discovered.json: 0x7ce7d8aba310ba771f7246400b1c50e747a7395e
+
+# Diff at Tue, 30 Jul 2024 11:12:28 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@b2b6471ff62871f4956541f42ec025c356c08f7e block: 20389671
+- current block number: 20389671
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20389671 (main branch discovery), not current.
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
+      fieldMeta:
++        {"verifiers":{"description":"Mapping of proof type to ZK Plonk Verifier contract"}}
+    }
+```
+
+Generated with discovered.json: 0x51489b22b6b962ccd94c990e8c37495160e47993
+
+# Diff at Fri, 26 Jul 2024 08:56:51 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@f98f9bf0ba32e20ec33942af664ae6ed27e8172d block: 20340569
+- current block number: 20389671
+
+## Description
+
+An unused verifier is removed from the registry.
+
+## Watched changes
+
+```diff
+-   Status: DELETED
+    contract VerifierProofType1 (0x8AB455030E1Ea718e445f423Bb8D993dcAd24Cc4)
+    +++ description: None
+```
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.1:
+-        "0x8AB455030E1Ea718e445f423Bb8D993dcAd24Cc4"
++        "0x0000000000000000000000000000000000000000"
+    }
+```
+
+## Source code changes
+
+```diff
+.../VerifierProofType1.sol => /dev/null            | 1347 --------------------
+ 1 file changed, 1347 deletions(-)
+```
+
+Generated with discovered.json: 0x20793d968ee199aa8b0f9d4a9b43b9aaff803dfe
+
+# Diff at Fri, 19 Jul 2024 12:26:54 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@744d4e1fec0be9972ab7fde1dd4cc0ba0c91a28c block: 20059600
+- current block number: 20340569
+
+## Description
+
+A new verifier is added for proofType 3 with almost no code diff to the old one (4 constants), probably related to [this PR](https://github.com/Consensys/linea-contracts/pull/20). Already [used in prod](https://app.blocksec.com/explorer/tx/eth/0x0f5c3d308947356409e0f048db7c8f4d5414840be0281c5368147fb6c8b758ab).
+
+## Watched changes
+
+```diff
+    contract zkEVM (0xd19d4B5d358258f05D7B411E21A1460D11B0876F) {
+    +++ description: None
++++ description: Mapping of proof type to ZK Plonk Verifier contract
+      values.verifiers.3:
+-        "0x1111111111111111111111111111111111111111"
++        "0xBfF4a03A355eEF7dA720bBC7878F9BdBBE81fe6F"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract VerifierProofType3 (0xBfF4a03A355eEF7dA720bBC7878F9BdBBE81fe6F)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../linea/ethereum/.flat/VerifierProofType3.sol    | 1347 ++++++++++++++++++++
+ 1 file changed, 1347 insertions(+)
+```
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20059600 (main branch discovery), not current.
+
+```diff
+    contract PlonkVerifierForMultiTypeDataAggregation (0x8AB455030E1Ea718e445f423Bb8D993dcAd24Cc4) {
+    +++ description: None
+      name:
+-        "PlonkVerifierForMultiTypeDataAggregation"
++        "VerifierProofType1"
+    }
+```
+
+Generated with discovered.json: 0x7dd5879afdba65078bc0f42d885728316075d9e7
 
 # Diff at Wed, 05 Jun 2024 13:36:11 GMT:
 

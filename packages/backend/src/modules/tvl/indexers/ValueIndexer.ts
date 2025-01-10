@@ -1,47 +1,37 @@
 import {
+  AmountId,
+  PriceId,
+  createAmountId,
+  createPriceId,
+} from '@l2beat/config'
+import {
   AmountConfigEntry,
+  AssetId,
   PriceConfigEntry,
-  ProjectId,
   UnixTime,
 } from '@l2beat/shared-pure'
-
-import {
-  ManagedChildIndexer,
-  ManagedChildIndexerOptions,
-} from '../../../tools/uif/ManagedChildIndexer'
-import { ValueRepository } from '../repositories/ValueRepository'
-import { ValueService } from '../services/ValueService'
-import { SyncOptimizer } from '../utils/SyncOptimizer'
-import { AmountId, createAmountId } from '../utils/createAmountId'
-import { AssetId, createAssetId } from '../utils/createAssetId'
-import { PriceId, createPriceId } from '../utils/createPriceId'
+import { ManagedChildIndexer } from '../../../tools/uif/ManagedChildIndexer'
 import { getValuesConfigHash } from '../utils/getValuesConfigHash'
-
-export interface ValueIndexerDeps
-  extends Omit<ManagedChildIndexerOptions, 'name'> {
-  valueService: ValueService
-  valueRepository: ValueRepository
-  priceConfigs: PriceConfigEntry[]
-  amountConfigs: AmountConfigEntry[]
-  project: ProjectId
-  dataSource: string
-  syncOptimizer: SyncOptimizer
-  maxTimestampsToProcessAtOnce: number
-  minHeight: number
-  maxHeight: number
-}
+import { ValueIndexerDeps } from './types'
 
 export class ValueIndexer extends ManagedChildIndexer {
-  // Maps used for performance optimization
   private readonly amountConfigs: Map<AmountId, AmountConfigEntry>
   private readonly priceConfigIds: Map<AssetId, PriceId>
 
   constructor(private readonly $: ValueIndexerDeps) {
-    const logger = $.logger.tag($.tag)
-    const name = 'value_indexer'
-    const configHash = getValuesConfigHash($.amountConfigs, $.priceConfigs)
-
-    super({ ...$, name, logger, configHash })
+    super({
+      ...$,
+      name: 'value_indexer',
+      tags: {
+        tag: `${$.project}_${$.dataSource}`,
+        project: $.project,
+      },
+      configHash: getValuesConfigHash(
+        $.amountConfigs,
+        $.priceConfigs,
+        $.minHeight,
+      ),
+    })
 
     this.amountConfigs = getAmountConfigs($.amountConfigs)
     this.priceConfigIds = getPriceConfigIds($.priceConfigs)
@@ -57,7 +47,7 @@ export class ValueIndexer extends ManagedChildIndexer {
       return to
     }
 
-    if (this.$.maxHeight < from) {
+    if (this.$.maxHeight && this.$.maxHeight < from) {
       this.logger.info('Skipping update due to maxHeight', {
         from,
         to,
@@ -84,7 +74,7 @@ export class ValueIndexer extends ManagedChildIndexer {
       timestamps,
     )
 
-    await this.$.valueRepository.addOrUpdateMany(values)
+    await this.$.db.value.upsertMany(values)
 
     this.logger.info('Saved values into DB', {
       from,
@@ -98,7 +88,7 @@ export class ValueIndexer extends ManagedChildIndexer {
 
   private getTimestampsToSync(from: number, to: number) {
     const start = Math.max(from, this.$.minHeight)
-    const end = Math.min(to, this.$.maxHeight)
+    const end = this.$.maxHeight ? Math.min(to, this.$.maxHeight) : to
 
     return this.$.syncOptimizer.getTimestampsToSync(
       start,
@@ -108,7 +98,6 @@ export class ValueIndexer extends ManagedChildIndexer {
   }
 
   override async invalidate(targetHeight: number): Promise<number> {
-    // Do not delete data
     return await Promise.resolve(targetHeight)
   }
 }
@@ -125,7 +114,7 @@ function getAmountConfigs(amounts: AmountConfigEntry[]) {
 function getPriceConfigIds(prices: PriceConfigEntry[]) {
   const result = new Map<AssetId, string>()
   for (const p of prices) {
-    result.set(createAssetId(p), createPriceId(p))
+    result.set(p.assetId, createPriceId(p))
   }
 
   return result

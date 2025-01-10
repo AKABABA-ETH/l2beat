@@ -4,18 +4,30 @@ import {
   ConfigReader,
   DiscoveryConfig,
   DiscoveryEngine,
+  DiscoveryLogger,
+  flattenDiscoveredSources,
   toDiscoveryOutput,
 } from '@l2beat/discovery'
 import type { DiscoveryOutput } from '@l2beat/discovery-types'
+import {
+  AllProviderStats,
+  ProviderMeasurement,
+  ProviderStats,
+} from '@l2beat/discovery/dist/discovery/provider/Stats'
 import { assert } from '@l2beat/shared-pure'
 import { isError } from 'lodash'
-import { Gauge, Histogram } from 'prom-client'
+import { Gauge } from 'prom-client'
 
 export interface DiscoveryRunnerOptions {
   logger: Logger
   injectInitialAddresses: boolean
   maxRetries?: number
   retryDelayMs?: number
+}
+
+export interface DiscoveryRunResult {
+  discovery: DiscoveryOutput
+  flatSources: Record<string, string>
 }
 
 // 10 minutes
@@ -38,41 +50,40 @@ export class DiscoveryRunner {
     projectConfig: DiscoveryConfig,
     blockNumber: number,
     options: DiscoveryRunnerOptions,
-  ) {
+  ): Promise<DiscoveryRunResult> {
     const config = options.injectInitialAddresses
       ? await this.updateInitialAddresses(projectConfig)
       : projectConfig
 
-    const discovery = await this.discoverWithRetry(
+    return await this.discoverWithRetry(
       config,
       blockNumber,
       options.logger,
       options.maxRetries,
       options.retryDelayMs,
     )
-
-    return discovery
   }
 
   private async discover(
     config: DiscoveryConfig,
     blockNumber: number,
-  ): Promise<DiscoveryOutput> {
-    const histogramDone = syncHistogram.startTimer()
-
+  ): Promise<DiscoveryRunResult> {
     const provider = this.allProviders.get(config.chain, blockNumber)
     const result = await this.discoveryEngine.discover(provider, config)
 
-    histogramDone({ project: config.name })
-    latestBlock.set({ project: config.name }, blockNumber)
+    setDiscoveryMetrics(this.allProviders.getStats(config.chain), config.chain)
 
-    return toDiscoveryOutput(
+    const discovery = toDiscoveryOutput(
       config.name,
       config.chain,
       config.hash,
       blockNumber,
       result,
     )
+
+    const flatSources = flattenDiscoveredSources(result, DiscoveryLogger.SILENT)
+
+    return { discovery, flatSources }
   }
 
   async discoverWithRetry(
@@ -81,13 +92,13 @@ export class DiscoveryRunner {
     logger: Logger,
     maxRetries = MAX_RETRIES,
     delayMs = RETRY_DELAY_MS,
-  ): Promise<DiscoveryOutput> {
-    let discovery: DiscoveryOutput | undefined = undefined
+  ): Promise<DiscoveryRunResult> {
+    let result: DiscoveryRunResult | undefined = undefined
     let err: Error | undefined = undefined
 
     for (let i = 0; i <= maxRetries; i++) {
       try {
-        discovery = await this.discover(config, blockNumber)
+        result = await this.discover(config, blockNumber)
         break
       } catch (error) {
         err = isError(err) ? (error as Error) : new Error(JSON.stringify(error))
@@ -104,7 +115,7 @@ export class DiscoveryRunner {
       await new Promise((resolve) => setTimeout(resolve, delayMs))
     }
 
-    if (discovery === undefined) {
+    if (result?.discovery === undefined) {
       assert(
         err !== undefined,
         'Programmer error: Error should not be undefined there',
@@ -112,7 +123,7 @@ export class DiscoveryRunner {
       throw err
     }
 
-    return discovery
+    return result
   }
 
   // There was a case connected with Amarok (better described in L2B-1521)
@@ -127,19 +138,81 @@ export class DiscoveryRunner {
     return new DiscoveryConfig({
       ...config.raw,
       initialAddresses,
+      maxAddresses: (config.raw.maxAddresses ?? 200) * 3,
+      maxDepth: (config.raw.maxDepth ?? 6) * 3,
     })
   }
 }
 
-const latestBlock = new Gauge({
-  name: 'discovery_last_synced',
-  help: 'Value showing latest block number with which UpdateMonitor was run',
-  labelNames: ['project'],
+function setDiscoveryMetrics(stats: AllProviderStats, chain: string) {
+  setProviderGauge(
+    lowLevelProviderCountGauge,
+    lowLevelProviderDurationGauge,
+    stats.lowLevelMeasurements,
+    chain,
+  )
+  setProviderGauge(
+    cacheProviderCountGauge,
+    cacheProviderDurationGauge,
+    stats.cacheMeasurements,
+    chain,
+  )
+  setProviderGauge(
+    highLevelProviderCountGauge,
+    highLevelProviderDurationGauge,
+    stats.highLevelMeasurements,
+    chain,
+  )
+}
+
+function setProviderGauge(
+  countGauge: ProviderGauge,
+  durationGauge: ProviderGauge,
+  stats: ProviderStats,
+  chain: string,
+) {
+  for (const [key, index] of Object.entries(ProviderMeasurement)) {
+    const entry = stats.get(index)
+    let avg = 0
+    if (entry.durations.length > 0) {
+      avg = entry.durations.reduce((acc, v) => acc + v) / entry.durations.length
+    }
+
+    countGauge.set({ chain: chain, method: key }, entry.count)
+    durationGauge.set({ chain: chain, method: key }, avg)
+  }
+}
+
+type ProviderGauge = Gauge<'chain' | 'method'>
+const lowLevelProviderCountGauge: ProviderGauge = new Gauge({
+  name: 'update_monitor_low_level_provider_stats',
+  help: 'Low level provider calls done during discovery',
+  labelNames: ['chain', 'method'],
+})
+const lowLevelProviderDurationGauge: ProviderGauge = new Gauge({
+  name: 'update_monitor_low_level_provider_duration_stats',
+  help: 'Average duration of methods in low level provider calls done during discovery',
+  labelNames: ['chain', 'method'],
 })
 
-const syncHistogram = new Histogram({
-  name: 'discovery_sync_duration_histogram',
-  help: 'Histogram showing discovery duration',
-  labelNames: ['project'],
-  buckets: [2, 4, 6, 8, 10, 15, 20, 30, 60, 120],
+const cacheProviderCountGauge: ProviderGauge = new Gauge({
+  name: 'update_monitor_cache_provider_stats',
+  help: 'Cache hit counts done during discovery',
+  labelNames: ['chain', 'method'],
+})
+const cacheProviderDurationGauge: ProviderGauge = new Gauge({
+  name: 'update_monitor_cache_provider_duration_stats',
+  help: 'Average duration of methods when a cache hit occurs during discovery',
+  labelNames: ['chain', 'method'],
+})
+
+const highLevelProviderCountGauge: ProviderGauge = new Gauge({
+  name: 'update_monitor_high_level_provider_stats',
+  help: 'High level provider calls done during discovery',
+  labelNames: ['chain', 'method'],
+})
+const highLevelProviderDurationGauge: ProviderGauge = new Gauge({
+  name: 'update_monitor_high_level_provider_duration_stats',
+  help: 'Average duration of methods in high level provider calls done during discovery',
+  labelNames: ['chain', 'method'],
 })

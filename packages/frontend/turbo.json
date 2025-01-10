@@ -3,8 +3,26 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["DEPLOYMENT_ENV", "NODE_ENV", "MOCK"],
-      "cache": false
+      "env": [
+        "CI",
+        "CRON_SECRET",
+        "DATABASE_URL",
+        "EXCLUDED_TVL_PROJECTS",
+        "EXCLUDED_ACTIVITY_PROJECTS",
+        "ETHEREUM_RPC_URL",
+        "FEATURE_FLAG_GITCOIN_OPTION",
+        "FEATURE_FLAG_HIRING",
+        "MOCK",
+        "NODE_ENV",
+        "NEXT_RUNTIME",
+        "PORT",
+        "SENTRY_AUTH_TOKEN",
+        "SKIP_ENV_VALIDATION",
+        "VERCEL_GIT_COMMIT_REF",
+        "VERCEL_GIT_COMMIT_SHA",
+        "VERCEL_ENV",
+        "VERCEL_URL"
+      ]
     }
   }
 }

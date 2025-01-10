@@ -11,7 +11,11 @@ import {
   discoveredJsonStub,
   discoveredOpStackJsonStub,
 } from '../test/stubs/discoveredJson'
-import { ProjectDiscovery } from './ProjectDiscovery'
+import {
+  ProjectDiscovery,
+  formatAsBulletPoints,
+  trimTrailingDots,
+} from './ProjectDiscovery'
 
 describe(ProjectDiscovery.name, () => {
   const projectName = 'ExampleProject'
@@ -83,44 +87,6 @@ describe(ProjectDiscovery.name, () => {
     })
   })
 
-  describe(
-    ProjectDiscovery.prototype.getContractUpgradeabilityParam.name,
-    () => {
-      it('should return given upgradeability param', () => {
-        const upgradeabilityParam = discovery.getContractUpgradeabilityParam(
-          contractStub.name,
-          'type',
-        )
-
-        expect(upgradeabilityParam).toEqual('StarkWare diamond')
-      })
-      it('should throw an error if upgradeability param does not exist', () => {
-        const key = 'randomParam'
-
-        expect(() =>
-          discovery.getContractUpgradeabilityParam(
-            contractStub.name,
-            //@ts-expect-error key does not exist on UpgradeabilityParams type
-            key,
-          ),
-        ).toThrow(
-          `Assertion Error: Upgradeability param of key ${key} does not exist in ${contractStub.name} contract (${projectName})`,
-        )
-      })
-
-      it('should not throw an error if upgradeability param is 0', () => {
-        const key = 'upgradeDelay'
-
-        const upgradeabilityParam = discovery.getContractUpgradeabilityParam(
-          contractStub.name,
-          key,
-        )
-
-        expect(upgradeabilityParam).toEqual(0)
-      })
-    },
-  )
-
   describe(ProjectDiscovery.prototype.getOpStackContractDetails.name, () => {
     const discovery = new ProjectDiscovery(
       'ExampleProject',
@@ -144,6 +110,7 @@ describe(ProjectDiscovery.name, () => {
           address: EthereumAddress(
             '0x48d7A6bbc428bca019A560cF3e8EA5364395Aad3',
           ),
+          isVerified: true,
           description:
             'The L2OutputOracle contract contains a list of proposed state roots which Proposers assert to be a result of block execution. Currently only the PROPOSER address can submit new state roots.',
           name: 'L2OutputOracle',
@@ -151,19 +118,20 @@ describe(ProjectDiscovery.name, () => {
           upgradableBy: ['MockAdmin'],
           upgradeDelay: 'No delay',
           upgradeability: {
-            admin: EthereumAddress(
-              '0x543bA4AADBAb8f9025686Bd03993043599c6fB04',
-            ),
-            implementation: EthereumAddress(
-              '0x29510c3ac0248bBE92FDb57bd2cBAF7216cC217a',
-            ),
-            type: 'EIP1967 proxy',
+            admins: [
+              EthereumAddress('0x543bA4AADBAb8f9025686Bd03993043599c6fB04'),
+            ],
+            implementations: [
+              EthereumAddress('0x29510c3ac0248bBE92FDb57bd2cBAF7216cC217a'),
+            ],
+            proxyType: 'EIP1967 proxy',
           },
         },
         {
           address: EthereumAddress(
             '0x0a2CCDbBD00f61724C485518B940Ab25abe832aA',
           ),
+          isVerified: true,
           description:
             'The MockPortal contract is the main entry point to deposit funds from L1 to L2. It also allows to prove and finalize withdrawals.',
           name: 'MockPortal',
@@ -171,19 +139,20 @@ describe(ProjectDiscovery.name, () => {
           upgradableBy: ['MockAdmin'],
           upgradeDelay: 'No delay',
           upgradeability: {
-            admin: EthereumAddress(
-              '0x543bA4AADBAb8f9025686Bd03993043599c6fB04',
-            ),
-            implementation: EthereumAddress(
-              '0x1b927019071A2a9C2b852Fd36f7238D2376B82FA',
-            ),
-            type: 'EIP1967 proxy',
+            admins: [
+              EthereumAddress('0x543bA4AADBAb8f9025686Bd03993043599c6fB04'),
+            ],
+            implementations: [
+              EthereumAddress('0x1b927019071A2a9C2b852Fd36f7238D2376B82FA'),
+            ],
+            proxyType: 'EIP1967 proxy',
           },
         },
         {
           address: EthereumAddress(
             '0x6Dda3a70B9946fA8C015904d9E2BEC86ecE4E745',
           ),
+          isVerified: true,
           description:
             'It contains configuration parameters such as the Sequencer address, the L2 gas limit and the unsafe block signer address.',
           name: 'SystemConfig',
@@ -191,19 +160,20 @@ describe(ProjectDiscovery.name, () => {
           upgradableBy: ['MockAdmin'],
           upgradeDelay: 'No delay',
           upgradeability: {
-            admin: EthereumAddress(
-              '0x543bA4AADBAb8f9025686Bd03993043599c6fB04',
-            ),
-            implementation: EthereumAddress(
-              '0xeba2dc4CC210e885F60b5feA41FDEab0C6527fdc',
-            ),
-            type: 'EIP1967 proxy',
+            admins: [
+              EthereumAddress('0x543bA4AADBAb8f9025686Bd03993043599c6fB04'),
+            ],
+            implementations: [
+              EthereumAddress('0xeba2dc4CC210e885F60b5feA41FDEab0C6527fdc'),
+            ],
+            proxyType: 'EIP1967 proxy',
           },
         },
         {
           address: EthereumAddress(
             '0x17bFa0561d9Ae73e05EcEAEB6663aDc85fA1d3E2',
           ),
+          isVerified: true,
           description:
             "The L1CrossDomainMessenger (L1xDM) contract sends messages from L1 to L2, and relays messages from L2 onto L1. In the event that a message sent from L1 to L2 is rejected for exceeding the L2 epoch gas limit, it can be resubmitted via this contract's replay function.",
           name: 'L1CrossDomainMessenger',
@@ -211,20 +181,18 @@ describe(ProjectDiscovery.name, () => {
           upgradableBy: ['MockAdmin'],
           upgradeDelay: 'No delay',
           upgradeability: {
-            addressManager: EthereumAddress(
-              '0xdE1FCfB0851916CA5101820A69b13a4E276bd81F',
-            ),
-            implementation: EthereumAddress(
-              '0x2150Bc3c64cbfDDbaC9815EF615D6AB8671bfe43',
-            ),
-            implementationName: 'OVM_L1CrossDomainMessenger',
-            type: 'resolved delegate proxy',
+            admins: [],
+            implementations: [
+              EthereumAddress('0x2150Bc3c64cbfDDbaC9815EF615D6AB8671bfe43'),
+            ],
+            proxyType: 'resolved delegate proxy',
           },
         },
         {
           address: EthereumAddress(
             '0xeBec795c9c8bBD61FFc14A6662944748F299cAcf',
           ),
+          isVerified: true,
           description:
             'The L1StandardBridge contract is the main entry point to deposit ERC20 tokens from L1 to L2.',
           name: 'L1StandardBridge',
@@ -232,13 +200,13 @@ describe(ProjectDiscovery.name, () => {
           upgradableBy: ['MockAdmin'],
           upgradeDelay: 'No delay',
           upgradeability: {
-            type: 'EIP1967 proxy',
-            implementation: EthereumAddress(
-              '0xC70dcb11c0673b0BBE2F415105fA2B15Ac58339f',
-            ),
-            admin: EthereumAddress(
-              '0x543bA4AADBAb8f9025686Bd03993043599c6fB04',
-            ),
+            proxyType: 'EIP1967 proxy',
+            implementations: [
+              EthereumAddress('0xC70dcb11c0673b0BBE2F415105fA2B15Ac58339f'),
+            ],
+            admins: [
+              EthereumAddress('0x543bA4AADBAb8f9025686Bd03993043599c6fB04'),
+            ],
           },
         },
       ])
@@ -283,6 +251,68 @@ describe(ProjectDiscovery.name, () => {
     const contract = discovery.getContract(contractStub.address.toString())
 
     expect(JSON.stringify(contract)).toEqual(JSON.stringify(contractStub))
+  })
+
+  describe(ProjectDiscovery.prototype.getPermissionsByRole.name, () => {
+    it('should find contracts and eoas by role', () => {
+      const discovery = new ProjectDiscovery(
+        'ExampleProject',
+        'ethereum',
+        configReader,
+      )
+      const sequencers = discovery.getPermissionsByRole('sequence')
+      expect(sequencers).toEqual([
+        {
+          address: contractStub.address,
+          type: 'Contract',
+        },
+        {
+          address: EthereumAddress(
+            '0x000000000000000000000000000000000000Bb22',
+          ),
+          type: 'EOA',
+        },
+      ])
+    })
+  })
+
+  describe(ProjectDiscovery.prototype.replaceAddressesWithNames.name, () => {
+    it('should replace addresses with names', () => {
+      const replaced = discovery.replaceAddressesWithNames(
+        'Can be updated by 0x0D4C1222f5e839a911e2053860e45F18921D72ac, 0x787A0ACaB02437c60Aafb1a29167A3609801e320',
+      )
+      expect(replaced).toEqual(
+        'Can be updated by MockedContract, 0x787A0ACaB02437c60Aafb1a29167A3609801e320',
+      )
+    })
+  })
+})
+
+describe(formatAsBulletPoints.name, () => {
+  it('should format description as bullet points', () => {
+    const description = ['First point', 'Second point', 'Third point']
+    const formatted = formatAsBulletPoints(description)
+    expect(formatted).toEqual('* First point\n* Second point\n* Third point\n')
+  })
+
+  it('should format single point as string', () => {
+    const description = ['Single point']
+    const formatted = formatAsBulletPoints(description)
+    expect(formatted).toEqual('Single point')
+  })
+})
+
+describe(trimTrailingDots.name, () => {
+  it('should remove trailing dots', () => {
+    const description = 'Some description...'
+    const trimmed = trimTrailingDots(description)
+    expect(trimmed).toEqual('Some description')
+  })
+
+  it('should not remove trailing dots if there are no dots', () => {
+    const description = 'Some description'
+    const trimmed = trimTrailingDots(description)
+    expect(trimmed).toEqual(description)
   })
 })
 

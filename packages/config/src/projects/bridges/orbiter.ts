@@ -1,11 +1,15 @@
 import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
 
+import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { RISK_VIEW } from './common'
 import { Bridge } from './types'
+
+const discovery = new ProjectDiscovery('orbiter')
 
 export const orbiter: Bridge = {
   type: 'bridge',
   id: ProjectId('orbiter'),
+  createdAt: new UnixTime(1662628329), // 2022-09-08T09:12:09Z
   display: {
     name: 'Orbiter',
     slug: 'orbiter',
@@ -102,17 +106,14 @@ export const orbiter: Bridge = {
         {
           category: 'Funds can be stolen if',
           text: "selected Maker decides to misuse user's funds.",
-          isCritical: true,
         },
         {
           category: 'Funds can be frozen if',
           text: "selected Maker doesn't act on user deposit.",
-          isCritical: true,
         },
         {
           category: 'Users can be censored if',
           text: "selected Maker doesn't act on user deposit.",
-          isCritical: true,
         },
       ],
     },
@@ -130,12 +131,10 @@ export const orbiter: Bridge = {
     // For contracts, see:
     // https://github.com/Orbiter-Finance/orbiter-sdk/blob/main/src/config/contracts.ts
     addresses: [
-      {
-        address: EthereumAddress('0xD9D74a29307cc6Fc8BF424ee4217f1A587FBc8Dc'),
-        name: 'OBSource',
-        description:
-          "Proxies transfers into Makers' accounts (when using custom frontend via SDK).",
-      },
+      discovery.getContractDetails(
+        'OBSource',
+        "Proxies transfers into Makers' accounts (when using custom frontend via SDK).",
+      ),
     ],
     risks: [],
   },

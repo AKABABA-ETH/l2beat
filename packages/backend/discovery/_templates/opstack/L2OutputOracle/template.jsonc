@@ -15,14 +15,27 @@
     "latestOutputIndex"
   ],
   "fields": {
+    "FINALIZATION_PERIOD_SECONDS": {
+      "description": "Challenge period (Number of seconds until a state root is finalized)."
+    },
     "proposer": {
       "target": {
-        "role": "Proposer"
+        "permissions": [{ "type": "propose" }]
+      }
+    },
+    "PROPOSER": {
+      "target": {
+        "permissions": [{ "type": "propose" }]
       }
     },
     "challenger": {
       "target": {
-        "role": "Challenger"
+        "permissions": [{ "type": "challenge" }]
+      }
+    },
+    "CHALLENGER": {
+      "target": {
+        "permissions": [{ "type": "challenge" }]
       }
     },
     "deletedOutputs": {

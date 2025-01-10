@@ -1,4 +1,465 @@
-Generated with discovered.json: 0xe230045a1bdd62248a3a4c7c480f765b3e7663fc
+Generated with discovered.json: 0x3fecf8693e8f367272c311041880c272398285bb
+
+# Diff at Mon, 21 Oct 2024 12:43:55 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@e660599f23a07618fe949a07be1f516ce44f1914 block: 20640703
+- current block number: 20640703
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20640703 (main branch discovery), not current.
+
+```diff
+    contract GovernanceMultisig (0xCCa5De1e10c05c50C51ac551D9182cd31aca1889) {
+    +++ description: This Multisig itself is one of the two Governors, the other being an EOA, both equally permissioned to upgrade the bridge.
+      descriptions:
+-        ["This Multisig itself is one of the two Governors, the other being an EOA, both equally permissioned to upgrade the bridge."]
+      description:
++        "This Multisig itself is one of the two Governors, the other being an EOA, both equally permissioned to upgrade the bridge."
+    }
+```
+
+Generated with discovered.json: 0x496ceb1508cd3a15b24a56bb4dec770960b7df9d
+
+# Diff at Mon, 21 Oct 2024 11:05:35 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@8895d33866f5665c4c710f4ddaa32bfa63cc3c78 block: 20640703
+- current block number: 20640703
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20640703 (main branch discovery), not current.
+
+```diff
+    contract StarkExchange (0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b) {
+    +++ description: None
+      values.$pastUpgrades.16.2:
++        ["0x29Db022dbc824b78A0dA699a77E3d177f08A1191","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x5524cB52490e01CBa4EB64F230CC661780cB6298","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
+      values.$pastUpgrades.16.1:
+-        ["0x29Db022dbc824b78A0dA699a77E3d177f08A1191","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x5524cB52490e01CBa4EB64F230CC661780cB6298","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
++        "0x4ed46e53b7228bbd7a377396a6dbb032beeb1296affd055462911dd323afa3f8"
+      values.$pastUpgrades.15.2:
++        ["0xc392DD8edAd534266cbf2817ee01dC68193DE23d","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x654cEF88e1EDD4B5a6d10815439768c60ca109a1","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
+      values.$pastUpgrades.15.1:
+-        ["0xc392DD8edAd534266cbf2817ee01dC68193DE23d","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x654cEF88e1EDD4B5a6d10815439768c60ca109a1","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
++        "0x7a7d7077267911d53481a49e72985aac941d7f1fde534926da902666729ce24d"
+      values.$pastUpgrades.14.2:
++        ["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
+      values.$pastUpgrades.14.1:
+-        ["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
++        "0x7c39229a92109c6dea7b9d16b8e0128d4316cede0fca1d7300cf5e49a508043d"
+      values.$pastUpgrades.13.2:
++        ["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
+      values.$pastUpgrades.13.1:
+-        ["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
++        "0x2581316c7e3de05782eb37313851dd4d61395c832bf4a4e24f3298c6161047d3"
+      values.$pastUpgrades.12.2:
++        ["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
+      values.$pastUpgrades.12.1:
+-        ["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
++        "0x202f69895d6438cdc5d2816418e9e57291a5d45446b54304bfcda28464e60887"
+      values.$pastUpgrades.11.2:
++        ["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
+      values.$pastUpgrades.11.1:
+-        ["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]
++        "0x35440a57c7d3ff276dddadfb339dd5cf14353c95f8a68203e4fc128a09b8773d"
+      values.$pastUpgrades.10.2:
++        ["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]
+      values.$pastUpgrades.10.1:
+-        ["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]
++        "0x35440a57c7d3ff276dddadfb339dd5cf14353c95f8a68203e4fc128a09b8773d"
+      values.$pastUpgrades.9.2:
++        ["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]
+      values.$pastUpgrades.9.1:
+-        ["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]
++        "0x044173077b541f16085d2e55e145bdf4a0a7159ded50ae346d931c380e79e64d"
+      values.$pastUpgrades.8.2:
++        ["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]
+      values.$pastUpgrades.8.1:
+-        ["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]
++        "0x575752cbf39cd864a43bb8496414cf52cf265670d0de8af26b8b6d0470a8afec"
+      values.$pastUpgrades.7.2:
++        ["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]
+      values.$pastUpgrades.7.1:
+-        ["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]
++        "0x4e66dd5619e7acc4e878c68ab25350d41c38d4d2339a34a19dbdb5a40377dff8"
+      values.$pastUpgrades.6.2:
++        ["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]
+      values.$pastUpgrades.6.1:
+-        ["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]
++        "0x679e92bfb784e59895fd71b8803906ed7adb74cec288d66d41050ef4c0aaa3c4"
+      values.$pastUpgrades.5.2:
++        ["0xB8563AD5aF1F79dd04937BE8B572318c8e6f43AC","0xF65C115efd24102315Af53f84aD65aD240bc9D57","0x97AA9658cfE27D6382b71FF9E72d773615Bd529E","0x86d8f977C9cEC503ad4E6805802cEf62Cde13773","0x0D7c8d7A16c7832869d8FeEf02730238CdFe083A","0x2D542881E93491e765E5110c1e373FC2968E720A","0x970d1Fa79c64b256ef68bBFEab34137786811C7F"]
+      values.$pastUpgrades.5.1:
+-        ["0xB8563AD5aF1F79dd04937BE8B572318c8e6f43AC","0xF65C115efd24102315Af53f84aD65aD240bc9D57","0x97AA9658cfE27D6382b71FF9E72d773615Bd529E","0x86d8f977C9cEC503ad4E6805802cEf62Cde13773","0x0D7c8d7A16c7832869d8FeEf02730238CdFe083A","0x2D542881E93491e765E5110c1e373FC2968E720A","0x970d1Fa79c64b256ef68bBFEab34137786811C7F"]
++        "0x0512cdb0c725a846ab22ecc1a19a023b62444816a860ecdcbd26afed1421dadd"
+      values.$pastUpgrades.4.2:
++        ["0xB8563AD5aF1F79dd04937BE8B572318c8e6f43AC","0xF65C115efd24102315Af53f84aD65aD240bc9D57","0x97AA9658cfE27D6382b71FF9E72d773615Bd529E","0x86d8f977C9cEC503ad4E6805802cEf62Cde13773","0x0D7c8d7A16c7832869d8FeEf02730238CdFe083A","0x2D542881E93491e765E5110c1e373FC2968E720A","0x970d1Fa79c64b256ef68bBFEab34137786811C7F"]
+      values.$pastUpgrades.4.1:
+-        ["0xB8563AD5aF1F79dd04937BE8B572318c8e6f43AC","0xF65C115efd24102315Af53f84aD65aD240bc9D57","0x97AA9658cfE27D6382b71FF9E72d773615Bd529E","0x86d8f977C9cEC503ad4E6805802cEf62Cde13773","0x0D7c8d7A16c7832869d8FeEf02730238CdFe083A","0x2D542881E93491e765E5110c1e373FC2968E720A","0x970d1Fa79c64b256ef68bBFEab34137786811C7F"]
++        "0xd7add75484f4ae4c369be403c7c94a1b9589266fd3f44ecfa5f4522dd41dc727"
+      values.$pastUpgrades.3.2:
++        ["0x7D2375a873CF858f02F97F40CbBBc03293f9A055","0x3Ba4D737e64b50d26dd594a7c5BcC0131E4C5d11","0xf677a1E6261e55C1f3C33D6C9FCf20b476D57713","0xb2B3c885C6E2D72E0bc28e944Ff3f67c236c7e69"]
+      values.$pastUpgrades.3.1:
+-        ["0x7D2375a873CF858f02F97F40CbBBc03293f9A055","0x3Ba4D737e64b50d26dd594a7c5BcC0131E4C5d11","0xf677a1E6261e55C1f3C33D6C9FCf20b476D57713","0xb2B3c885C6E2D72E0bc28e944Ff3f67c236c7e69"]
++        "0xdf3ea6ba0901e47d804e717046e1b1b9861e6082930c682aa0e300293c71b571"
+      values.$pastUpgrades.2.2:
++        ["0x18a5452117714ccE0d8FaECeFDFdB4783140AF74","0x3Ba4D737e64b50d26dd594a7c5BcC0131E4C5d11","0xFD64579fbf48702B3Dbd4e5bb451ab29FDd588dD","0xb2B3c885C6E2D72E0bc28e944Ff3f67c236c7e69"]
+      values.$pastUpgrades.2.1:
+-        ["0x18a5452117714ccE0d8FaECeFDFdB4783140AF74","0x3Ba4D737e64b50d26dd594a7c5BcC0131E4C5d11","0xFD64579fbf48702B3Dbd4e5bb451ab29FDd588dD","0xb2B3c885C6E2D72E0bc28e944Ff3f67c236c7e69"]
++        "0x28e50d1e59f0a7dfa9fe177195bdc47eed90db11773d2ce4c34beaf277db8c5f"
+      values.$pastUpgrades.1.2:
++        ["0x63A995cfB3Badabe007263917024369529BaF26f","0x3Ba4D737e64b50d26dd594a7c5BcC0131E4C5d11","0x2Bb72fc643c1AbaC80392b19D12c68027a944470","0xb2B3c885C6E2D72E0bc28e944Ff3f67c236c7e69"]
+      values.$pastUpgrades.1.1:
+-        ["0x63A995cfB3Badabe007263917024369529BaF26f","0x3Ba4D737e64b50d26dd594a7c5BcC0131E4C5d11","0x2Bb72fc643c1AbaC80392b19D12c68027a944470","0xb2B3c885C6E2D72E0bc28e944Ff3f67c236c7e69"]
++        "0xaa2d2b00a0c72056946b6c0e7e656602ded829fda99e4506c78bb6569ac55eba"
+      values.$pastUpgrades.0.2:
++        ["0xab4cB335Bc7eE587Ebc07c2445Dc2807bEBE973e"]
+      values.$pastUpgrades.0.1:
+-        ["0xab4cB335Bc7eE587Ebc07c2445Dc2807bEBE973e"]
++        "0x717f978da7127c0340327351275f626c281515e116e0e9d8d62236cf651f4653"
+    }
+```
+
+Generated with discovered.json: 0xe0988fdd6989c21b01a27b944407bd8b2490446b
+
+# Diff at Mon, 14 Oct 2024 10:50:33 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 20640703
+- current block number: 20640703
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20640703 (main branch discovery), not current.
+
+```diff
+    contract Committee (0x28780349A33eEE56bb92241bAAB8095449e24306) {
+    +++ description: None
+      sourceHashes:
++        ["0x83a4f7af4e5a371aadb57903aed1b1f96556a0b3eb4665044a65ad8f70a89edc"]
+    }
+```
+
+```diff
+    contract GpsFactRegistryAdapter (0x3b1298395290Bb7924F0Fcc176DECF3B4879FE73) {
+    +++ description: None
+      sourceHashes:
++        ["0x3c0fff412189244728e9be021e2c7a1084326cc80e71f930221094909caafec0"]
+    }
+```
+
+```diff
+    contract OrderRegistry (0x518c4A79a1102eEDc987005CA8cE6B87Ca14dDf8) {
+    +++ description: None
+      sourceHashes:
++        ["0x1e28fda3c245bc1fc13d0ddc7b108be510d1e0220fc67552921c87724bb45a4c"]
+    }
+```
+
+```diff
+    contract DeversiFiTreasuryMultisig (0x520Cf70a2D0B3dfB7386A2Bc9F800321F62a5c3a) {
+    +++ description: None
+      sourceHashes:
++        ["0x379cacebf61f1aa488b2a43b02fff3f8d7835d9dca8f342a13570553219e6e8c"]
+    }
+```
+
+```diff
+    contract StarkExchange (0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b) {
+    +++ description: None
+      sourceHashes:
++        ["0x46eae4f2e7b6b0f5096ba403f113ff3c86205368a36af081ab280441d64942fc","0xa6841fa395d89b246e6ab746f0501d13a8c570e1c9fa282241c39b48c738067c","0x70e4767336d4a44ecedb78b7cef6dc2810f5d8bc87a46c360083e65af451cb97","0x86d6fa45382a22e80ccfc3c25098fbb8d33ef8ae32da21e4fe8257f0caf8c114","0x0e101cfdb791ca1a86402273377c7da5e67225cf5799ac2f51d9a940227ee6be","0x7d557870276c694154e12790f8c0c09930c8c75320f470c47b67968bffd536a6","0x2a703c051ff2524868f044282fc50b01913736a92f794b64b31bd31363cd3fca","0xd5b06286e3bf5dccd0bb360c8cc876aec0a2ce288120d9f83dec45fa47c1aabc"]
+    }
+```
+
+```diff
+    contract GovernanceMultisig (0xCCa5De1e10c05c50C51ac551D9182cd31aca1889) {
+    +++ description: This Multisig itself is one of the two Governors, the other being an EOA, both equally permissioned to upgrade the bridge.
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+Generated with discovered.json: 0x892b57a5c51efa33135fb2afe99b1b125aa235fd
+
+# Diff at Tue, 01 Oct 2024 10:50:48 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@bd754dc73c66120164006054f8d25c5fae9cd910 block: 20640703
+- current block number: 20640703
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20640703 (main branch discovery), not current.
+
+```diff
+    contract StarkExchange (0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2020-05-26T11:16:50.000Z",["0xab4cB335Bc7eE587Ebc07c2445Dc2807bEBE973e"]],["2020-12-02T07:18:47.000Z",["0x63A995cfB3Badabe007263917024369529BaF26f","0x3Ba4D737e64b50d26dd594a7c5BcC0131E4C5d11","0x2Bb72fc643c1AbaC80392b19D12c68027a944470","0xb2B3c885C6E2D72E0bc28e944Ff3f67c236c7e69"]],["2021-01-04T07:16:37.000Z",["0x18a5452117714ccE0d8FaECeFDFdB4783140AF74","0x3Ba4D737e64b50d26dd594a7c5BcC0131E4C5d11","0xFD64579fbf48702B3Dbd4e5bb451ab29FDd588dD","0xb2B3c885C6E2D72E0bc28e944Ff3f67c236c7e69"]],["2021-01-21T07:40:38.000Z",["0x7D2375a873CF858f02F97F40CbBBc03293f9A055","0x3Ba4D737e64b50d26dd594a7c5BcC0131E4C5d11","0xf677a1E6261e55C1f3C33D6C9FCf20b476D57713","0xb2B3c885C6E2D72E0bc28e944Ff3f67c236c7e69"]],["2021-08-18T07:47:40.000Z",["0xB8563AD5aF1F79dd04937BE8B572318c8e6f43AC","0xF65C115efd24102315Af53f84aD65aD240bc9D57","0x97AA9658cfE27D6382b71FF9E72d773615Bd529E","0x86d8f977C9cEC503ad4E6805802cEf62Cde13773","0x0D7c8d7A16c7832869d8FeEf02730238CdFe083A","0x2D542881E93491e765E5110c1e373FC2968E720A","0x970d1Fa79c64b256ef68bBFEab34137786811C7F"]],["2021-09-09T13:16:44.000Z",["0xB8563AD5aF1F79dd04937BE8B572318c8e6f43AC","0xF65C115efd24102315Af53f84aD65aD240bc9D57","0x97AA9658cfE27D6382b71FF9E72d773615Bd529E","0x86d8f977C9cEC503ad4E6805802cEf62Cde13773","0x0D7c8d7A16c7832869d8FeEf02730238CdFe083A","0x2D542881E93491e765E5110c1e373FC2968E720A","0x970d1Fa79c64b256ef68bBFEab34137786811C7F"]],["2021-12-15T08:08:11.000Z",["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]],["2022-01-04T12:03:18.000Z",["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]],["2022-02-02T15:39:33.000Z",["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]],["2023-07-26T15:11:11.000Z",["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]],["2023-08-08T08:32:11.000Z",["0x4EDD62189732e9fF476ABa880b48c29432A7AC9B","0x62BCA4DB742A99c834e2c24b609656A70EA25379","0x8536850750956c2FEebeCAB786d82271a5467687","0x1c3A4EfF75a287Fe6249CAb49606FA25659929A2","0x3799ad2a4Eb4E882219B02C036656d4ECbD437A1","0x1688abB0B5c72F34B7f78e857Aa317deD5B5D339","0xB3788a88F063B217227E27ae16Ba550db3132bE6"]],["2023-08-08T08:32:11.000Z",["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]],["2023-08-10T07:28:59.000Z",["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]],["2023-08-13T15:01:59.000Z",["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]],["2024-03-25T15:35:47.000Z",["0xdF2f24751F7e84ccDCD39e7b49904FAB0Fb0f583","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x2Dbc18A3ac126abE1fF90A83Bbc3947ff7912Afb","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]],["2024-03-28T20:37:47.000Z",["0xc392DD8edAd534266cbf2817ee01dC68193DE23d","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x654cEF88e1EDD4B5a6d10815439768c60ca109a1","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]],["2024-08-26T15:52:35.000Z",["0x29Db022dbc824b78A0dA699a77E3d177f08A1191","0xfbea22FeB369DB10C0d3a2aAa8F4939E76815f12","0x5524cB52490e01CBa4EB64F230CC661780cB6298","0x67e198743BC19fa4757720eDd0e769f8291e1F1D","0x613ee54C54D5548627064B4D648942bF3648f376","0xb2ED005D0278179001a49a9969BB22BA8e98f31F","0xB5353268d8d4D711a92cb838F8fEDFC2A66E50Db"]]]
+      values.$upgradeCount:
++        17
+    }
+```
+
+Generated with discovered.json: 0xf262a64a3850dbfb866758c225175dd7ba5b3789
+
+# Diff at Fri, 30 Aug 2024 10:09:59 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@78fe1115153efe3e1ba2014fd74329156dca3951 block: 20633317
+- current block number: 20640703
+
+## Description
+
+Admin EOA removed after our ping.
+
+## Watched changes
+
+```diff
+    contract StarkExchange (0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b) {
+    +++ description: None
+      issuedPermissions.1:
+-        {"permission":"upgrade","target":"0xCCa5De1e10c05c50C51ac551D9182cd31aca1889","via":[]}
+      issuedPermissions.0.target:
+-        "0x3a74010f2b37C02A249bd539EaE6b90Ba7CcD8aA"
++        "0xCCa5De1e10c05c50C51ac551D9182cd31aca1889"
+      values.$admin:
+-        ["0x3a74010f2b37C02A249bd539EaE6b90Ba7CcD8aA","0xCCa5De1e10c05c50C51ac551D9182cd31aca1889"]
++        "0xCCa5De1e10c05c50C51ac551D9182cd31aca1889"
+    }
+```
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20633317 (main branch discovery), not current.
+
+```diff
+    contract GovernanceMultisig (0xCCa5De1e10c05c50C51ac551D9182cd31aca1889) {
+    +++ description: This Multisig itself is one of the two Governors, the other being an EOA, both equally permissioned to upgrade the bridge.
+      receivedPermissions.0.via:
+-        []
+    }
+```
+
+Generated with discovered.json: 0xd3cb0c967e7f0f853d636259b32a7bdf6de9801d
+
+# Diff at Thu, 29 Aug 2024 09:22:37 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@ae2eef5fb76c32f2e57d2f78a8a0f4686592fe8b block: 19825372
+- current block number: 20633317
+
+## Description
+
+This minor upgrade of StarkExchange.sol and TokensAndRamping.sol adds the ability to withdraw even for blocklisted owner keys after a CLEARANCE_DELAY hardcoded to 2 weeks. This can only be done by the BlockAdmin (hardcoded to DeversiFiTreasuryMultisig).
+
+Furthermore two signers of the GovernanceMultisig are rotated.
+
+A redWarning is added due to EOA Admin (was missed in the past).
+
+## Watched changes
+
+```diff
+    contract StarkExchange (0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b) {
+    +++ description: None
+      values.$implementation.2:
+-        "0x654cEF88e1EDD4B5a6d10815439768c60ca109a1"
++        "0x5524cB52490e01CBa4EB64F230CC661780cB6298"
+      values.$implementation.0:
+-        "0xc392DD8edAd534266cbf2817ee01dC68193DE23d"
++        "0x29Db022dbc824b78A0dA699a77E3d177f08A1191"
+      values.implementation:
+-        "0xc392DD8edAd534266cbf2817ee01dC68193DE23d"
++        "0x29Db022dbc824b78A0dA699a77E3d177f08A1191"
+      values.VERSION:
+-        "4.5.2-bl"
++        "4.5.3-blc"
+    }
+```
+
+```diff
+    contract GovernanceMultisig (0xCCa5De1e10c05c50C51ac551D9182cd31aca1889) {
+    +++ description: This Multisig itself is one of the two Governors, the other being an EOA, both equally permissioned to upgrade the bridge.
+      values.$members.5:
+-        "0xe0fE5b38C52A83308bEC9242d768441025DBB4D8"
++        "0x8501cFEE1715F5BC771cC65997F2A655f234e9Ef"
+      values.$members.0:
+-        "0x94aa58E38ac22518Cf0E267cd062Ed7E78eA958E"
++        "0x6Db55792263D558d9c98B740f8cB5E8a2e02Ec05"
+    }
+```
+
+## Source code changes
+
+```diff
+.../StarkExchange/StarkExchange.1.sol              | 16 ++--
+ .../StarkExchange/TokensAndRamping.3.sol           | 88 ++++++++++++++++++++--
+ 2 files changed, 89 insertions(+), 15 deletions(-)
+```
+
+Generated with discovered.json: 0x7b68025e5a9b3890af9387a25144eda5f8e9ec59
+
+# Diff at Wed, 21 Aug 2024 10:02:45 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@2f6dde3357bf5d79196b6e94f79d853a6c4ec72b block: 19825372
+- current block number: 19825372
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19825372 (main branch discovery), not current.
+
+```diff
+    contract StarkExchange (0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0x3a74010f2b37C02A249bd539EaE6b90Ba7CcD8aA","via":[]},{"permission":"upgrade","target":"0xCCa5De1e10c05c50C51ac551D9182cd31aca1889","via":[]}]
+    }
+```
+
+```diff
+    contract GovernanceMultisig (0xCCa5De1e10c05c50C51ac551D9182cd31aca1889) {
+    +++ description: This Multisig itself is one of the two Governors, the other being an EOA, both equally permissioned to upgrade the bridge.
+      assignedPermissions:
+-        {"upgrade":["0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b"]}
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b","via":[]}]
+    }
+```
+
+Generated with discovered.json: 0x178744cd356eb31e7b50a829cd9c0849148680ce
+
+# Diff at Fri, 09 Aug 2024 10:09:23 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 19825372
+- current block number: 19825372
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19825372 (main branch discovery), not current.
+
+```diff
+    contract GovernanceMultisig (0xCCa5De1e10c05c50C51ac551D9182cd31aca1889) {
+    +++ description: This Multisig itself is one of the two Governors, the other being an EOA, both equally permissioned to upgrade the bridge.
+      assignedPermissions.admin:
+-        ["0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b"]
+      assignedPermissions.upgrade:
++        ["0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b"]
+      values.$multisigThreshold:
+-        "4 of 6 (67%)"
++++ description: Signers of the Multisig
++++ severity: LOW
+      values.getOwners:
+-        ["0x94aa58E38ac22518Cf0E267cd062Ed7E78eA958E","0x478615F37FcCB0DF69C191a8674233f6899D092e","0x0fa6bf3377Cfa276d9d7122c09C187e5e8ef1C59","0x611F96c83fE0A30B504Ee2C6a2Cae890e620bA35","0x445EEDE2681116Dd94C8D5Bfab73283B3ef1f6f3","0xe0fE5b38C52A83308bEC9242d768441025DBB4D8"]
++++ description: Threshold of the Multisig
++++ severity: HIGH
+      values.getThreshold:
+-        4
+      values.$members:
++        ["0x94aa58E38ac22518Cf0E267cd062Ed7E78eA958E","0x478615F37FcCB0DF69C191a8674233f6899D092e","0x0fa6bf3377Cfa276d9d7122c09C187e5e8ef1C59","0x611F96c83fE0A30B504Ee2C6a2Cae890e620bA35","0x445EEDE2681116Dd94C8D5Bfab73283B3ef1f6f3","0xe0fE5b38C52A83308bEC9242d768441025DBB4D8"]
+      values.$threshold:
++        4
+      values.multisigThreshold:
++        "4 of 6 (67%)"
+    }
+```
+
+Generated with discovered.json: 0x83ca8c055d1a8555877725d7e9f5fec6a1553ed7
+
+# Diff at Tue, 30 Jul 2024 11:11:37 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@b2b6471ff62871f4956541f42ec025c356c08f7e block: 19825372
+- current block number: 19825372
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19825372 (main branch discovery), not current.
+
+```diff
+    contract GovernanceMultisig (0xCCa5De1e10c05c50C51ac551D9182cd31aca1889) {
+    +++ description: This Multisig itself is one of the two Governors, the other being an EOA, both equally permissioned to upgrade the bridge.
+      fieldMeta:
++        {"getOwners":{"severity":"LOW","description":"Signers of the Multisig"},"getThreshold":{"severity":"HIGH","description":"Threshold of the Multisig"}}
+    }
+```
+
+Generated with discovered.json: 0xffb7fd8ba83b7d701327b0733f3f80e093661103
+
+# Diff at Thu, 18 Jul 2024 10:30:41 GMT:
+
+- author: Adrian Adamiak (<adrian@adamiak.net>)
+- comparing to: main@d89fe52cb65d643cef712d1d7910564a7acf2dce block: 19825372
+- current block number: 19825372
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19825372 (main branch discovery), not current.
+
+```diff
+    contract GovernanceMultisig (0xCCa5De1e10c05c50C51ac551D9182cd31aca1889) {
+    +++ description: This Multisig itself is one of the two Governors, the other being an EOA, both equally permissioned to upgrade the bridge.
+      assignedPermissions:
++        {"admin":["0x5d22045DAcEAB03B158031eCB7D9d06Fad24609b"]}
+    }
+```
+
+Generated with discovered.json: 0x694214ed17ed4f9ea12cd7d368bd65206c17ad4a
 
 # Diff at Wed, 08 May 2024 12:34:48 GMT:
 

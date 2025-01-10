@@ -16,6 +16,7 @@ const congressThreshold = discovery.getContractValue<number>(
 export const chainport: Bridge = {
   type: 'bridge',
   id: ProjectId('chainport'),
+  createdAt: new UnixTime(1696938823), // 2023-10-10T11:53:43Z
   display: {
     name: 'Chainport',
     slug: 'chainport',
@@ -110,7 +111,6 @@ export const chainport: Bridge = {
         {
           category: 'Funds can be frozen if',
           text: 'third party actors decide to not relay selected messages between chains.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
@@ -131,7 +131,7 @@ export const chainport: Bridge = {
       ),
       discovery.getContractDetails(
         'ChainportCongressMembersRegistry',
-        `Registry of the Chainport Congress members. Acts as a ${congressThreshold}-of-${congressSize} multisig.`,
+        `Registry of the Chainport Congress members. Acts as a ${congressThreshold} / ${congressSize} multisig.`,
       ),
     ],
     risks: [],

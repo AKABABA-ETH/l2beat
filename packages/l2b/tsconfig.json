@@ -1,0 +1,9 @@
+{
+  "extends": "@l2beat/typescript-config/base",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noFallthroughCasesInSwitch": false,
+    "noUncheckedIndexedAccess": false
+  },
+  "include": ["src"]
+}

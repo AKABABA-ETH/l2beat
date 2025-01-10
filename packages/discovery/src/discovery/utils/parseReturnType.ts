@@ -1,16 +1,16 @@
-import { assert } from '@l2beat/backend-tools'
+import { assert } from '@l2beat/shared-pure'
 import { utils } from 'ethers'
 import { ParamType } from 'ethers/lib/utils'
 import { toFunctionFragment } from '../handlers/utils/toFunctionFragment'
 
 export type Type = BaseType | ArrayType | TupleType
 
-export interface BaseType {
+interface BaseType {
   kind: 'base'
   typeName: string
 }
 
-export interface ArrayType {
+interface ArrayType {
   kind: 'array'
   length: number | 'dynamic'
   childType: Type

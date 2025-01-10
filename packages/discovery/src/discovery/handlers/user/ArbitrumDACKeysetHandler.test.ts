@@ -2,7 +2,6 @@ import { Bytes, EthereumAddress, Hash256 } from '@l2beat/shared-pure'
 import { expect, mockObject } from 'earl'
 import { providers, utils } from 'ethers'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { ArbitrumDACKeysetHandler } from './ArbitrumDACKeysetHandler'
 
@@ -11,12 +10,23 @@ describe(ArbitrumDACKeysetHandler.name, () => {
     'event SetValidKeyset(bytes32 indexed keysetHash, bytes keysetBytes)',
   ])
 
+  const emptyKeyBytes = Bytes.fromHex('0x0001aa')
+  function generateEmptyKeyBytes(keyCount: number): Bytes {
+    let result = Bytes.EMPTY
+
+    for (let i = 0; i < keyCount; i++) {
+      result = result.concat(emptyKeyBytes)
+    }
+
+    return result
+  }
+
   function SetValidKeyset(threshold: number, keyCount: number): providers.Log {
     const keysetHash = Hash256.random()
     const keysetBytes = Bytes.fromByteArray([])
       .concat(Bytes.fromHex(`0x${threshold.toString(16).padStart(16, '0')}`))
       .concat(Bytes.fromHex(`0x${keyCount.toString(16).padStart(16, '0')}`))
-      .concat(Bytes.randomOfLength(256))
+      .concat(generateEmptyKeyBytes(keyCount))
 
     return abi.encodeEventLog(abi.getEvent('SetValidKeyset'), [
       keysetHash.toString(),
@@ -40,16 +50,15 @@ describe(ArbitrumDACKeysetHandler.name, () => {
       },
     })
 
-    const handler = new ArbitrumDACKeysetHandler(
-      'someName',
-      { type: 'arbitrumDACKeyset' },
-      DiscoveryLogger.SILENT,
-    )
+    const handler = new ArbitrumDACKeysetHandler('someName', {
+      type: 'arbitrumDACKeyset',
+    })
 
     const value = await handler.execute(provider, address)
     expect(value).toEqual({
       field: 'someName',
       value: {
+        blsSignatures: ['qg==', 'qg==', 'qg==', 'qg==', 'qg==', 'qg==', 'qg=='],
         requiredSignatures: 4,
         membersCount: 7,
       },
@@ -66,16 +75,15 @@ describe(ArbitrumDACKeysetHandler.name, () => {
       },
     })
 
-    const handler = new ArbitrumDACKeysetHandler(
-      'someName',
-      { type: 'arbitrumDACKeyset' },
-      DiscoveryLogger.SILENT,
-    )
+    const handler = new ArbitrumDACKeysetHandler('someName', {
+      type: 'arbitrumDACKeyset',
+    })
 
     const value = await handler.execute(provider, address)
     expect(value).toEqual({
       field: 'someName',
       value: {
+        blsSignatures: [],
         requiredSignatures: 0,
         membersCount: 0,
       },

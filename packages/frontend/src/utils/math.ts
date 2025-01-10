@@ -2,11 +2,9 @@ import indexOf from 'lodash/indexOf'
 import max from 'lodash/max'
 import sum from 'lodash/sum'
 
-export function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value))
-}
-
-export function unifyPercentagesAsIntegers(percentages: number[]): number[] {
+export function unifyPercentagesAsIntegers<T extends number[]>(
+  percentages: T,
+): T {
   if (percentages.length < 2) {
     throw new Error(`Array has to contain at least two elements`)
   }
@@ -23,9 +21,10 @@ export function unifyPercentagesAsIntegers(percentages: number[]): number[] {
   const iterations = 100 - sum(intParts)
   for (let i = 0; i < iterations; i++) {
     const largestIndex = indexOf(decimalParts, max(decimalParts))
-    intParts[largestIndex] += 1
+    if (intParts[largestIndex] !== undefined) intParts[largestIndex] += 1
+
     decimalParts[largestIndex] = 0
   }
 
-  return intParts
+  return intParts as T
 }

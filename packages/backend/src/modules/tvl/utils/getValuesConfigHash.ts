@@ -1,22 +1,23 @@
 import { createHash } from 'crypto'
-import { assert } from '@l2beat/backend-tools'
+import { createAmountId } from '@l2beat/config'
 import {
+  assert,
   AmountConfigEntry,
   CoingeckoPriceConfigEntry,
 } from '@l2beat/shared-pure'
-import { createAmountId } from './createAmountId'
 import { createValueId } from './createValueId'
 
 export function getValuesConfigHash(
   amountConfigs: AmountConfigEntry[],
   priceConfigs: CoingeckoPriceConfigEntry[],
+  indexerMinHeight: number,
 ): string {
   const valueIds: string[] = []
 
+  valueIds.push(indexerMinHeight.toString())
+
   for (const amount of amountConfigs) {
-    const price = priceConfigs.find(
-      (p) => p.address === amount.address && p.chain === amount.chain,
-    )
+    const price = priceConfigs.find((p) => p.assetId === amount.assetId)
     assert(price, `Price config not found for ${createAmountId(amount)}`)
     const valueId = createValueId(amount, price)
     valueIds.push(valueId)

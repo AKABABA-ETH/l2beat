@@ -2,21 +2,25 @@ import {
   EthereumAddress,
   ProjectId,
   UnixTime,
-  formatLargeNumberShared,
+  formatLargeNumber,
   formatSeconds,
 } from '@l2beat/shared-pure'
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   NEW_CRYPTOGRAPHY,
   NUGGETS,
   OPERATOR,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { ESCROW } from '../../common/escrow'
 import { FORCE_TRANSACTIONS } from '../../common/forceTransactions'
+import { formatExecutionDelay } from '../../common/formatDelays'
 import { RISK_VIEW } from '../../common/riskView'
 import { STATE_CORRECTNESS } from '../../common/stateCorrectness'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
@@ -26,30 +30,32 @@ import {
   getSHARPVerifierGovernors,
 } from '../../discovery/starkware'
 import { delayDescriptionFromSeconds } from '../../utils/delayDescription'
+import { Badge } from '../badges'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('paradex')
 const verifierAddress = discovery.getAddressFromValue('Paradex', 'verifier')
 
-const upgradeDelaySeconds = discovery.getContractUpgradeabilityParam(
+const upgradeDelaySeconds = discovery.getContractValue<number>(
   'Paradex',
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
 
-const escrowUSDCDelaySeconds = discovery.getContractUpgradeabilityParam(
+const escrowUSDCDelaySeconds = discovery.getContractValue<number>(
   'USDC Bridge',
-  'upgradeDelay',
+  'StarkWareProxy_upgradeDelay',
 )
 
 const minDelay = Math.min(upgradeDelaySeconds, escrowUSDCDelaySeconds)
+const finalizationPeriod = 0
 
 function formatMaxTotalBalanceString(
   ticker: string,
   maxTotalBalance: number,
   decimals: number,
 ) {
-  return `The current bridge cap is ${formatLargeNumberShared(
+  return `The current bridge cap is ${formatLargeNumber(
     maxTotalBalance / 10 ** decimals,
   )} ${ticker}.`
 }
@@ -63,13 +69,20 @@ const escrowUSDCMaxTotalBalanceString = formatMaxTotalBalanceString(
 export const paradex: Layer2 = {
   type: 'layer2',
   id: ProjectId('paradex'),
+  createdAt: new UnixTime(1698756386), // 2023-10-31T12:46:26Z
+  badges: [
+    Badge.VM.CairoVM,
+    Badge.DA.EthereumBlobs,
+    Badge.Fork.StarknetFork,
+    Badge.Infra.SHARP,
+  ],
   display: {
     name: 'Paradex',
     slug: 'paradex',
     provider: 'Starknet',
     description:
       'Paradex is a high-performance crypto-derivatives exchange built on a Starknet Appchain.',
-    purposes: ['Exchange'],
+    purposes: ['Universal', 'Exchange'],
     category: 'ZK Rollup',
 
     links: {
@@ -88,7 +101,7 @@ export const paradex: Layer2 = {
         'Paradex is a ZK rollup that posts state diffs to the L1. For a transaction to be considered final, the state diffs have to be submitted and validity proof should be generated, submitted, and verified. Proofs are aggregated with other projects using SHARP and state updates have to refer to proved claims.',
     },
     finality: {
-      finalizationPeriod: 0,
+      finalizationPeriod,
     },
   },
   config: {
@@ -96,6 +109,7 @@ export const paradex: Layer2 = {
       discovery.getEscrowDetails({
         address: EthereumAddress('0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3'),
         tokens: ['USDC'],
+        ...ESCROW.CANONICAL_EXTERNAL,
         upgradableBy: ['USDC Escrow owner'],
         upgradeDelay: formatSeconds(escrowUSDCDelaySeconds),
         description:
@@ -107,8 +121,8 @@ export const paradex: Layer2 = {
         uses: [{ type: 'liveness', subtype: 'proofSubmissions' }],
         query: {
           formula: 'sharpSubmission',
-          sinceTimestampInclusive: new UnixTime(1636978914),
-          untilTimestampExclusive: new UnixTime(1704729971),
+          sinceTimestamp: new UnixTime(1636978914),
+          untilTimestamp: new UnixTime(1704729971),
           programHashes: [
             '3258367057337572248818716706664617507069572185152472699066582725377748079373',
           ],
@@ -118,8 +132,8 @@ export const paradex: Layer2 = {
         uses: [{ type: 'liveness', subtype: 'proofSubmissions' }],
         query: {
           formula: 'sharpSubmission',
-          sinceTimestampInclusive: new UnixTime(1704729971),
-          untilTimestampExclusive: new UnixTime(1706626427),
+          sinceTimestamp: new UnixTime(1704729971),
+          untilTimestamp: new UnixTime(1706626427),
           programHashes: [
             '54878256403880350656938046611252303365750679698042371543935159963667935317',
           ],
@@ -130,8 +144,8 @@ export const paradex: Layer2 = {
         query: {
           // Updated to this program hash in tx 0x7eb527c897e8449234ad770573a2a5ba3737e6b9014600c261741bc258849639
           formula: 'sharpSubmission',
-          sinceTimestampInclusive: new UnixTime(1706626427),
-          untilTimestampExclusive: new UnixTime(1710346919),
+          sinceTimestamp: new UnixTime(1706626427),
+          untilTimestamp: new UnixTime(1710346919),
           programHashes: [
             '2479841346739966073527450029179698923866252973805981504232089731754042431018',
           ],
@@ -141,8 +155,8 @@ export const paradex: Layer2 = {
         uses: [{ type: 'liveness', subtype: 'proofSubmissions' }],
         query: {
           formula: 'sharpSubmission',
-          sinceTimestampInclusive: new UnixTime(1710346919),
-          untilTimestampExclusive: new UnixTime(1710764843),
+          sinceTimestamp: new UnixTime(1710346919),
+          untilTimestamp: new UnixTime(1710764843),
           programHashes: [
             '109586309220455887239200613090920758778188956576212125550190099009305121410',
           ],
@@ -152,9 +166,30 @@ export const paradex: Layer2 = {
         uses: [{ type: 'liveness', subtype: 'proofSubmissions' }],
         query: {
           formula: 'sharpSubmission',
-          sinceTimestampInclusive: new UnixTime(1710764843),
+          sinceTimestamp: new UnixTime(1710764843),
+          untilTimestamp: new UnixTime(1725811535),
           programHashes: [
             '3383082961563516565935611087683915026448707331436034043529592588079494402084',
+          ],
+        },
+      },
+      {
+        uses: [{ type: 'liveness', subtype: 'proofSubmissions' }],
+        query: {
+          formula: 'sharpSubmission',
+          sinceTimestamp: new UnixTime(1725811535),
+          programHashes: [
+            '853638403225561750106379562222782223909906501242604214771127703946595519856', // Starknet OS
+          ],
+        },
+      },
+      {
+        uses: [{ type: 'liveness', subtype: 'proofSubmissions' }],
+        query: {
+          formula: 'sharpSubmission',
+          sinceTimestamp: new UnixTime(1725811535),
+          programHashes: [
+            '1161178844461337253856226043908368523817098764221830529880464854589141231910', // Aggregator
           ],
         },
       },
@@ -168,7 +203,7 @@ export const paradex: Layer2 = {
           selector: '0x77552641',
           functionSignature:
             'function updateState(uint256[] programOutput, uint256 onchainDataHash, uint256 onchainDataSize)',
-          sinceTimestampInclusive: new UnixTime(1689850631),
+          sinceTimestamp: new UnixTime(1689850631),
         },
       },
       {
@@ -181,30 +216,47 @@ export const paradex: Layer2 = {
           selector: '0xb72d42a1',
           functionSignature:
             'function updateStateKzgDA(uint256[] programOutput, bytes kzgProof)',
-          sinceTimestampInclusive: new UnixTime(1710346919),
+          sinceTimestamp: new UnixTime(1710346919),
+          untilTimestamp: new UnixTime(1725811535),
+        },
+      },
+      {
+        uses: [{ type: 'liveness', subtype: 'stateUpdates' }],
+        query: {
+          formula: 'functionCall',
+          address: EthereumAddress(
+            '0xF338cad020D506e8e3d9B4854986E0EcE6C23640',
+          ),
+          selector: '0x507ee528',
+          functionSignature:
+            'function updateStateKzgDA(uint256[] programOutput, bytes[] kzgProofs)',
+          sinceTimestamp: new UnixTime(1725811667),
         },
       },
     ],
     finality: {
       lag: 0,
       type: 'Starknet',
-      minTimestamp: new UnixTime(1710346920),
+      minTimestamp: new UnixTime(1725811667),
       stateUpdate: 'disabled',
     },
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (blobs or calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_BLOBS_OR_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: {
       ...RISK_VIEW.STATE_ZKP_ST,
+      secondLine: formatExecutionDelay(finalizationPeriod),
       sources: [
         {
           contract: 'Paradex',
           references: [
-            'https://etherscan.io/address/0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24#code',
+            'https://etherscan.io/address/0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC#code',
           ],
         },
       ],
@@ -215,7 +267,7 @@ export const paradex: Layer2 = {
         {
           contract: 'Paradex',
           references: [
-            'https://etherscan.io/address/0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24#code',
+            'https://etherscan.io/address/0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC#code',
           ],
         },
       ],
@@ -227,15 +279,13 @@ export const paradex: Layer2 = {
         {
           contract: 'Paradex',
           references: [
-            'https://etherscan.io/address/0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24#code#F1#L199',
+            'https://etherscan.io/address/0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC#code#F1#L253',
           ],
         },
       ],
     },
     proposerFailure: RISK_VIEW.PROPOSER_CANNOT_WITHDRAW,
-    destinationToken: RISK_VIEW.CANONICAL_USDC,
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   stage: getStage({
     stage0: {
       callsItselfRollup: true,
@@ -321,12 +371,14 @@ export const paradex: Layer2 = {
       link: 'https://twitter.com/tradeparadex/status/1768306190596153799',
       date: '2024-03-26T00:00:00Z',
       description: 'Paradex starts publishing data to blobs.',
+      type: 'general',
     },
     {
       name: 'Open Beta Mainnet Launch',
       link: 'https://twitter.com/tradeparadex',
       date: '2023-10-01T00:00:00.00Z',
       description: 'Paradex launches Open Beta on Mainnet.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [...NUGGETS.STARKWARE],

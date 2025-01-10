@@ -1,19 +1,27 @@
 import { Logger } from '@l2beat/backend-tools'
 import {
   AmountConfigBase,
+  AssetId,
+  Bytes,
   EscrowEntry,
   EthereumAddress,
   ProjectId,
   TotalSupplyEntry,
   UnixTime,
 } from '@l2beat/shared-pure'
-import { expect, mockObject } from 'earl'
-import { BigNumber } from 'ethers'
+import { expect, mockFn, mockObject } from 'earl'
 
+import { RpcClient } from '@l2beat/shared'
 import { MulticallClient } from '../../../peripherals/multicall/MulticallClient'
-import { RpcClient } from '../../../peripherals/rpcclient/RpcClient'
-import { Configuration } from '../../../tools/uif/multi/types'
-import { AmountService, ChainAmountConfig } from './AmountService'
+import { ChainAmountConfig } from '../indexers/types'
+import {
+  AmountService,
+  encodeErc20BalanceQuery,
+  encodeErc20TotalSupplyQuery,
+  encodeGetEthBalance,
+  erc20Interface,
+  multicallInterface,
+} from './AmountService'
 
 describe(AmountService.name, () => {
   const NATIVE_CODEC_SINCE_BLOCK = 1_111
@@ -23,7 +31,7 @@ describe(AmountService.name, () => {
 
   it('calls RPC if multicall does not support native balance', async () => {
     const mockRpc = mockObject<RpcClient>({
-      getBalance: () => Promise.resolve(BigNumber.from(0)),
+      getBalance: () => Promise.resolve(BigInt(0)),
     })
     const mockMulticall = mockObject<MulticallClient>({
       isNativeBalanceSupported: () => false,
@@ -36,9 +44,7 @@ describe(AmountService.name, () => {
     })
 
     const escrowNativeConfig = mockEscrowConfig({ address: 'native' })
-    const configurations: Configuration<ChainAmountConfig>[] = [
-      mockUifConfig(escrowNativeConfig),
-    ]
+    const configurations = [mockConfig(escrowNativeConfig)]
 
     await service.fetchAmounts(timestamp, blockNumber, configurations)
 
@@ -62,12 +68,10 @@ describe(AmountService.name, () => {
       logger: Logger.SILENT,
     })
 
-    const escrowNativeConfig = mockUifConfig(
+    const escrowNativeConfig = mockConfig(
       mockEscrowConfig({ address: 'native' }),
     )
-    const configurations: Configuration<ChainAmountConfig>[] = [
-      escrowNativeConfig,
-    ]
+    const configurations = [escrowNativeConfig]
 
     await service.fetchAmounts(timestamp, blockNumber, configurations)
 
@@ -90,26 +94,102 @@ describe(AmountService.name, () => {
 
     const erc20TotalSupplyConfig = mockTotalSupplyConfig()
     const erc20BalanceConfig = mockEscrowConfig()
-    const configurations: Configuration<ChainAmountConfig>[] = [
-      mockUifConfig(erc20TotalSupplyConfig),
-      mockUifConfig(erc20BalanceConfig),
+    const configurations = [
+      mockConfig(erc20TotalSupplyConfig),
+      mockConfig(erc20BalanceConfig),
     ]
 
     await service.fetchAmounts(timestamp, blockNumber, configurations)
 
     expect(mockMulticall.multicall).toHaveBeenCalledTimes(1)
   })
+
+  describe(AmountService.prototype.fetchWithMulticall.name, () => {
+    it('encodes, calls and decodes data', async () => {
+      const multicallAddress = EthereumAddress.random()
+      const multicallClient = mockObject<MulticallClient>({
+        getMulticallAddressAt: () => multicallAddress,
+        multicall: mockFn().resolvesTo([
+          {
+            success: true,
+            data: encodeTotalSupplyResult(123n),
+          },
+          {
+            success: true,
+            data: encodeErc20BalanceResult(300n),
+          },
+          {
+            success: true,
+            data: encodeGetEthBalanceResult(200n),
+          },
+        ]),
+      })
+      const service = new AmountService({
+        rpcClient: mockObject<RpcClient>({}),
+        multicallClient,
+        logger: Logger.SILENT,
+      })
+
+      const erc20TotalSupplyConfig = mockConfig(mockTotalSupplyConfig())
+      const escrowConfig = mockConfig(mockEscrowConfig())
+      const escrowConfigWithNative = mockConfig(
+        mockEscrowConfig({
+          address: 'native',
+        }),
+      )
+
+      const result = await service.fetchWithMulticall(
+        [erc20TotalSupplyConfig, escrowConfig, escrowConfigWithNative],
+        blockNumber,
+      )
+
+      // encodes and calls
+      expect(multicallClient.multicall).toHaveBeenCalledWith(
+        [
+          encodeErc20TotalSupplyQuery(
+            erc20TotalSupplyConfig.address as EthereumAddress,
+          ),
+          encodeErc20BalanceQuery(
+            (escrowConfig as EscrowEntry).escrowAddress,
+            (escrowConfig as EscrowEntry).address as EthereumAddress,
+          ),
+          encodeGetEthBalance(
+            multicallAddress,
+            (escrowConfigWithNative as EscrowEntry)
+              .escrowAddress as EthereumAddress,
+          ),
+        ],
+        blockNumber,
+      )
+
+      // decodes and returns
+      expect(result).toEqual([
+        {
+          configId: erc20TotalSupplyConfig.id,
+          type: 'totalSupply',
+          amount: 123n,
+        },
+        {
+          configId: escrowConfig.id,
+          type: 'escrow',
+          amount: 300n,
+        },
+        {
+          configId: escrowConfigWithNative.id,
+          type: 'escrow',
+          amount: 200n,
+        },
+      ])
+    })
+  })
 })
 
-function mockUifConfig<T>(
-  config: T,
-  params: { id?: string; minHeight?: number; maxHeight?: number } = {},
-): Configuration<T> {
+function mockConfig(
+  config: ChainAmountConfig,
+): ChainAmountConfig & { id: string } {
   return {
-    properties: config,
-    id: params.id ?? 'id',
-    minHeight: params.minHeight ?? 1,
-    maxHeight: params.maxHeight ?? 2,
+    ...config,
+    id: 'id',
   }
 }
 
@@ -118,7 +198,7 @@ function mockEscrowConfig(config: Partial<EscrowEntry> = {}): EscrowEntry {
     type: 'escrow',
     address: EthereumAddress.random(),
     escrowAddress: EthereumAddress.random(),
-    ...mockBaseConfig(config),
+    ...mockBaseConfig(config, config.address),
     ...config,
   }
 }
@@ -129,21 +209,46 @@ function mockTotalSupplyConfig(
   return {
     type: 'totalSupply',
     address: EthereumAddress.random(),
-    ...mockBaseConfig(config),
+    ...mockBaseConfig(config, config.address),
     ...config,
   }
 }
 
-function mockBaseConfig(base: Partial<AmountConfigBase>): AmountConfigBase {
+function mockBaseConfig(
+  base: Partial<AmountConfigBase>,
+  address: EthereumAddress | 'native' | undefined,
+): AmountConfigBase {
   return {
+    assetId: AssetId.create(base.chain ?? 'chain', address),
     chain: 'chain',
+    dataSource: 'chain',
     project: ProjectId('project'),
     source: 'canonical' as const,
     sinceTimestamp: new UnixTime(123),
     includeInTotal: true,
+    untilTimestamp: undefined,
     decimals: 18,
     symbol: 'SYMBOL',
     isAssociated: false,
+    category: 'other',
     ...base,
   }
+}
+
+function encodeTotalSupplyResult(totalSupply: bigint): Bytes {
+  return Bytes.fromHex(
+    erc20Interface.encodeFunctionResult('totalSupply', [totalSupply]),
+  )
+}
+
+function encodeErc20BalanceResult(totalSupply: bigint): Bytes {
+  return Bytes.fromHex(
+    erc20Interface.encodeFunctionResult('balanceOf', [totalSupply]),
+  )
+}
+
+function encodeGetEthBalanceResult(totalSupply: bigint): Bytes {
+  return Bytes.fromHex(
+    multicallInterface.encodeFunctionResult('getEthBalance', [totalSupply]),
+  )
 }

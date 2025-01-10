@@ -1,18 +1,18 @@
 {
   "name": "lzomnichain",
   "chain": "bsc",
-  "blockNumber": 37363085,
+  "blockNumber": 40976255,
   "configHash": "0xa5396a1a2e11aeb0f8e7ef582ed4a209f01b734e71667872e6bdebda305a75c3",
-  "version": 3,
   "contracts": [
     {
       "name": "FPValidator",
       "address": "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x0d505ac1b08cd930c4b902daa632eaa029531d5c1aa50c45169b63c310b2da62"
+      ],
       "sinceTimestamp": 1665890525,
       "values": {
+        "$immutable": true,
         "getProofType": 2,
         "getUtilsVersion": 1,
         "proofType": 2,
@@ -24,11 +24,12 @@
     {
       "name": "TreasuryV2",
       "address": "0x3773E1E9Deb273fCdf9f80bc88bB387B1e6Ce34d",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x8b908351f18fdaeaf600ae46ef1450c535f741fc95bb25acade77f8b59fdc168"
+      ],
       "sinceTimestamp": 1661528757,
       "values": {
+        "$immutable": true,
         "feeEnabled": false,
         "nativeBP": 0,
         "owner": "0x8D452629c5FfCDDE407069da48c096e1F8beF22c",
@@ -40,22 +41,35 @@
     {
       "name": "ProxyAdmin",
       "address": "0x38dE71124f7a447a01D67945a51eDcE9FF491251",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xeb95d39e1b35f76b6331da863f87bf2e148dd21abf5666590443b65f6a125630"
+      ],
+      "receivedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0xde19274c009A22921E3966a1Ec868cEba40A5DaC"
+        }
+      ],
       "sinceTimestamp": 1647317014,
       "values": {
+        "$immutable": true,
         "owner": "0x76F6d257CEB5736CbcAAb5c48E4225a45F74d6e5"
       }
     },
     {
       "name": "Endpoint",
       "address": "0x3c2269811836af69497E5F486A85D7316753cf62",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x945c3299d0cf62b9ea7a77d6328295d54327299d6a153e1e7b48d85fa9b77215"
+      ],
+      "ignoreInWatchMode": ["isReceivingPayload", "isSendingPayload"],
       "sinceTimestamp": 1647316942,
       "values": {
+        "$immutable": true,
         "BLOCK_VERSION": 65535,
         "chainId": 2,
         "DEFAULT_VERSION": 0,
@@ -81,11 +95,12 @@
     {
       "name": "MPTValidator01",
       "address": "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x965651ae50a316c3ab842d2c8c9242c34d6e40eefa61f7c731bba9a1faf2ccea"
+      ],
       "sinceTimestamp": 1661528745,
       "values": {
+        "$immutable": true,
         "getProofType": 1,
         "getUtilsVersion": 4,
         "PACKET_SIGNATURE": "0xe9bded5f24a4168e4f3bf44e00298c993b22376aad8c58c7dda9718a54cbea82",
@@ -98,11 +113,20 @@
     {
       "name": "UltraLightNodeV2",
       "address": "0x4D73AdB72bC3DD368966edD0f0b2148401A178E2",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x38c85ab54f670eaa1fc2b351aee39913bc12e2b26c460ee31cf89d3f1f7d59b9"
+      ],
+      "ignoreInWatchMode": [
+        "chainAddressSizeMap",
+        "defaultAppConfig",
+        "defaultAdapterParams",
+        "inboundProofLibrary",
+        "supportedOutboundProof",
+        "ulnLookup"
+      ],
       "sinceTimestamp": 1661528751,
       "values": {
+        "$immutable": true,
         "chainAddressSizeMap": {
           "101": 20,
           "102": 20,
@@ -156,11 +180,21 @@
           "230": 20,
           "234": 20,
           "235": 20,
+          "236": 20,
+          "237": 20,
           "238": 20,
           "243": 20,
           "255": 20,
           "257": 20,
-          "260": 20
+          "260": 20,
+          "263": 20,
+          "265": 20,
+          "266": 20,
+          "267": 20,
+          "274": 20,
+          "280": 20,
+          "284": 20,
+          "292": 20
         },
         "CONFIG_TYPE_INBOUND_BLOCK_CONFIRMATIONS": 2,
         "CONFIG_TYPE_INBOUND_PROOF_LIBRARY_VERSION": 1,
@@ -377,6 +411,14 @@
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           },
+          "236": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "237": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
           "238": {
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
@@ -394,6 +436,38 @@
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           },
           "260": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "263": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "265": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "266": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "267": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "274": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "280": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "284": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "292": {
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           }
@@ -585,7 +659,7 @@
           },
           "158": {
             "inboundProofLib": 2,
-            "inboundBlockConfirm": 20,
+            "inboundBlockConfirm": 225000,
             "outboundProofType": 2,
             "outboundBlockConfirm": 20,
             "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
@@ -831,6 +905,22 @@
             "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
             "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
           },
+          "236": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 20,
+            "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
+            "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+          },
+          "237": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 20,
+            "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
+            "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+          },
           "238": {
             "inboundProofLib": 2,
             "inboundBlockConfirm": 5,
@@ -857,13 +947,77 @@
           },
           "257": {
             "inboundProofLib": 2,
-            "inboundBlockConfirm": 5,
+            "inboundBlockConfirm": 225000,
             "outboundProofType": 2,
             "outboundBlockConfirm": 20,
             "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
             "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
           },
           "260": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 20,
+            "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
+            "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+          },
+          "263": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 20,
+            "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
+            "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+          },
+          "265": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 20,
+            "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
+            "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+          },
+          "266": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 10,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 20,
+            "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
+            "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+          },
+          "267": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 20,
+            "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
+            "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+          },
+          "274": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 225000,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 20,
+            "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
+            "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+          },
+          "280": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 20,
+            "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
+            "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+          },
+          "284": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 20,
+            "oracle": "0x5a54fe5234E811466D5366846283323c954310B2",
+            "relayer": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182"
+          },
+          "292": {
             "inboundProofLib": 2,
             "inboundBlockConfirm": 5,
             "outboundProofType": 2,
@@ -1078,6 +1232,14 @@
             "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
             "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
           ],
+          "236": [
+            "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
+            "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
+          ],
+          "237": [
+            "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
+            "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
+          ],
           "238": [
             "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
             "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
@@ -1095,6 +1257,38 @@
             "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
           ],
           "260": [
+            "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
+            "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
+          ],
+          "263": [
+            "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
+            "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
+          ],
+          "265": [
+            "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
+            "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
+          ],
+          "266": [
+            "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
+            "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
+          ],
+          "267": [
+            "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
+            "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
+          ],
+          "274": [
+            "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
+            "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
+          ],
+          "280": [
+            "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
+            "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
+          ],
+          "284": [
+            "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
+            "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
+          ],
+          "292": [
             "0x462F7eC57C6492B983a8C8322B4369a7f149B859",
             "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6"
           ]
@@ -1158,11 +1352,21 @@
           "230": 2,
           "234": 2,
           "235": 2,
+          "236": 2,
+          "237": 2,
           "238": 2,
           "243": 2,
           "255": 2,
           "257": 2,
-          "260": 2
+          "260": 2,
+          "263": 2,
+          "265": 2,
+          "266": [1, 2],
+          "267": [1, 2],
+          "274": 2,
+          "280": 2,
+          "284": 2,
+          "292": 2
         },
         "treasuryContract": "0x3773E1E9Deb273fCdf9f80bc88bB387B1e6Ce34d",
         "treasuryZROFees": 0,
@@ -1219,11 +1423,21 @@
           "230": "0x000000000000000000000000980205d352f198748b626f6f7c38a8a5663ec981",
           "234": "0x000000000000000000000000980205d352f198748b626f6f7c38a8a5663ec981",
           "235": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "236": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "237": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "238": "0x0000000000000000000000004bb746ed0df6a8be563ff66dfc502f084779f9c9",
           "243": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "255": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "257": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
-          "260": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251"
+          "260": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "263": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "265": "0x000000000000000000000000e1844c5d63a9543023008d332bd3d2e6f1fe1043",
+          "266": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "267": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "274": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "280": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "284": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "292": "0x000000000000000000000000fe7c30860d01e28371d40434806f4a8fcdd3a098"
         }
       },
       "derivedName": "UltraLightNodeV2"
@@ -1232,31 +1446,55 @@
       "name": "",
       "address": "0x5a54fe5234E811466D5366846283323c954310B2",
       "unverified": true,
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x47bc8fb02aA30f7ec413f60aFD2C90D8ee96B583",
-        "admin": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8"
-      },
-      "implementations": ["0x47bc8fb02aA30f7ec413f60aFD2C90D8ee96B583"],
-      "sinceTimestamp": 1661535965
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8",
+          "via": []
+        }
+      ],
+      "sinceTimestamp": 1661535965,
+      "values": {
+        "$admin": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8",
+        "$implementation": "0x47bc8fb02aA30f7ec413f60aFD2C90D8ee96B583",
+        "$pastUpgrades": [
+          [
+            "2023-02-08T19:55:32.000Z",
+            "0x31f47a097b7bd9f63239dbc3fa2e1c2557c61434ca6afdb25b4561eee80007b4",
+            ["0xf75C2919c8fddF9D6f34531EBDC7Ad28E1a192e2"]
+          ],
+          [
+            "2023-04-27T02:37:47.000Z",
+            "0xf63ed6dc94a1fbfba0050f3fd911a2783aadb094b645eb3b4eeb3d155a06427c",
+            ["0x47bc8fb02aA30f7ec413f60aFD2C90D8ee96B583"]
+          ]
+        ],
+        "$upgradeCount": 2
+      }
     },
     {
       "name": "",
       "address": "0x5b3b51F830A79a250808f080e0e8dB08BAdf2D1C",
       "unverified": true,
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1687808648
+      "receivedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x7A50b180265eb5347Ce7b92224F0B0Cd6cE0493b"
+        }
+      ],
+      "sinceTimestamp": 1687808648,
+      "values": { "$immutable": true }
     },
     {
       "name": "NonceContract",
       "address": "0x5B905fE05F81F3a8ad8B28C6E17779CFAbf76068",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x895867397d61409de8476975bae4d871fec1c289e52fe97b31872726808dae38"
+      ],
       "sinceTimestamp": 1661280106,
       "values": {
+        "$immutable": true,
         "endpoint": "0x3c2269811836af69497E5F486A85D7316753cf62"
       }
     },
@@ -1264,41 +1502,73 @@
       "name": "",
       "address": "0x5e603Fe3FBDa423D4AFc82e80F59AE8a041Ac35D",
       "unverified": true,
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xc9A227D0319f42e8C5997BD639a5286642474849",
-        "admin": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8"
-      },
-      "implementations": ["0xc9A227D0319f42e8C5997BD639a5286642474849"],
-      "sinceTimestamp": 1669425920
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8",
+          "via": []
+        }
+      ],
+      "sinceTimestamp": 1669425920,
+      "values": {
+        "$admin": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8",
+        "$implementation": "0xc9A227D0319f42e8C5997BD639a5286642474849",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0
+      }
     },
     {
       "name": "",
       "address": "0x7A50b180265eb5347Ce7b92224F0B0Cd6cE0493b",
       "unverified": true,
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xa79dE9B3409361Cd3367856b5Fa9BC258C1f9F0F",
-        "admin": "0x5b3b51F830A79a250808f080e0e8dB08BAdf2D1C"
-      },
-      "implementations": ["0xa79dE9B3409361Cd3367856b5Fa9BC258C1f9F0F"],
-      "sinceTimestamp": 1687808660
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x5b3b51F830A79a250808f080e0e8dB08BAdf2D1C",
+          "via": []
+        }
+      ],
+      "sinceTimestamp": 1687808660,
+      "values": {
+        "$admin": "0x5b3b51F830A79a250808f080e0e8dB08BAdf2D1C",
+        "$implementation": "0x893BB42a352CA8Ee8bCb58348455DD3966368737",
+        "$pastUpgrades": [
+          [
+            "2023-06-26T19:44:20.000Z",
+            "0x89dde5652c34f71e7337186bea268a09a9caa409ea40edb4bcf61f5483c8f67b",
+            ["0x23768Cfd95B699d9B772ce042e490F9deA5ae6d6"]
+          ],
+          [
+            "2024-03-11T19:12:16.000Z",
+            "0xc270073cd459d99b6a86001e756530ae0c22761bf47e42089bdfae585e9f2443",
+            ["0xa79dE9B3409361Cd3367856b5Fa9BC258C1f9F0F"]
+          ],
+          [
+            "2024-07-04T23:52:09.000Z",
+            "0xfd690c14f615eced61d756cd43013ce3409f77b4875d6268a67884501ca4d29e",
+            ["0x893BB42a352CA8Ee8bCb58348455DD3966368737"]
+          ]
+        ],
+        "$upgradeCount": 3
+      }
     },
     {
       "name": "LayerZero Multisig",
       "address": "0x8D452629c5FfCDDE407069da48c096e1F8beF22c",
-      "upgradeability": {
-        "type": "gnosis safe",
-        "masterCopy": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
-        "modules": [],
-        "threshold": "2 of 6 (33%)"
-      },
-      "implementations": ["0x3E5c63644E683549055b9Be8653de26E0B4CD36E"],
+      "template": "GnosisSafe",
+      "sourceHashes": [
+        "0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff",
+        "0x59fe14e95a8aa7f52213f18bae5c9329cf583a7ba31194698b15eddb97d5e825"
+      ],
+      "proxyType": "gnosis safe",
+      "ignoreInWatchMode": ["nonce"],
       "sinceTimestamp": 1648073735,
       "values": {
-        "domainSeparator": "0x177169efa9840f133f0472583ab7f069e6a611246ecf24092e54d542d6e0f47f",
-        "getChainId": 56,
-        "getOwners": [
+        "$immutable": false,
+        "$implementation": "0x3E5c63644E683549055b9Be8653de26E0B4CD36E",
+        "$members": [
           "0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327",
           "0xe095F2590eF1Ab39601445025847Ed8E4B40D687",
           "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936",
@@ -1306,8 +1576,12 @@
           "0x67FC8c432448f9a8d541C17579EF7a142378d5aD",
           "0xf1f5E3777a3ADBe6f3289AD6b21eae6427dfb553"
         ],
-        "getThreshold": 2,
-        "nonce": 81,
+        "$threshold": 2,
+        "domainSeparator": "0x177169efa9840f133f0472583ab7f069e6a611246ecf24092e54d542d6e0f47f",
+        "getChainId": 56,
+        "GnosisSafe_modules": [],
+        "multisigThreshold": "2 of 6 (33%)",
+        "nonce": 131,
         "VERSION": "1.3.0"
       },
       "derivedName": "GnosisSafeL2"
@@ -1315,25 +1589,77 @@
     {
       "name": "ProxyAdmin",
       "address": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xeb95d39e1b35f76b6331da863f87bf2e148dd21abf5666590443b65f6a125630"
+      ],
+      "receivedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x5a54fe5234E811466D5366846283323c954310B2"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x5e603Fe3FBDa423D4AFc82e80F59AE8a041Ac35D"
+        }
+      ],
       "sinceTimestamp": 1661448871,
       "values": {
+        "$immutable": true,
         "owner": "0x7B80f2924E3Ad59a55f4bcC38AB63480599Be6c8"
       }
     },
     {
       "name": "RelayerV2",
       "address": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x7701C12D268847dB94bbF37A4C4af53Bb6bAF8B0",
-        "admin": "0x38dE71124f7a447a01D67945a51eDcE9FF491251"
-      },
-      "implementations": ["0x7701C12D268847dB94bbF37A4C4af53Bb6bAF8B0"],
+      "sourceHashes": [
+        "0x2cffb288804b4b9aa5855910610b396abe44ded0ad8ed35981ed74d056ae8ba1",
+        "0x09e8ef64d88f50d1728775b0716905d15bbe17af7dad266027d75f85e6276d49"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x38dE71124f7a447a01D67945a51eDcE9FF491251",
+          "via": []
+        }
+      ],
       "sinceTimestamp": 1661531611,
       "values": {
+        "$admin": "0x38dE71124f7a447a01D67945a51eDcE9FF491251",
+        "$implementation": "0x7701C12D268847dB94bbF37A4C4af53Bb6bAF8B0",
+        "$pastUpgrades": [
+          [
+            "2022-11-21T22:34:18.000Z",
+            "0xc8142d7bedc7b69fc6946c60bfe7920560036a570ab9b1a0dbd80611d3013db6",
+            ["0x50002CdFe7CCb0C41F519c6Eb0653158d11cd907"]
+          ],
+          [
+            "2023-02-03T23:05:57.000Z",
+            "0x836cf185eb81a7c91b2aaea511c9f1a87ce030596f1f750848666ae37b8f9e4d",
+            ["0x48486ECbB22Ca392f99C21FF02f6106580f526F8"]
+          ],
+          [
+            "2023-04-23T04:35:55.000Z",
+            "0x6f17740ee2451bdc90723be62bd6c5bf2896e27c2656aa442f8b1abe86dc6862",
+            ["0x1a9a68b8Af58eA2b9130622e3bEA2373AaA79EFa"]
+          ],
+          [
+            "2023-06-26T23:18:31.000Z",
+            "0x8ecbced18a0e42909acc3cdae10feca174cf9b3bed09cee3b43cf09b069fb792",
+            ["0x92B9a8278ce3a1E17C66B3a6B61d807b2616bcED"]
+          ],
+          [
+            "2023-09-20T19:37:03.000Z",
+            "0x47a7ec5b68119851c4f03560f3aaed318454b512a7a5ad2235a54fad20205fe7",
+            ["0x26fdA154E76e53F078e7096459d9132542db3b9d"]
+          ],
+          [
+            "2023-09-22T14:16:28.000Z",
+            "0x14c6afd1411f336c05539d9bcc5c1b9d79babf7de84343615816229cd1c25371",
+            ["0x7701C12D268847dB94bbF37A4C4af53Bb6bAF8B0"]
+          ]
+        ],
+        "$upgradeCount": 6,
         "AIRDROP_GAS_LIMIT": 10000,
         "fpBytes": 160,
         "mptOverhead": 500,
@@ -1351,11 +1677,12 @@
     {
       "name": "VerifierNetwork",
       "address": "0xD56e4eAb23cb81f43168F9F45211Eb027b9aC7cc",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x1be31a02ca7158d467a49eeb964f0f8aa1d1e74019df854c1881d89d51260701"
+      ],
       "sinceTimestamp": 1694218835,
       "values": {
+        "$immutable": true,
         "allowlistSize": 0,
         "DEFAULT_ADMIN_ROLE": "0x0000000000000000000000000000000000000000000000000000000000000000",
         "defaultMultiplierBps": 12100,
@@ -1370,14 +1697,24 @@
     {
       "name": "RelayerV2Radar",
       "address": "0xde19274c009A22921E3966a1Ec868cEba40A5DaC",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x8363302080e711E0CAb978C081b9e69308d49808",
-        "admin": "0x38dE71124f7a447a01D67945a51eDcE9FF491251"
-      },
-      "implementations": ["0x8363302080e711E0CAb978C081b9e69308d49808"],
+      "sourceHashes": [
+        "0x2cffb288804b4b9aa5855910610b396abe44ded0ad8ed35981ed74d056ae8ba1",
+        "0xb04546b4c05b8647cba50bd7560426e2d11b5b874b85b0f0b61dad7221bf0558"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x38dE71124f7a447a01D67945a51eDcE9FF491251",
+          "via": []
+        }
+      ],
       "sinceTimestamp": 1669420588,
       "values": {
+        "$admin": "0x38dE71124f7a447a01D67945a51eDcE9FF491251",
+        "$implementation": "0x8363302080e711E0CAb978C081b9e69308d49808",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "owner": "0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327",
         "paused": false,
         "relayerV2": "0xA27A2cA24DD28Ce14Fb5f5844b59851F03DCf182",
@@ -1388,21 +1725,23 @@
     {
       "name": "VerifierFeeLib",
       "address": "0xdeA04ef31C4B4FDf31CB58923F37869739280d49",
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1694218841
+      "sourceHashes": [
+        "0x37e1cee9d0a4ad6ebb439d27dbbf23925fcd9f9c0d5b43a33a6335e62b54d18c"
+      ],
+      "sinceTimestamp": 1694218841,
+      "values": { "$immutable": true }
     }
   ],
   "eoas": [
-    "0x67FC8c432448f9a8d541C17579EF7a142378d5aD",
-    "0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e",
-    "0x76F6d257CEB5736CbcAAb5c48E4225a45F74d6e5",
-    "0x7B80f2924E3Ad59a55f4bcC38AB63480599Be6c8",
-    "0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327",
-    "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936",
-    "0xe095F2590eF1Ab39601445025847Ed8E4B40D687",
-    "0xf1f5E3777a3ADBe6f3289AD6b21eae6427dfb553"
+    { "address": "0x0000000000000000000000000000000000000000" },
+    { "address": "0x67FC8c432448f9a8d541C17579EF7a142378d5aD" },
+    { "address": "0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e" },
+    { "address": "0x76F6d257CEB5736CbcAAb5c48E4225a45F74d6e5" },
+    { "address": "0x7B80f2924E3Ad59a55f4bcC38AB63480599Be6c8" },
+    { "address": "0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327" },
+    { "address": "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936" },
+    { "address": "0xe095F2590eF1Ab39601445025847Ed8E4B40D687" },
+    { "address": "0xf1f5E3777a3ADBe6f3289AD6b21eae6427dfb553" }
   ],
   "abis": {
     "0x28A5536cA9F36c45A9d2AC8d2B62Fc46Fde024B6": [
@@ -1839,5 +2178,8 @@
       "function getFee(tuple(address priceFeed, uint32 dstEid, uint64 confirmations, address sender, uint64 quorum, uint16 defaultMultiplierBps) _params, tuple(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD) _dstConfig, bytes) view returns (uint256)",
       "function getFeeOnSend(tuple(address priceFeed, uint32 dstEid, uint64 confirmations, address sender, uint64 quorum, uint16 defaultMultiplierBps) _params, tuple(uint64 gas, uint16 multiplierBps, uint128 floorMarginUSD) _dstConfig, bytes) payable returns (uint256)"
     ]
+  },
+  "usedTemplates": {
+    "GnosisSafe": "0x18527e82c3800311291da7323caa876f588cde67692c1c84d5ecb5161da61359"
   }
 }

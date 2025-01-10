@@ -7,15 +7,20 @@ import {
   normalizeDiffPath,
 } from '@l2beat/discovery'
 import type { DiscoveryOutput } from '@l2beat/discovery-types'
-import { assert, UnixTime } from '@l2beat/shared-pure'
+import {
+  assert,
+  ChainConverter,
+  UnixTime,
+  assertUnreachable,
+} from '@l2beat/shared-pure'
 import { Gauge } from 'prom-client'
 
-import { ChainConverter } from '../../tools/ChainConverter'
+import { Database } from '@l2beat/database'
+import { hashJson, sortObjectByKeys } from '@l2beat/shared'
 import { Clock } from '../../tools/Clock'
 import { TaskQueue } from '../../tools/queue/TaskQueue'
 import { DiscoveryRunner } from './DiscoveryRunner'
 import { DailyReminderChainEntry, UpdateNotifier } from './UpdateNotifier'
-import { UpdateMonitorRepository } from './repositories/UpdateMonitorRepository'
 import { sanitizeDiscoveryOutput } from './sanitizeDiscoveryOutput'
 import { findDependents } from './utils/findDependents'
 import { findUnknownContracts } from './utils/findUnknownContracts'
@@ -28,12 +33,11 @@ export class UpdateMonitor {
     private readonly discoveryRunners: DiscoveryRunner[],
     private readonly updateNotifier: UpdateNotifier,
     private readonly configReader: ConfigReader,
-    private readonly repository: UpdateMonitorRepository,
+    private readonly db: Database,
     private readonly clock: Clock,
     private readonly chainConverter: ChainConverter,
     private readonly logger: Logger,
     private readonly runOnStart: boolean,
-    private readonly version: number,
   ) {
     this.logger = this.logger.for(this)
     this.taskQueue = new TaskQueue(
@@ -172,10 +176,14 @@ export class UpdateMonitor {
       runner,
       projectConfig,
     )
-    const discovery = await runner.run(projectConfig, blockNumber, {
-      logger: this.logger,
-      injectInitialAddresses: true,
-    })
+    const { discovery, flatSources } = await runner.run(
+      projectConfig,
+      blockNumber,
+      {
+        logger: this.logger,
+        injectInitialAddresses: false,
+      },
+    )
 
     if (!previousDiscovery || !discovery) return
 
@@ -191,6 +199,8 @@ export class UpdateMonitor {
     const unverifiedContracts = deployedDiscovered.contracts
       .filter((c) => c.unverified)
       .map((c) => c.name)
+
+    this.logErrorsInDiscovery(discovery, this.logger)
 
     const prevSanitizedDiscovery = sanitizeDiscoveryOutput(previousDiscovery)
     const sanitizedDiscovery = sanitizeDiscoveryOutput(discovery)
@@ -209,22 +219,45 @@ export class UpdateMonitor {
       runner.chain,
     )
 
-    await this.repository.addOrUpdate({
+    await this.db.updateMonitor.upsert({
       projectName: projectConfig.name,
       chainId: this.chainConverter.toChainId(runner.chain),
       timestamp,
       blockNumber,
       discovery,
-      version: this.version,
       configHash: projectConfig.hash,
     })
+
+    await this.db.flatSources.upsert({
+      projectName: projectConfig.name,
+      chainId: this.chainConverter.toChainId(runner.chain),
+      blockNumber,
+      contentHash: hashJson(sortObjectByKeys(flatSources)),
+      flat: flatSources,
+    })
+  }
+
+  private logErrorsInDiscovery(
+    discovery: DiscoveryOutput,
+    logger: Logger,
+  ): void {
+    for (const contract of discovery.contracts) {
+      if (contract.errors !== undefined) {
+        for (const [field, error] of Object.entries(contract.errors)) {
+          logger.warn(`There was an error during discovery`, {
+            field,
+            error,
+          })
+        }
+      }
+    }
   }
 
   async getPreviousDiscovery(
     runner: DiscoveryRunner,
     projectConfig: DiscoveryConfig,
   ): Promise<DiscoveryOutput | undefined> {
-    const databaseEntry = await this.repository.findLatest(
+    const databaseEntry = await this.db.updateMonitor.findLatest(
       projectConfig.name,
       this.chainConverter.toChainId(runner.chain),
     )
@@ -246,21 +279,16 @@ export class UpdateMonitor {
       )
     }
 
-    if (previousDiscovery.version === this.version) {
-      return previousDiscovery
-    }
-    this.logger.info(
-      'Discovery logic version changed, discovering with new logic',
+    const result = await runner.run(
+      projectConfig,
+      previousDiscovery.blockNumber,
       {
-        chain: runner.chain,
-        project: projectConfig.name,
+        logger: this.logger,
+        injectInitialAddresses: false,
       },
     )
 
-    return await runner.run(projectConfig, previousDiscovery.blockNumber, {
-      logger: this.logger,
-      injectInitialAddresses: true,
-    })
+    return result.discovery
   }
 
   private async handleDiff(
@@ -285,7 +313,6 @@ export class UpdateMonitor {
       await this.updateNotifier.handleUpdate(
         projectConfig.name,
         diff,
-        this.configReader.readConfig(projectConfig.name, chain),
         blockNumber,
         this.chainConverter.toChainId(chain),
         dependents,
@@ -361,9 +388,12 @@ function countSeverities(diffs: DiscoveryDiff[], config?: DiscoveryConfig) {
         case 'HIGH':
           result.high++
           break
+        case undefined:
         case null:
           result.unknown++
           break
+        default:
+          assertUnreachable(severity)
       }
     }
   }

@@ -10,6 +10,7 @@ const discovery = new ProjectDiscovery('aptos')
 export const aptos: Bridge = {
   type: 'bridge',
   id: ProjectId('aptos'),
+  createdAt: new UnixTime(1667124468), // 2022-10-30T10:07:48Z
   display: {
     name: 'Aptos (LayerZero)',
     slug: 'aptos',
@@ -22,7 +23,12 @@ export const aptos: Bridge = {
         'https://github.com/LayerZero-Labs/LayerZero-Aptos-Contract',
         'https://github.com/aptos-labs',
       ],
-      socialMedia: ['https://twitter.com/Aptos_Network'],
+      socialMedia: [
+        'https://x.com/Aptos',
+        'https://discord.com/invite/aptosnetwork',
+        'https://linkedin.com/company/aptos-foundation/',
+        'https://t.me/aptos',
+      ],
     },
     description:
       'Aptos Bridge is built on top of LayerZero protocol and is a token bridge for transferring assets from Ethereum to Aptos. It leverages an oracle and relayer for cross-chain security for the protocol.',
@@ -63,22 +69,18 @@ export const aptos: Bridge = {
         {
           category: 'Users can be censored if',
           text: 'oracles or relayers fail to facilitate the transfer.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'oracles and relayers collude to submit fraudulent block hash and relay fraudulent transfer .',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'token bridge owner (currently EOA) enables emergency withdrawal and users do not exit with their funds within a week.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: "token bridge owner (currently EOA) sets WETH contract address to a malicious contract that will allow the owner to steal user's ETH.",
-          isCritical: true,
         },
       ],
       isIncomplete: true,
@@ -102,38 +104,15 @@ export const aptos: Bridge = {
   contracts: {
     addresses: [
       discovery.getContractDetails('TokenBridge', 'Aptos Token Bridge.'),
-      {
-        address: EthereumAddress('0x902F09715B6303d4173037652FA7377e5b98089E'),
-        name: 'LayerZero Relayer',
-        upgradeability: {
-          type: 'EIP1967 proxy',
-          admin: EthereumAddress('0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9'),
-          implementation: EthereumAddress(
-            '0x76A15d86FbBe691557C8b7A9C4BebF1d8AFE00A7',
-          ),
-        },
-      },
-      {
-        address: EthereumAddress('0x5a54fe5234E811466D5366846283323c954310B2'),
-        name: 'LayerZero Oracle',
-        upgradeability: {
-          type: 'EIP1967 proxy',
-          admin: EthereumAddress('0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8'),
-          implementation: EthereumAddress(
-            '0xA0Cc33Dd6f4819D473226257792AFe230EC3c67f',
-          ),
-        },
-      },
+      discovery.getContractDetails('LayerZero Relayer'),
+      discovery.getContractDetails('LayerZero Oracle'),
       discovery.getContractDetails('Endpoint', 'LayerZero Ethereum Endpoint.'),
       discovery.getContractDetails(
         'UltraLightNodeV2',
         'LayerZero UltraLight Node V2. Used by oracles to checkpoint source chain block hashes.',
       ),
       discovery.getContractDetails('TreasuryV2', 'LayerZero Treasury.'),
-      {
-        address: EthereumAddress('0x07245eEa05826F5984c7c3C8F478b04892e4df89'),
-        name: 'LayerZero Proof Library',
-      },
+      discovery.getContractDetails('LayerZero Proof Library'),
     ],
     risks: [CONTRACTS.UPGRADE_NO_DELAY_RISK],
     isIncomplete: true,

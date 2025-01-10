@@ -1,16 +1,9 @@
+import { BlobClient, BlobsInBlock } from '@l2beat/shared'
 import { Bytes, EthereumAddress, Hash256, UnixTime } from '@l2beat/shared-pure'
 import { providers, utils } from 'ethers'
-import { EtherscanLikeClient } from '../../utils/EtherscanLikeClient'
+import { IEtherscanClient } from '../../utils/IEtherscanClient'
+import { ContractSource } from '../../utils/IEtherscanClient'
 import { DebugTransactionCallResponse } from './DebugTransactionTrace'
-
-export interface ContractSource {
-  name: string
-  isVerified: boolean
-  abi: string[]
-  source: string
-  solidityVersion: string
-  constructorArguments: string
-}
 
 export interface ContractDeployment {
   deployer: EthereumAddress
@@ -22,7 +15,8 @@ export interface ContractDeployment {
 export interface RawProviders {
   baseProvider: providers.JsonRpcProvider
   eventProvider: providers.JsonRpcProvider
-  etherscanLikeClient: EtherscanLikeClient
+  etherscanClient: IEtherscanClient
+  blobClient?: BlobClient
 }
 
 export interface IProvider {
@@ -75,9 +69,10 @@ export interface IProvider {
     // biome-ignore lint/suspicious/noExplicitAny: TODO: LogDescription
   ): Promise<{ log: providers.Log; event: any }[]>
 
+  getBlock(blockNumber: number): Promise<providers.Block | undefined>
   getTransaction(
     transactionHash: Hash256,
-  ): Promise<providers.TransactionResponse>
+  ): Promise<providers.TransactionResponse | undefined>
   getDebugTrace(transactionHash: Hash256): Promise<DebugTransactionCallResponse>
 
   getBytecode(address: EthereumAddress): Promise<Bytes>
@@ -85,4 +80,6 @@ export interface IProvider {
   getDeployment(
     address: EthereumAddress,
   ): Promise<ContractDeployment | undefined>
+
+  getBlobs(txHash: string): Promise<BlobsInBlock>
 }

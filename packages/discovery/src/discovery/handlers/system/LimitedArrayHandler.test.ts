@@ -1,7 +1,6 @@
 import { EthereumAddress } from '@l2beat/shared-pure'
 import { expect, mockObject } from 'earl'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { LimitedArrayHandler } from './LimitedArrayHandler'
 
@@ -17,21 +16,15 @@ describe(LimitedArrayHandler.name, () => {
     ]
 
     const provider = mockObject<IProvider>({
-      async callMethod<T>(
-        passedAddress: EthereumAddress,
-        _abi: string,
-        data: unknown[],
-      ) {
-        expect(passedAddress).toEqual(address)
-
+      async callMethod<T>(a: EthereumAddress, _abi: string, data: unknown[]) {
+        expect(a).toEqual(address)
         const index = data[0] as number
         expect(data).toEqual([index])
-
         return owners[index]!.toString() as T
       },
     })
 
-    const handler = new LimitedArrayHandler(method, 3, DiscoveryLogger.SILENT)
+    const handler = new LimitedArrayHandler(method, 3)
     expect(handler.field).toEqual('owners')
 
     const result = await handler.execute(provider, address)
@@ -51,12 +44,8 @@ describe(LimitedArrayHandler.name, () => {
     ]
 
     const provider = mockObject<IProvider>({
-      async callMethod<T>(
-        passedAddress: EthereumAddress,
-        _abi: string,
-        data: unknown[],
-      ) {
-        expect(passedAddress).toEqual(address)
+      async callMethod<T>(a: EthereumAddress, _abi: string, data: unknown[]) {
+        expect(a).toEqual(address)
 
         const index = data[0] as number
         expect(data).toEqual([index])
@@ -68,7 +57,7 @@ describe(LimitedArrayHandler.name, () => {
       },
     })
 
-    const handler = new LimitedArrayHandler(method, 3, DiscoveryLogger.SILENT)
+    const handler = new LimitedArrayHandler(method, 3)
     const result = await handler.execute(provider, address)
     expect(result).toEqual({
       field: 'owners',
@@ -85,12 +74,8 @@ describe(LimitedArrayHandler.name, () => {
     ]
 
     const provider = mockObject<IProvider>({
-      async callMethod<T>(
-        passedAddress: EthereumAddress,
-        _abi: string,
-        data: unknown[],
-      ) {
-        expect(passedAddress).toEqual(address)
+      async callMethod<T>(a: EthereumAddress, _abi: string, data: unknown[]) {
+        expect(a).toEqual(address)
 
         const index = data[0] as number
         expect(data).toEqual([index])
@@ -102,11 +87,36 @@ describe(LimitedArrayHandler.name, () => {
       },
     })
 
-    const handler = new LimitedArrayHandler(method, 3, DiscoveryLogger.SILENT)
+    const handler = new LimitedArrayHandler(method, 3)
     const result = await handler.execute(provider, address)
     expect(result).toEqual({
       field: 'owners',
       error: 'foo bar',
+    })
+  })
+
+  it('rewrites $foo to _$foo', async () => {
+    const address = EthereumAddress.random()
+    const provider = mockObject<IProvider>({
+      async callMethod<T>(a: EthereumAddress, _abi: string, data: unknown[]) {
+        expect(a).toEqual(address)
+        const index = data[0] as number
+        expect(data).toEqual([index])
+        if (index === 1) {
+          return undefined
+        }
+        return 1 as T
+      },
+    })
+
+    const handler = new LimitedArrayHandler(
+      'function $foo(uint256 index) view returns (uint)',
+      2,
+    )
+    const result = await handler.execute(provider, address)
+    expect(result).toEqual({
+      field: '_$foo',
+      value: [1],
     })
   })
 })

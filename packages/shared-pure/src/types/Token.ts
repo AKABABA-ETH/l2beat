@@ -13,15 +13,21 @@ export interface Token {
   decimals: number
   sinceTimestamp: UnixTime
   untilTimestamp?: UnixTime
-  /** @deprecated */
   category: 'ether' | 'stablecoin' | 'other'
   iconUrl?: string
   chainId: ChainId
   source: 'canonical' | 'external' | 'native'
   supply: 'totalSupply' | 'circulatingSupply' | 'zero'
-  bridgedUsing?: {
-    bridge: string
-    slug?: string
-    warning?: string
-  }
+  excludeFromTotal?: true
+  bridgedUsing?: TokenBridgedUsing
+}
+
+export interface TokenBridge {
+  name: string
+  slug?: string
+}
+
+export interface TokenBridgedUsing {
+  bridges: TokenBridge[]
+  warning?: string
 }

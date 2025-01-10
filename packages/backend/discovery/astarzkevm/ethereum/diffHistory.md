@@ -1,4 +1,425 @@
-Generated with discovered.json: 0x518b77ec1a2267755301f1d6e67f9fe242b8b8ee
+Generated with discovered.json: 0x1b524a34a4111aef11046d81df2527fb3fcf9089
+
+# Diff at Mon, 21 Oct 2024 11:04:26 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@8895d33866f5665c4c710f4ddaa32bfa63cc3c78 block: 20325048
+- current block number: 20325048
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20325048 (main branch discovery), not current.
+
+```diff
+    contract AstarValidium (0x1E163594e13030244DCAf4cDfC2cd0ba3206DA80) {
+    +++ description: None
+      values.$pastUpgrades.1.2:
++        ["0x10D296e8aDd0535be71639E5D1d1c30ae1C6bD4C"]
+      values.$pastUpgrades.1.1:
+-        ["0x10D296e8aDd0535be71639E5D1d1c30ae1C6bD4C"]
++        "0xf735ab474ff2e48c6231cc834828e35736c6fc9fec9759b74e5cf58a88075a36"
+      values.$pastUpgrades.0.2:
++        ["0x9cf80f7eB1C76ec5AE7A88b417e373449b73ac30"]
+      values.$pastUpgrades.0.1:
+-        ["0x9cf80f7eB1C76ec5AE7A88b417e373449b73ac30"]
++        "0xd68a284c1d748ff541d3339f650f5b90e2faf2744db5fdfc27edfffc702e2dbd"
+    }
+```
+
+```diff
+    contract AstarValidiumDAC (0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0) {
+    +++ description: None
+      values.$pastUpgrades.0.2:
++        ["0xF4e87685e323818E0aE35dCdFc3B65106002E456"]
+      values.$pastUpgrades.0.1:
+-        ["0xF4e87685e323818E0aE35dCdFc3B65106002E456"]
++        "0x72856ab866229053e930b1e4ec2c8505ed4b72feffdf13db4a218eced4364fa2"
+    }
+```
+
+Generated with discovered.json: 0x60db18bbf616e56be12eb0232005fb4d9e473094
+
+# Diff at Mon, 14 Oct 2024 10:49:30 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 20325048
+- current block number: 20325048
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20325048 (main branch discovery), not current.
+
+```diff
+    contract AstarVerifier (0x0775e11309d75aA6b0967917fB0213C5673eDf81) {
+    +++ description: None
+      sourceHashes:
++        ["0x0bc67d276b40b2ba13903d94fd6c25ae4d3d5162bc942763c418afdc11bc9b32"]
+    }
+```
+
+```diff
+    contract ProxyAdmin (0x1963D7b78e75A5eDfF9e5376E7A07A935Fb3d50d) {
+    +++ description: None
+      receivedPermissions:
+-        [{"permission":"upgrade","target":"0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0"}]
+      template:
++        "global/ProxyAdmin"
+      sourceHashes:
++        ["0x68f689a23d3badd91255602a1eb13d4789baedc16d904c3103244642fc78ca8f"]
+      directlyReceivedPermissions:
++        [{"permission":"upgrade","target":"0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0"}]
+    }
+```
+
+```diff
+    contract AstarValidium (0x1E163594e13030244DCAf4cDfC2cd0ba3206DA80) {
+    +++ description: None
+      sourceHashes:
++        ["0xa25e4c87882527d75fa2198c374939dd0c3b3fd509be89ee51c9b206bc62bdc4","0x7c56bc9e6cae8422520d318420d3b180551e366e0e265bc846875479cfabdef7"]
+    }
+```
+
+```diff
+    contract GnosisSafe (0x6c4876Ecb5de33f76700f44d547C593065806dAC) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+```diff
+    contract AstarValidiumDAC (0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0) {
+    +++ description: None
+      issuedPermissions.0.target:
+-        "0x1963D7b78e75A5eDfF9e5376E7A07A935Fb3d50d"
++        "0xf98ee8c46baEa2B11e4f0450AD9D01861265F76E"
+      issuedPermissions.0.via.0:
++        {"address":"0x1963D7b78e75A5eDfF9e5376E7A07A935Fb3d50d","delay":0}
+      sourceHashes:
++        ["0x36a2777510f3b20063560bdcb7f657da283bcfdc484a19b0a0f77d18f6a8b5e1","0xf7c38d00c4b6000f1840ed38f9ae99d753da8ac69ee1b6ac9ed614f2b60d470f"]
+    }
+```
+
+```diff
+    contract LocalAdmin (0xf98ee8c46baEa2B11e4f0450AD9D01861265F76E) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0","via":[{"address":"0x1963D7b78e75A5eDfF9e5376E7A07A935Fb3d50d"}]}]
+      directlyReceivedPermissions:
++        [{"permission":"act","target":"0x1963D7b78e75A5eDfF9e5376E7A07A935Fb3d50d"}]
+    }
+```
+
+Generated with discovered.json: 0x9bd8193a78bf39e9848d2145e1ed2d573e3f3a9d
+
+# Diff at Tue, 01 Oct 2024 10:49:53 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@bd754dc73c66120164006054f8d25c5fae9cd910 block: 20325048
+- current block number: 20325048
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20325048 (main branch discovery), not current.
+
+```diff
+    contract AstarValidium (0x1E163594e13030244DCAf4cDfC2cd0ba3206DA80) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2024-02-22T20:00:59.000Z",["0x9cf80f7eB1C76ec5AE7A88b417e373449b73ac30"]],["2024-04-08T18:10:59.000Z",["0x10D296e8aDd0535be71639E5D1d1c30ae1C6bD4C"]]]
+    }
+```
+
+```diff
+    contract AstarValidiumDAC (0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2024-02-22T17:55:59.000Z",["0xF4e87685e323818E0aE35dCdFc3B65106002E456"]]]
+    }
+```
+
+Generated with discovered.json: 0xdb831b3c00409a66463c269d69024df58b67f87a
+
+# Diff at Fri, 30 Aug 2024 07:51:24 GMT:
+
+- author: Adrian Adamiak (<adrian@adamiak.net>)
+- comparing to: main@6c1bd1f41fadf5f2cb1c1805b5a2c6138a3ed35a block: 20325048
+- current block number: 20325048
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20325048 (main branch discovery), not current.
+
+```diff
+    contract ProxyAdmin (0x1963D7b78e75A5eDfF9e5376E7A07A935Fb3d50d) {
+    +++ description: None
+      receivedPermissions.0.via:
+-        []
+    }
+```
+
+Generated with discovered.json: 0xde613ba738048f3624b819f6a69fbb987fab6e49
+
+# Diff at Fri, 23 Aug 2024 09:51:15 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@67597c7d6c810bc726594446890178150240711e block: 20325048
+- current block number: 20325048
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20325048 (main branch discovery), not current.
+
+```diff
+    contract AstarValidium (0x1E163594e13030244DCAf4cDfC2cd0ba3206DA80) {
+    +++ description: None
+      values.$upgradeCount:
++        2
+    }
+```
+
+```diff
+    contract AstarValidiumDAC (0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0) {
+    +++ description: None
+      values.$upgradeCount:
++        1
+    }
+```
+
+Generated with discovered.json: 0x02a62722b1880efb5bcb0348fe18989f5bb3ec76
+
+# Diff at Wed, 21 Aug 2024 10:02:00 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@2f6dde3357bf5d79196b6e94f79d853a6c4ec72b block: 20325048
+- current block number: 20325048
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20325048 (main branch discovery), not current.
+
+```diff
+    contract ProxyAdmin (0x1963D7b78e75A5eDfF9e5376E7A07A935Fb3d50d) {
+    +++ description: None
+      assignedPermissions:
+-        {"upgrade":["0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0"]}
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0","via":[]}]
+    }
+```
+
+```diff
+    contract AstarValidiumDAC (0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0x1963D7b78e75A5eDfF9e5376E7A07A935Fb3d50d","via":[]}]
+    }
+```
+
+Generated with discovered.json: 0x665a7b1228f03991f8f70fbd27e5883123c84527
+
+# Diff at Fri, 09 Aug 2024 10:08:39 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 20325048
+- current block number: 20325048
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20325048 (main branch discovery), not current.
+
+```diff
+    contract ProxyAdmin (0x1963D7b78e75A5eDfF9e5376E7A07A935Fb3d50d) {
+    +++ description: None
+      assignedPermissions.admin:
+-        ["0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0"]
+      assignedPermissions.upgrade:
++        ["0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0"]
+    }
+```
+
+```diff
+    contract GnosisSafe (0x6c4876Ecb5de33f76700f44d547C593065806dAC) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "1 of 3 (33%)"
+      values.getOwners:
+-        ["0xEc33045FA66cF43E9b5b9F332dc124dbc71c0917","0x33f9b8ac59814E1A0a59e5d1a6125E5E7AF58BA8","0x2b3Aa0Dc0622eFb9426F5A44015aE9151Bd8224C"]
+      values.getThreshold:
+-        1
+      values.$members:
++        ["0xEc33045FA66cF43E9b5b9F332dc124dbc71c0917","0x33f9b8ac59814E1A0a59e5d1a6125E5E7AF58BA8","0x2b3Aa0Dc0622eFb9426F5A44015aE9151Bd8224C"]
+      values.$threshold:
++        1
+      values.multisigThreshold:
++        "1 of 3 (33%)"
+    }
+```
+
+```diff
+    contract LocalAdmin (0xf98ee8c46baEa2B11e4f0450AD9D01861265F76E) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "3 of 6 (50%)"
+      values.getOwners:
+-        ["0xe4D4fBC6e27B3AE9D881BD9400071FB6c62E4dfa","0xEc24369A1269171e3cb0A323DD920F99Cb528Fb0","0x127Bae6Fc751dC92111a359500ae91EB437f3dCb","0x83cC8195856b0463dEd5f052021009b7985FDa2C","0x4324c3960c7B2567D0C13ba17493bb364c407937","0x6c4876Ecb5de33f76700f44d547C593065806dAC"]
+      values.getThreshold:
+-        3
+      values.$members:
++        ["0xe4D4fBC6e27B3AE9D881BD9400071FB6c62E4dfa","0xEc24369A1269171e3cb0A323DD920F99Cb528Fb0","0x127Bae6Fc751dC92111a359500ae91EB437f3dCb","0x83cC8195856b0463dEd5f052021009b7985FDa2C","0x4324c3960c7B2567D0C13ba17493bb364c407937","0x6c4876Ecb5de33f76700f44d547C593065806dAC"]
+      values.$threshold:
++        3
+      values.multisigThreshold:
++        "3 of 6 (50%)"
+    }
+```
+
+Generated with discovered.json: 0x0fdc4f296dc50c1a0add96374b39d4b1248b9f0d
+
+# Diff at Wed, 17 Jul 2024 08:27:23 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@0df6fda263b58edb9acce032017abb5ebd61f5fd block: 20188651
+- current block number: 20325048
+
+## Description
+
+Introduced a new LocalAdmin, not handled by the shared template, which mainContract admin (not the upgradeabilityAdmin) and who can change local system configs. This role was wrongly given to the SharedProxyAdminOwner before.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20188651 (main branch discovery), not current.
+
+```diff
+    contract AstarValidiumEtrog (0x1E163594e13030244DCAf4cDfC2cd0ba3206DA80) {
+    +++ description: None
+      name:
+-        "AstarValidiumEtrog"
++        "AstarValidium"
+    }
+```
+
+```diff
+    contract ProxyAdminOwner (0xf98ee8c46baEa2B11e4f0450AD9D01861265F76E) {
+    +++ description: None
+      name:
+-        "ProxyAdminOwner"
++        "LocalAdmin"
+    }
+```
+
+Generated with discovered.json: 0x4c1a1e744f8a16bc777c372929ab36767c7bcb20
+
+# Diff at Fri, 28 Jun 2024 07:20:22 GMT:
+
+- author: vincfurc (<10850139+vincfurc@users.noreply.github.com>)
+- comparing to: main@49bfbec96093cd13bd953b811e1f3024e562632f block: 19882099
+- current block number: 20188651
+
+## Description
+
+Change sequencer address and URL. DAC committee members changed. Chain was offline for this update/maintenance for 40 minutes.
+
+## Watched changes
+
+```diff
+    contract AstarValidiumEtrog (0x1E163594e13030244DCAf4cDfC2cd0ba3206DA80) {
+    +++ description: None
+      values.trustedSequencer:
+-        "0xD49CD5f9776A54fAe89B68205F6Af69586F98203"
++        "0xA09F1c88C0194Da6b0a1c564CDBEcbF3AAd649E4"
+      values.trustedSequencerURL:
+-        "https://rpc.astar-zkevm.gelato.digital"
++        "https://rpc-zkevm.astar.network"
+    }
+```
+
+```diff
+    contract AstarValidiumDAC (0x9CCD205052c732Ac1Df2cf7bf8aACC0E371eE0B0) {
+    +++ description: None
+      values.committeeHash:
+-        "0xf3b713b9d34dd6c8f99950e7f622937def5d1044471824b807c8b9dbedf75d2f"
++        "0x9a0c18a0211f34e9126b78961894fb03edbdcb7e314a5affed3f8365315e3aff"
+      values.members.4.1:
+-        "0xF54b295a221B5d3510D03d9B16E23BA151da012A"
++        "0xC4ad70e848f36925FcbDfb252f5e258D06647320"
+      values.members.4.0:
+-        "http://cdk-validium-dac-1-prod-6d3f0-port1.cdk-validium-deployment-6d3f0.svc.cluster.local:8444"
++        "https://dac0-zkevm.astar.network"
+      values.members.3.1:
+-        "0xCFb77B6abb27e04cE0DB347cCCd5544f51A98CBc"
++        "0xB4d094b4216F1BEb8bAeD995092A05182fD4bEf0"
+      values.members.3.0:
+-        "http://cdk-validium-dac-2-prod-6d3f0-port1.cdk-validium-deployment-6d3f0.svc.cluster.local:8444"
++        "https://dac4-zkevm.astar.network"
+      values.members.2.1:
+-        "0x8FB3cb4777EE1c2C35C48aC69a650026d18aFF08"
++        "0x68B62E4C9E69cd637c61f19Fb64976D466De1d58"
+      values.members.2.0:
+-        "http://cdk-validium-dac-3-prod-6d3f0-port1.cdk-validium-deployment-6d3f0.svc.cluster.local:8444"
++        "https://dac2-zkevm.astar.network"
+      values.members.1.1:
+-        "0x37f0B74e0Fc72aDAAb1Fd39Ec6d779F596866aB8"
++        "0x361Ed4c21Ad3f9B28eeE1e1894854cE7E39b2dB1"
+      values.members.1.0:
+-        "http://cdk-validium-dac-4-prod-6d3f0-port1.cdk-validium-deployment-6d3f0.svc.cluster.local:8444"
++        "https://dac3-zkevm.astar.network"
+      values.members.0.1:
+-        "0x08EbBdFf8cB6d1336515A89641e899bc8ce91F2C"
++        "0x19DdD9d655B993D6B2e2437bfBA0378B777d7470"
+      values.members.0.0:
+-        "http://cdk-validium-dac-5-prod-6d3f0-port1.cdk-validium-deployment-6d3f0.svc.cluster.local:8444"
++        "https://dac1-zkevm.astar.network"
+    }
+```
+
+Generated with discovered.json: 0x46c4eb4a0263e10d78594ff27d659e62a41b869d
 
 # Diff at Thu, 16 May 2024 11:00:25 GMT:
 

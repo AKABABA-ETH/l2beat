@@ -1,69 +1,66 @@
-import { ManualProxyType } from '@l2beat/discovery-types'
+import {
+  ContractFieldSeverity,
+  ContractValueType,
+  ManualProxyType,
+  StackCategory,
+} from '@l2beat/discovery-types'
 import { EthereumAddress, stringAs } from '@l2beat/shared-pure'
 import * as z from 'zod'
 
 import { UserHandlerDefinition } from '../handlers/user'
 
-export type ValueType = z.infer<typeof ValueType>
-export const ValueType = z.enum([
-  'CODE_CHANGE',
-  'L2',
-  'EXTERNAL',
-  'RISK_PARAMETER',
-  'PERMISSION',
-])
+export const BasePermissionEntries = [
+  'member',
+  'act',
+  'configure',
+  'upgrade',
+] as const
 
-export type StackRole = z.infer<typeof StackRole>
-export const StackRole = z.enum([
-  'Sequencer',
-  'Proposer',
-  'Challenger',
-  'Guardian',
-  'Validator',
-])
+export const RolePermissionEntries = [
+  'challenge',
+  'guard',
+  'propose',
+  'sequence',
+  'validate',
+  'operateLinea',
+  'fastconfirm',
+] as const
 
+export const Permission = z.enum([
+  ...RolePermissionEntries,
+  ...BasePermissionEntries,
+])
 export type Permission = z.infer<typeof Permission>
-export const Permission = z.enum(['admin', 'owner'])
 
-export type StackCategory = z.infer<typeof StackCategory>
-export const StackCategory = z.enum([
-  'Core',
-  'Gateways&Escrows',
-  'Upgrades&Governance',
-])
+export type RawPermissionConfiguration = z.infer<
+  typeof RawPermissionConfiguration
+>
 
-export type ContractFieldSeverity = z.infer<typeof ContractFieldSeverity>
-export const ContractFieldSeverity = z.enum(['HIGH', 'MEDIUM', 'LOW'])
+export const RawPermissionConfiguration = z.object({
+  type: Permission,
+  delay: z.union([z.number(), z.string()]).default(0),
+  description: z.string().optional(),
+})
+
+export type PermissionConfiguration = RawPermissionConfiguration & {
+  target: EthereumAddress
+  delay: number
+}
 
 export type DiscoveryContractField = z.infer<typeof DiscoveryContractField>
 export const DiscoveryContractField = z.object({
   handler: z.optional(UserHandlerDefinition),
-  description: z.string().nullable().optional(),
-  displayName: z.string().nullable().optional(),
-  severity: z.optional(ContractFieldSeverity).nullable(),
-  returnType: z.string().nullable().optional(),
+  description: z.string().optional(),
+  severity: z.optional(ContractFieldSeverity),
+  returnType: z.string().optional(),
   target: z
     .object({
-      description: z.string().nullable().optional(),
-      template: z.string().nullable().optional(),
-      role: z
-        .union([StackRole, z.array(StackRole)])
-        .nullable()
-        .optional(),
-      category: z
-        .union([StackCategory, z.array(StackCategory)])
-        .nullable()
-        .optional(),
-      permission: z
-        .union([Permission, z.array(Permission)])
-        .nullable()
-        .optional(),
+      template: z.string().optional(),
+      category: z.union([StackCategory, z.array(StackCategory)]).optional(),
+      permissions: z.array(RawPermissionConfiguration).optional(),
     })
     .optional(),
-  type: z
-    .union([ValueType, z.array(ValueType)])
-    .nullable()
-    .optional(),
+  type: z.union([ContractValueType, z.array(ContractValueType)]).optional(),
 })
 
 export type DiscoveryCustomType = z.infer<typeof DiscoveryCustomType>
@@ -71,8 +68,8 @@ export const DiscoveryCustomType = z
   .object({
     typeCaster: z.optional(z.string()),
     arg: z.optional(z.record(z.string(), z.union([z.string(), z.number()]))),
-    description: z.optional(z.string()).nullable(),
-    severity: z.optional(ContractFieldSeverity).nullable(),
+    description: z.optional(z.string()),
+    severity: z.optional(ContractFieldSeverity),
   })
   .refine((d) => !(d.arg !== undefined && d.typeCaster === undefined), {
     message: 'typeCaster must be defined if arg is defined',
@@ -82,19 +79,24 @@ export const DiscoveryCustomType = z
 export type DiscoveryContract = z.infer<typeof DiscoveryContract>
 export const DiscoveryContract = z.object({
   extends: z.optional(z.string()),
+  canActIndependently: z.boolean().optional(),
   ignoreDiscovery: z.optional(z.boolean()),
   proxyType: z.optional(ManualProxyType),
+  displayName: z.string().optional(),
   ignoreInWatchMode: z.optional(z.array(z.string())),
   ignoreMethods: z.optional(z.array(z.string())),
   ignoreRelatives: z.optional(z.array(z.string())),
   fields: z
-    .record(z.string().regex(/^[a-z_][a-z\d_]*$/i), DiscoveryContractField)
+    .record(z.string().regex(/^\$?[a-z_][a-z\d_]*$/i), DiscoveryContractField)
     .optional(),
   description: z.optional(z.string()),
   // TODO: in fields?
   methods: z.optional(z.record(z.string(), z.string())),
-  usedTypes: z.optional(z.array(DiscoveryCustomType)),
+  types: z.optional(z.record(z.string(), DiscoveryCustomType)),
 })
+
+export type GlobalTypes = z.infer<typeof GlobalTypes>
+export const GlobalTypes = z.record(z.string(), DiscoveryCustomType)
 
 export type RawDiscoveryConfig = z.infer<typeof RawDiscoveryConfig>
 export const RawDiscoveryConfig = z.object({
@@ -102,7 +104,7 @@ export const RawDiscoveryConfig = z.object({
   chain: z.string().min(1),
   initialAddresses: z.array(stringAs(EthereumAddress)),
   maxAddresses: z.optional(z.number().positive()),
-  maxDepth: z.optional(z.number().positive()),
+  maxDepth: z.optional(z.number()),
   overrides: z.optional(z.record(z.string(), DiscoveryContract)),
   types: z.optional(z.record(z.string(), DiscoveryCustomType)),
   names: z.optional(

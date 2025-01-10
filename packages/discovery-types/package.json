@@ -24,12 +24,14 @@
     "start": "node -r esbuild-register src/",
     "format": "biome format .",
     "format:fix": "biome format --write .",
-    "lint:fix": "biome check --formatter-enabled=false --apply .",
+    "lint:fix": "biome check --formatter-enabled=false --write .",
     "lint": "biome check --formatter-enabled=false .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "zod": "^3.22.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@l2beat/typescript-config": "workspace:*"
+  }
 }

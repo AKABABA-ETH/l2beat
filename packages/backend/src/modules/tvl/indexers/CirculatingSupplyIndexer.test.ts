@@ -1,4 +1,6 @@
 import { Logger } from '@l2beat/backend-tools'
+import { createAmountId } from '@l2beat/config'
+import { AmountRecord, Database } from '@l2beat/database'
 import {
   CirculatingSupplyEntry,
   CoingeckoId,
@@ -9,13 +11,8 @@ import {
 import { expect, mockObject } from 'earl'
 import { IndexerService } from '../../../tools/uif/IndexerService'
 import { _TEST_ONLY_resetUniqueIds } from '../../../tools/uif/ids'
-import {
-  AmountRecord,
-  AmountRepository,
-} from '../repositories/AmountRepository'
 import { CirculatingSupplyService } from '../services/CirculatingSupplyService'
 import { SyncOptimizer } from '../utils/SyncOptimizer'
-import { createAmountId } from '../utils/createAmountId'
 import { CirculatingSupplyIndexer } from './CirculatingSupplyIndexer'
 
 describe(CirculatingSupplyIndexer.name, () => {
@@ -29,8 +26,8 @@ describe(CirculatingSupplyIndexer.name, () => {
       const to = 300
       const adjustedTo = 200
 
-      const amountRepository = mockObject<AmountRepository>({
-        addMany: async () => 1,
+      const amountRepository = mockObject<Database['amount']>({
+        insertMany: async () => 1,
       })
 
       const configuration = mockObject<CirculatingSupplyEntry>({
@@ -39,6 +36,8 @@ describe(CirculatingSupplyIndexer.name, () => {
         type: 'circulatingSupply',
         address: EthereumAddress.random(),
         coingeckoId: CoingeckoId('id'),
+        category: 'other',
+        untilTimestamp: undefined,
       })
 
       const circulatingSupplyService = mockObject<CirculatingSupplyService>({
@@ -55,7 +54,7 @@ describe(CirculatingSupplyIndexer.name, () => {
       })
 
       const indexer = new CirculatingSupplyIndexer({
-        amountRepository,
+        db: mockObject<Database>({ amount: amountRepository }),
         configuration,
         parents: [],
         circulatingSupplyService,
@@ -74,17 +73,112 @@ describe(CirculatingSupplyIndexer.name, () => {
 
       expect(
         circulatingSupplyService.fetchCirculatingSupplies,
-      ).toHaveBeenOnlyCalledWith(
-        new UnixTime(from),
-        new UnixTime(adjustedTo),
-        configuration,
-      )
+      ).toHaveBeenOnlyCalledWith(new UnixTime(from), new UnixTime(adjustedTo), {
+        ...configuration,
+        id: createAmountId(configuration),
+      })
 
-      expect(amountRepository.addMany).toHaveBeenOnlyCalledWith([
+      expect(amountRepository.insertMany).toHaveBeenOnlyCalledWith([
         amount(configuration, 200),
       ])
 
       expect(safeHeight).toEqual(adjustedTo)
+    })
+
+    it('Skips when maxHeight is greater than from', async () => {
+      const maxHeight = 50
+      const from = 100
+      const to = 300
+
+      const configuration = mockObject<CirculatingSupplyEntry>({
+        chain: 'chain',
+        project: ProjectId('project'),
+        type: 'circulatingSupply',
+        address: EthereumAddress.random(),
+        coingeckoId: CoingeckoId('id'),
+        category: 'other',
+        untilTimestamp: new UnixTime(maxHeight),
+      })
+
+      const indexer = new CirculatingSupplyIndexer({
+        db: mockObject<Database>({}),
+        configuration,
+        parents: [],
+        circulatingSupplyService: mockObject<CirculatingSupplyService>({}),
+        syncOptimizer: mockObject<SyncOptimizer>({}),
+        minHeight: 0,
+        indexerService: mockObject<IndexerService>({}),
+        logger: Logger.SILENT,
+      })
+
+      const safeHeight = await indexer.update(from, to)
+
+      expect(safeHeight).toEqual(to)
+    })
+
+    it('takes maxHeight into consideration during update', async () => {
+      const from = 100
+      const maxHeight = 250
+      const to = 300
+      const adjustedTo = 300
+
+      const amountRepository = mockObject<Database['amount']>({
+        insertMany: async () => 1,
+      })
+
+      const configuration = mockObject<CirculatingSupplyEntry>({
+        chain: 'chain',
+        project: ProjectId('project'),
+        type: 'circulatingSupply',
+        address: EthereumAddress.random(),
+        coingeckoId: CoingeckoId('id'),
+        category: 'other',
+        untilTimestamp: new UnixTime(maxHeight),
+      })
+
+      const circulatingSupplyService = mockObject<CirculatingSupplyService>({
+        getAdjustedTo: () => new UnixTime(adjustedTo),
+        fetchCirculatingSupplies: async () => [
+          amount(configuration, 150), // this should be filtered out
+          amount(configuration, 200),
+          amount(configuration, 250), // this should be filtered out
+        ],
+      })
+
+      const syncOptimizer = mockObject<SyncOptimizer>({
+        shouldTimestampBeSynced: (t: UnixTime) => !(t.toNumber() % 100),
+      })
+
+      const indexer = new CirculatingSupplyIndexer({
+        db: mockObject<Database>({ amount: amountRepository }),
+        configuration,
+        parents: [],
+        circulatingSupplyService,
+        syncOptimizer,
+        minHeight: 0,
+        indexerService: mockObject<IndexerService>({}),
+        logger: Logger.SILENT,
+      })
+
+      const safeHeight = await indexer.update(from, to)
+
+      expect(circulatingSupplyService.getAdjustedTo).toHaveBeenOnlyCalledWith(
+        from,
+        to,
+      )
+
+      expect(
+        circulatingSupplyService.fetchCirculatingSupplies,
+      ).toHaveBeenOnlyCalledWith(new UnixTime(from), new UnixTime(maxHeight), {
+        ...configuration,
+        id: createAmountId(configuration),
+      })
+
+      expect(amountRepository.insertMany).toHaveBeenOnlyCalledWith([
+        amount(configuration, 200),
+      ])
+
+      expect(safeHeight).toEqual(maxHeight)
     })
   })
 
@@ -98,14 +192,16 @@ describe(CirculatingSupplyIndexer.name, () => {
         type: 'circulatingSupply',
         address: EthereumAddress.random(),
         coingeckoId: CoingeckoId('id'),
+        category: 'other',
+        untilTimestamp: undefined,
       })
 
-      const amountRepository = mockObject<AmountRepository>({
+      const amountRepository = mockObject<Database['amount']>({
         deleteByConfigAfter: async () => 1,
       })
 
       const indexer = new CirculatingSupplyIndexer({
-        amountRepository,
+        db: mockObject<Database>({ amount: amountRepository }),
         configuration,
         parents: [],
         circulatingSupplyService: mockObject<CirculatingSupplyService>({}),

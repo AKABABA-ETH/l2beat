@@ -1,4 +1,4 @@
-import { ProjectId } from '@l2beat/shared-pure'
+import { ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import {
   KnowledgeNugget,
@@ -14,16 +14,18 @@ import {
 export interface Bridge {
   type: 'bridge'
   id: ProjectId
+  /** Date of creation of the file (not the project) */
+  createdAt: UnixTime
   isArchived?: boolean
   isUpcoming?: boolean
   isUnderReview?: boolean
   display: BridgeDisplay
   config: BridgeConfig
-  riskView?: BridgeRiskView
+  riskView: BridgeRiskView
   technology: BridgeTechnology
   contracts?: ScalingProjectContracts
   permissions?: ScalingProjectPermission[] | 'UnderReview'
-  nativePermissions?: ScalingProjectPermission[] | 'UnderReview'
+  nativePermissions?: Record<string, ScalingProjectPermission[]> | 'UnderReview'
   milestones?: Milestone[]
   knowledgeNuggets?: KnowledgeNugget[]
 }
@@ -37,6 +39,7 @@ export interface BridgeDisplay {
   detailedDescription?: string
   category: 'Token Bridge' | 'Liquidity Network' | 'Hybrid'
   links: Partial<ScalingProjectLinks>
+  architectureImage?: string
 }
 
 export interface BridgeConfig {
@@ -45,7 +48,7 @@ export interface BridgeConfig {
 }
 
 export interface BridgeRiskView {
-  validatedBy?: ScalingProjectRiskViewEntry
+  validatedBy: ScalingProjectRiskViewEntry
   sourceUpgradeability?: ScalingProjectRiskViewEntry
   destinationToken?: ScalingProjectRiskViewEntry
 }

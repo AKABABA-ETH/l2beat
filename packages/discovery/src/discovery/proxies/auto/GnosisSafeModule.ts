@@ -44,14 +44,17 @@ export async function detectGnosisSafeZodiacModule(
   const modules = await getModules(provider, address)
 
   return {
-    implementations: [],
-    relatives: modules ?? [],
-    upgradeability: {
-      type: 'gnosis safe zodiac module',
-      avatar,
-      target,
-      guard,
-      modules,
+    type: 'gnosis safe zodiac module',
+    values: {
+      // TODO: (sz-piotr) is this correct?
+      $immutable: false,
+      ZodiacModule_modules: (modules ?? []).map((m) => m.toString()),
+      // TODO: (sz-piotr) ignore relative
+      ZodiacModule_avatar: avatar.toString(),
+      // TODO: (sz-piotr) ignore relative
+      ZodiacModule_target: target.toString(),
+      // TODO: (sz-piotr) ignore relative
+      ZodiacModule_guard: guard.toString(),
     },
   }
 }

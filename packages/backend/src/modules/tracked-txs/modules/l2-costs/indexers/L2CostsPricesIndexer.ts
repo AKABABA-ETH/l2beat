@@ -1,19 +1,14 @@
+import { Database, L2CostPriceRecord } from '@l2beat/database'
+import { CoingeckoQueryService } from '@l2beat/shared'
 import { CoingeckoId, UnixTime } from '@l2beat/shared-pure'
-
 import {
   ManagedChildIndexer,
   type ManagedChildIndexerOptions,
 } from '../../../../../tools/uif/ManagedChildIndexer'
 
-import { CoingeckoQueryService } from '@l2beat/shared'
-import {
-  L2CostsPricesRecord,
-  L2CostsPricesRepository,
-} from '../repositories/L2CostsPricesRepository'
-
 export interface L2CostsPricesIndexerDeps
   extends Omit<ManagedChildIndexerOptions, 'name'> {
-  l2CostsPricesRepository: L2CostsPricesRepository
+  db: Database
   coingeckoQueryService: CoingeckoQueryService
 }
 
@@ -28,7 +23,10 @@ export class L2CostsPricesIndexer extends ManagedChildIndexer {
     const unixFrom = new UnixTime(from)
     const unixTo = new UnixTime(to)
 
-    const shiftedTo = CoingeckoQueryService.getAdjustedTo(unixFrom, unixTo)
+    const shiftedTo = CoingeckoQueryService.calculateAdjustedTo(
+      unixFrom,
+      unixTo,
+    )
 
     this.logger.info('Time range shifted', {
       shiftedTo,
@@ -41,7 +39,7 @@ export class L2CostsPricesIndexer extends ManagedChildIndexer {
       return to
     }
 
-    await this.$.l2CostsPricesRepository.addMany(prices)
+    await this.$.db.l2CostPrice.insertMany(prices)
 
     this.logger.info('Saved prices into DB', {
       prices: prices.length,
@@ -53,12 +51,11 @@ export class L2CostsPricesIndexer extends ManagedChildIndexer {
   async fetchPrices(
     from: UnixTime,
     to: UnixTime,
-  ): Promise<L2CostsPricesRecord[]> {
+  ): Promise<L2CostPriceRecord[]> {
     const prices = await this.$.coingeckoQueryService.getUsdPriceHistoryHourly(
       ETHEREUM_COINGECKO_ID,
       from,
       to,
-      undefined,
     )
 
     return prices.map((p) => ({
@@ -69,7 +66,7 @@ export class L2CostsPricesIndexer extends ManagedChildIndexer {
 
   override async invalidate(targetHeight: number): Promise<number> {
     const unixTargetHeight = new UnixTime(targetHeight)
-    await this.$.l2CostsPricesRepository.deleteAfter(unixTargetHeight)
+    await this.$.db.l2CostPrice.deleteAfter(unixTargetHeight)
 
     return targetHeight
   }

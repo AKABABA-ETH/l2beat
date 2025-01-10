@@ -1,26 +1,34 @@
-import { assert, Logger } from '@l2beat/backend-tools'
+import { Logger } from '@l2beat/backend-tools'
 import {
+  assert,
+  Bytes,
   EscrowEntry,
-  TotalSupplyEntry,
+  EthereumAddress,
   UnixTime,
   assertUnreachable,
 } from '@l2beat/shared-pure'
 import { partition } from 'lodash'
 
+import { AmountRecord } from '@l2beat/database'
+import { RpcClient } from '@l2beat/shared'
+import { utils } from 'ethers'
 import { MulticallClient } from '../../../peripherals/multicall/MulticallClient'
-import {
-  erc20Codec,
-  nativeAssetCodec,
-} from '../../../peripherals/multicall/codecs'
 import {
   MulticallRequest,
   MulticallResponse,
 } from '../../../peripherals/multicall/types'
-import { RpcClient } from '../../../peripherals/rpcclient/RpcClient'
-import { Configuration } from '../../../tools/uif/multi/types'
-import { AmountRecord } from '../repositories/AmountRepository'
+import { ChainAmountConfig } from '../indexers/types'
 
-export type ChainAmountConfig = EscrowEntry | TotalSupplyEntry
+export const multicallInterface = new utils.Interface([
+  'function getEthBalance(address account) view returns (uint256)',
+])
+
+export const erc20Interface = new utils.Interface([
+  'function balanceOf(address account) view returns (uint256)',
+  'function totalSupply() view returns (uint256)',
+])
+
+type Config = ChainAmountConfig & { id: string }
 
 export interface AmountServiceDependencies {
   readonly rpcClient: RpcClient
@@ -36,11 +44,11 @@ export class AmountService {
   public async fetchAmounts(
     timestamp: UnixTime,
     blockNumber: number,
-    configurations: Configuration<ChainAmountConfig>[],
+    configurations: Config[],
   ): Promise<(AmountRecord & { type: 'escrow' | 'totalSupply' })[]> {
     const [forRpc, forMulticall] = partition(
       configurations,
-      (c): c is Configuration<EscrowEntry> =>
+      (c): c is EscrowEntry & { id: string } =>
         isNotSupportedByMulticall(c, this.$.multicallClient, blockNumber),
     )
 
@@ -58,29 +66,26 @@ export class AmountService {
   }
 
   private async fetchWithRpc(
-    configurations: Configuration<EscrowEntry>[],
+    configurations: (EscrowEntry & { id: string })[],
     blockNumber: number,
   ) {
     return await Promise.all(
       configurations.map(async (configuration) => {
         const amount = await this.$.rpcClient.getBalance(
-          configuration.properties.escrowAddress,
+          configuration.escrowAddress,
           blockNumber,
         )
 
         return {
           configId: configuration.id,
-          type: configuration.properties.type,
-          amount: amount.toBigInt(),
+          type: configuration.type,
+          amount,
         }
       }),
     )
   }
 
-  private async fetchWithMulticall(
-    configurations: Configuration<ChainAmountConfig>[],
-    blockNumber: number,
-  ) {
+  async fetchWithMulticall(configurations: Config[], blockNumber: number) {
     if (configurations.length === 0) {
       return []
     }
@@ -104,77 +109,121 @@ export class AmountService {
         )
         return {
           configId: configurations[i].id,
-          type: configurations[i].properties.type,
+          type: configurations[i].type,
           amount: 0n,
         }
       }
 
       return {
         configId: configurations[i].id,
-        type: configurations[i].properties.type,
+        type: configurations[i].type,
         amount,
       }
     })
   }
 
   encodeForMulticall(
-    { properties }: Configuration<ChainAmountConfig>,
+    configuration: Config,
     blockNumber: number,
   ): MulticallRequest {
-    switch (properties.type) {
+    switch (configuration.type) {
       case 'totalSupply':
-        return erc20Codec.totalSupply.encode(properties.address)
+        return encodeErc20TotalSupplyQuery(configuration.address)
       case 'escrow':
-        if (properties.address === 'native') {
+        if (configuration.address === 'native') {
           // choose multicall address based on block number
           const multicallAddress =
             this.$.multicallClient.getMulticallAddressAt(blockNumber)
 
           assert(multicallAddress, 'Multicall address not found')
 
-          return nativeAssetCodec.balance.encode(
+          return encodeGetEthBalance(
             multicallAddress,
-            properties.escrowAddress,
+            configuration.escrowAddress,
           )
         }
-        return erc20Codec.balance.encode(
-          properties.escrowAddress,
-          properties.address,
+        return encodeErc20BalanceQuery(
+          configuration.escrowAddress,
+          configuration.address,
         )
       default:
-        assertUnreachable(properties)
+        assertUnreachable(configuration)
     }
   }
 
-  decodeForMulticall(
-    { properties }: Configuration<ChainAmountConfig>,
-    response: MulticallResponse,
-  ) {
+  decodeForMulticall(configuration: Config, response: MulticallResponse) {
     if (!response.success) {
       return
     }
-    switch (properties.type) {
+    switch (configuration.type) {
       case 'totalSupply':
-        return erc20Codec.totalSupply.decode(response.data)
+        return decodeErc20TotalSupplyQuery(response.data)
       case 'escrow':
-        if (properties.address === 'native') {
-          return nativeAssetCodec.balance.decode(response.data)
+        if (configuration.address === 'native') {
+          return decodeGetEthBalance(response.data)
         }
-        return erc20Codec.balance.decode(response.data)
+        return decodeErc20BalanceQuery(response.data)
       default:
-        assertUnreachable(properties)
+        assertUnreachable(configuration)
     }
   }
 }
 
 function isNotSupportedByMulticall(
-  configuration: Configuration<ChainAmountConfig>,
+  configuration: Config,
   multicallClient: MulticallClient,
   blockNumber: number,
-): configuration is Configuration<EscrowEntry> {
+): configuration is EscrowEntry & { id: string } {
   return (
-    configuration.properties.type === 'escrow' &&
-    configuration.properties.address === 'native' &&
+    configuration.type === 'escrow' &&
+    configuration.address === 'native' &&
     !multicallClient.isNativeBalanceSupported(blockNumber)
   )
+}
+
+export function encodeGetEthBalance(
+  multicall: EthereumAddress,
+  address: EthereumAddress,
+): MulticallRequest {
+  return {
+    address: multicall,
+    data: Bytes.fromHex(
+      multicallInterface.encodeFunctionData('getEthBalance', [
+        address.toString(),
+      ]),
+    ),
+  }
+}
+
+function decodeGetEthBalance(response: Bytes) {
+  return BigInt(response.toString())
+}
+
+export function encodeErc20BalanceQuery(
+  holder: EthereumAddress,
+  tokenAddress: EthereumAddress,
+): MulticallRequest {
+  return {
+    address: tokenAddress,
+    data: Bytes.fromHex(
+      erc20Interface.encodeFunctionData('balanceOf', [holder.toString()]),
+    ),
+  }
+}
+
+function decodeErc20BalanceQuery(response: Bytes): bigint {
+  return BigInt(response.toString())
+}
+
+export function encodeErc20TotalSupplyQuery(
+  tokenAddress: EthereumAddress,
+): MulticallRequest {
+  return {
+    address: tokenAddress,
+    data: Bytes.fromHex(erc20Interface.encodeFunctionData('totalSupply', [])),
+  }
+}
+
+function decodeErc20TotalSupplyQuery(response: Bytes): bigint {
+  return BigInt(response.toString())
 }

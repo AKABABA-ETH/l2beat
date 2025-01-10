@@ -1,4 +1,4 @@
-import { EthereumAddress, ProjectId } from '@l2beat/shared-pure'
+import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import { NUGGETS } from '../../common'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
@@ -18,6 +18,7 @@ const enaExecutor = EthereumAddress(
 export const layerzerov2oft: Bridge = {
   type: 'bridge',
   id: ProjectId('layerzerov2oft'),
+  createdAt: new UnixTime(1718891395), // 2024-06-20T13:49:55Z
   display: {
     name: 'LayerZero v2 OFTs',
     slug: 'layerzerov2oft',
@@ -33,12 +34,17 @@ export const layerzerov2oft: Bridge = {
       documentation: [
         'https://docs.layerzero.network/v2/developers/evm/oft/quickstart',
       ],
-      socialMedia: ['https://x.com/LayerZero_Labs'],
+      socialMedia: [
+        'https://x.com/layerzero_core',
+        'https://t.me/joinchat/VcqxYkStIDsyN2Rh',
+        'https://discord.com/invite/ktbvm8Nkcr',
+        'https://medium.com/layerzero-official',
+      ],
     },
     description:
       'This page gathers significant Omnichain Fungible Tokens (OFTs) built on top of LayerZero v2 AMB protocol.',
     detailedDescription:
-      'Risk associated with using any OFT varies, depending on the technological decisions ([OApp configuration and security stack](https://docs.layerzero.network/v2/developers/evm/configuration/default-config)) made by the developers.\
+      'Risk associated with using any OFT varies, depending on the technological decisions ([OApp configuration and security stack](https://docs.layerzero.network/v2/developers/evm/protocol-gas-settings/default-config)) made by the developers.\
        LayerZero as a framework to build omnichain application does not provide any base security as applications can define their own security settings,\
        however applications and tokens choosing the default security settings will leverage security provided by the current default Verifiers and Executor.\
        Default settings are managed by LayerZero team.',
@@ -141,7 +147,6 @@ export const layerzerov2oft: Bridge = {
         {
           category: 'Funds can be stolen if',
           text: 'the OApp owner upgrades the OFT(Adapter) contract maliciously.',
-          isCritical: true,
         },
       ],
       references: [
@@ -177,12 +182,10 @@ export const layerzerov2oft: Bridge = {
         {
           category: 'Funds can be stolen if',
           text: 'the Executor and the Verifiers collude to submit fraudulent block hash and relay fraudulent transfer.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'the OApp owner changes the security stack maliciously.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',

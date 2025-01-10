@@ -1,4 +1,9 @@
-import { CoingeckoQueryService } from '@l2beat/shared'
+import { createAmountId } from '@l2beat/config'
+import { AmountRecord } from '@l2beat/database'
+import {
+  CirculatingSupplyProvider,
+  CoingeckoQueryService,
+} from '@l2beat/shared'
 import {
   CirculatingSupplyEntry,
   CoingeckoId,
@@ -7,66 +12,66 @@ import {
   UnixTime,
 } from '@l2beat/shared-pure'
 import { expect, mockObject } from 'earl'
-import { AmountRecord } from '../repositories/AmountRepository'
-import { createAmountId } from '../utils/createAmountId'
 import { CirculatingSupplyService } from './CirculatingSupplyService'
 
 describe(CirculatingSupplyService.name, () => {
-  describe(
-    CirculatingSupplyService.prototype.fetchCirculatingSupplies.name,
-    () => {
-      it('fetches circulating supplies and returns them as big integers', async () => {
-        const coingeckoQueryService = mockObject<CoingeckoQueryService>({
-          getCirculatingSupplies: async () => [
-            coingeckoResponse(100),
-            coingeckoResponse(200),
-            coingeckoResponse(300),
-          ],
-        })
-
-        const service = new CirculatingSupplyService({
-          coingeckoQueryService,
-        })
-
-        const from = new UnixTime(100)
-        const to = new UnixTime(300)
-        const coingeckoId = CoingeckoId('id')
-        const config = mockObject<CirculatingSupplyEntry>({
-          chain: 'chain',
-          project: ProjectId('project'),
-          type: 'circulatingSupply',
-          address: EthereumAddress.random(),
-          coingeckoId,
-          decimals: 18,
-        })
-
-        const result = await service.fetchCirculatingSupplies(from, to, config)
-
-        expect(result).toEqual([
-          amount(config, 100),
-          amount(config, 200),
-          amount(config, 300),
-        ])
-
-        expect(
-          coingeckoQueryService.getCirculatingSupplies,
-        ).toHaveBeenOnlyCalledWith(coingeckoId, { from, to }, undefined)
+  describe(CirculatingSupplyService.prototype.fetchCirculatingSupplies
+    .name, () => {
+    it('fetches circulating supplies and returns them as big integers', async () => {
+      const circulatingSupplyProvider = mockObject<CirculatingSupplyProvider>({
+        getCirculatingSupplies: async () => [
+          coingeckoResponse(100),
+          coingeckoResponse(200),
+          coingeckoResponse(300),
+        ],
       })
-    },
-  )
+
+      const service = new CirculatingSupplyService({
+        circulatingSupplyProvider: circulatingSupplyProvider,
+      })
+
+      const from = new UnixTime(100)
+      const to = new UnixTime(300)
+      const coingeckoId = CoingeckoId('id')
+      const config = mockObject<CirculatingSupplyEntry>({
+        chain: 'chain',
+        project: ProjectId('project'),
+        type: 'circulatingSupply',
+        address: EthereumAddress.random(),
+        coingeckoId,
+        decimals: 18,
+        category: 'other',
+      })
+
+      const result = await service.fetchCirculatingSupplies(from, to, {
+        ...config,
+        id: createAmountId(config),
+      })
+
+      expect(result).toEqual([
+        amount(config, 100),
+        amount(config, 200),
+        amount(config, 300),
+      ])
+
+      expect(
+        circulatingSupplyProvider.getCirculatingSupplies,
+      ).toHaveBeenOnlyCalledWith(coingeckoId, { from, to })
+    })
+  })
 
   describe(CirculatingSupplyService.prototype.getAdjustedTo.name, () => {
     it('adjust range for coingecko hourly query range', () => {
       const from = 0
       const to = 100
 
-      const service = new CirculatingSupplyService({
-        coingeckoQueryService: mockObject<CoingeckoQueryService>({}),
+      const circulatingSupplyProvider = new CirculatingSupplyService({
+        circulatingSupplyProvider: mockObject<CirculatingSupplyProvider>({}),
       })
 
-      const result = service.getAdjustedTo(from, to)
+      const result = circulatingSupplyProvider.getAdjustedTo(from, to)
 
-      const expected = CoingeckoQueryService.getAdjustedTo(
+      const expected = CoingeckoQueryService.calculateAdjustedTo(
         new UnixTime(from),
         new UnixTime(to),
       )
@@ -91,6 +96,5 @@ function coingeckoResponse(timestamp: number) {
   return {
     timestamp: new UnixTime(timestamp),
     value: timestamp, // for the sake of tests simplicity it is the same
-    deltaMs: 0,
   }
 }

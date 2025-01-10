@@ -1,94 +1,99 @@
-import { ProjectId } from '@l2beat/shared-pure'
-import { DacBridge, NoDaBridge, OnChainDaBridge } from './DaBridge'
+import { ScalingProjectTechnologyChoice } from '../../../../common'
+import { DataAvailabilityLayer as ScalingDaLayerOption } from '../../../../common'
+import {
+  DacBridge,
+  EnshrinedBridge,
+  NoDaBridge,
+  OnChainDaBridge,
+} from './DaBridge'
+import { DaChallengeMechanism } from './DaChallengeMechanism'
+import { DaConsensusAlgorithm } from './DaConsensusAlgorithm'
 import { DaEconomicSecurity } from './DaEconomicSecurity'
 import { DaEconomicSecurityRisk } from './DaEconomicSecurityRisk'
 import { DaFraudDetectionRisk } from './DaFraudDetectionRisk'
+import { DaLayerThroughput } from './DaLayerThroughput'
+import { DaLinks } from './DaLinks'
+import { DaTechnology } from './DaTechnology'
+import { DataAvailabilitySampling } from './DataAvailabilitySampling'
+import { EthereumDaLayerRisks } from './EthereumDaRisks'
 
-export const DaLayerKind = {
-  PublicBlockchain: 'PublicBlockchain',
-  DAC: 'DAC',
-} as const
-
-export type DaLayerKind = (typeof DaLayerKind)[keyof typeof DaLayerKind]
-
-export type DaLayer = BlockchainDaLayer | DacDaLayer
-
-export const DaLayerKindDisplay: Record<DaLayerKind, string> = {
-  PublicBlockchain: 'Public blockchain',
-  DAC: 'DAC',
-}
+export type DaLayer = BlockchainDaLayer | DacDaLayer | EthereumDaLayer
 
 export type BlockchainDaLayer = CommonDaLayer & {
-  kind: typeof DaLayerKind.PublicBlockchain
-
+  kind: 'PublicBlockchain'
   bridges: (OnChainDaBridge | NoDaBridge)[]
+  /** Risks associated with the data availability layer. */
+  risks: DaLayerRisks
+  /** The period within which full nodes must store and distribute data. @unit seconds */
+  pruningWindow: number
+  /** The consensus algorithm used by the data availability layer. */
+  consensusAlgorithm: DaConsensusAlgorithm
+  /** Details about data availability throughput. */
+  throughput?: DaLayerThroughput
+  /** Details about data availability sampling. */
+  dataAvailabilitySampling?: DataAvailabilitySampling
+  /** Economic security configuration. */
+  economicSecurity?: DaEconomicSecurity
+}
 
-  /**
-   * The duration of the data storage.
-   * @unit seconds
-   */
-  storageDuration: number
-
-  /**
-   * Consensus finality time.
-   * @unit seconds
-   */
-  consensusFinality: number
-
-  /**
-   * Duration of time for unbonding in seconds
-   * @unit seconds
-   */
-  unbondingPeriod: number
-
-  /**
-   * Economic security configuration.
-   */
+export type EthereumDaLayer = CommonDaLayer & {
+  kind: 'EthereumDaLayer'
+  bridges: [EnshrinedBridge]
+  /** Risks associated with the data availability layer. */
+  risks: EthereumDaLayerRisks
+  /** The period within which full nodes must store and distribute data. @unit seconds */
+  pruningWindow: number
+  /** The consensus algorithm used by the data availability layer. */
+  consensusAlgorithm: DaConsensusAlgorithm
+  /** Details about data availability throughput. */
+  throughput?: DaLayerThroughput
+  /** Economic security configuration. */
   economicSecurity?: DaEconomicSecurity
 }
 
 export type DacDaLayer = CommonDaLayer & {
-  kind: typeof DaLayerKind.DAC
-
-  bridges: DacBridge[]
+  kind: 'DAC' | 'DA Service' | 'No DAC'
+  bridges: (DacBridge | NoDaBridge)[]
+  /** Risks associated with the data availability layer. */
+  risks: DaLayerRisks
 }
 
 export type CommonDaLayer = {
-  /**
-   * Unique identifier of the data availability layer
-   */
+  type: 'DaLayer'
+  /** Unique identifier of the data availability layer. */
   id: string
-
-  display: {
-    /**
-     * The name of the data availability layer.
-     */
-    name: string
-
-    /**
-     * Slug of the data availability bridge
-     */
-    slug: string
-
-    /**
-     * A short description of the data availability layer.
-     */
-    description?: string
-  }
-
-  /**
-   * List of projects given da layer is being used in
-   */
-  usedIn: ProjectId[]
-
-  /**
-   * Risks associated with the data availability layer.
-   * @see DaLayerRisks
-   */
-  risks: DaLayerRisks
+  /** Classification layers will be split based on */
+  systemCategory: 'public' | 'custom'
+  /** Supported challenge mechanism in place */
+  challengeMechanism?: DaChallengeMechanism
+  /** Fallback */
+  fallback?: ScalingDaLayerOption
+  /** Number of operators in the data availability layer. */
+  numberOfOperators?: number
+  /** Display information for the data availability layer. */
+  display: DaLayerDisplay
+  /** Is the DA layer upcoming? */
+  isUpcoming?: boolean
+  /** Is the DA layer under review? */
+  isUnderReview?: boolean
+  /** The technology used by the data availability layer. */
+  technology: DaTechnology
+  /** Other considerations */
+  otherConsiderations?: ScalingProjectTechnologyChoice[]
 }
 
 export type DaLayerRisks = {
   economicSecurity: DaEconomicSecurityRisk
   fraudDetection: DaFraudDetectionRisk
+}
+
+interface DaLayerDisplay {
+  /** The name of the data availability layer. */
+  name: string
+  /** Slug of the data availability bridge. */
+  slug: string
+  /** A short description of the data availability layer. */
+  description: string
+  /** Links related to the data availability layer. */
+  links: DaLinks
 }

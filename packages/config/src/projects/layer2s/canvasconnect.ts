@@ -7,6 +7,9 @@ import {
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -16,7 +19,6 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import {
@@ -30,9 +32,9 @@ import { delayDescriptionFromString } from '../../utils/delayDescription'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('canvasconnect')
-const upgradeDelaySeconds = discovery.getContractUpgradeabilityParam(
+const upgradeDelaySeconds = discovery.getContractValue<number>(
   'StarkExchange',
-  'upgradeDelay',
+  'StarkWareDiamond_upgradeDelay',
 )
 const includingSHARPUpgradeDelaySeconds = Math.min(
   upgradeDelaySeconds,
@@ -54,6 +56,7 @@ const committee = getCommittee(discovery)
 export const canvasconnect: Layer2 = {
   type: 'layer2',
   id: ProjectId('canvasconnect'),
+  createdAt: new UnixTime(1623153328), // 2021-06-08T11:55:28Z
   isArchived: true,
   display: {
     name: 'Canvas Connect',
@@ -62,7 +65,7 @@ export const canvasconnect: Layer2 = {
       'Canvas Connect is currently open only to whitelisted institutional clients.',
     description:
       'Canvas Connect is a Layer 2 solution based on StarkEx technology, specifically designed to provide centralized investment and trading services to financial institutions.',
-    purposes: ['Privacy', 'DeFi'],
+    purposes: ['Privacy', 'Exchange'],
     provider: 'StarkEx',
     category: 'Validium',
     links: {
@@ -92,16 +95,17 @@ export const canvasconnect: Layer2 = {
       }),
     ],
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['DAC'],
-    bridge: {
-      type: 'DAC Members',
-      membersCount: committee.accounts.length,
-      requiredSignatures: committee.minSigners,
-    },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.DAC],
+      bridge: DA_BRIDGES.DAC_MEMBERS({
+        membersCount: committee.accounts.length,
+        requiredSignatures: committee.minSigners,
+      }),
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: RISK_VIEW.STATE_ZKP_ST,
     dataAvailability: RISK_VIEW.DATA_EXTERNAL_DAC({
       membersCount: committee.accounts.length,
@@ -113,9 +117,7 @@ export const canvasconnect: Layer2 = {
     ),
     sequencerFailure: RISK_VIEW.SEQUENCER_FORCE_VIA_L1(freezeGracePeriod),
     proposerFailure: RISK_VIEW.PROPOSER_USE_ESCAPE_HATCH_MP_NFT,
-    destinationToken: RISK_VIEW.CANONICAL,
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   technology: {
     stateCorrectness: STATE_CORRECTNESS.STARKEX_VALIDITY_PROOFS,
     newCryptography: NEW_CRYPTOGRAPHY.ZK_STARKS,

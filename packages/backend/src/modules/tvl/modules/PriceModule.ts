@@ -1,76 +1,21 @@
-import { Logger } from '@l2beat/backend-tools'
-import { CoingeckoClient, CoingeckoQueryService } from '@l2beat/shared'
+import { createPriceId } from '@l2beat/config'
 import { CoingeckoId, CoingeckoPriceConfigEntry } from '@l2beat/shared-pure'
 import { groupBy } from 'lodash'
-
 import { TvlConfig } from '../../../config/Config'
-import { Peripherals } from '../../../peripherals/Peripherals'
-import { KnexMiddleware } from '../../../peripherals/database/KnexMiddleware'
-import { IndexerService } from '../../../tools/uif/IndexerService'
 import { DescendantIndexer } from '../indexers/DescendantIndexer'
-import { HourlyIndexer } from '../indexers/HourlyIndexer'
 import { PriceIndexer } from '../indexers/PriceIndexer'
-import { PriceRepository } from '../repositories/PriceRepository'
-import { PriceService } from '../services/PriceService'
-import { SyncOptimizer } from '../utils/SyncOptimizer'
-import { createPriceId } from '../utils/createPriceId'
+import { TvlDependencies } from './TvlDependencies'
 
-export interface PriceModule {
+interface PriceModule {
   start: () => Promise<void> | void
   descendant: DescendantIndexer
 }
 
-export function createPriceModule(
+export function initPriceModule(
   config: TvlConfig,
-  logger: Logger,
-  peripherals: Peripherals,
-  hourlyIndexer: HourlyIndexer,
-  syncOptimizer: SyncOptimizer,
-  indexerService: IndexerService,
+  dependencies: TvlDependencies,
 ): PriceModule {
-  const coingeckoClient = peripherals.getClient(CoingeckoClient, {
-    apiKey: config.coingeckoApiKey,
-  })
-  const coingeckoQueryService = new CoingeckoQueryService(coingeckoClient)
-
-  const priceService = new PriceService({
-    coingeckoQueryService,
-  })
-
-  const byCoingeckoId = groupBy(config.prices, (price) => price.coingeckoId)
-
-  const indexers = Object.entries(byCoingeckoId).map(
-    ([coingeckoId, prices]) =>
-      new PriceIndexer({
-        logger,
-        tag: coingeckoId,
-        parents: [hourlyIndexer],
-        indexerService,
-        coingeckoId: CoingeckoId(coingeckoId),
-        configurations: prices.map((price) => ({
-          properties: price,
-          minHeight: price.sinceTimestamp.toNumber(),
-          maxHeight: price.untilTimestamp?.toNumber() ?? null,
-          id: createPriceId(price),
-        })),
-        priceService,
-        priceRepository: peripherals.getRepository(PriceRepository),
-        serializeConfiguration,
-        syncOptimizer,
-        createDatabaseMiddleware: async () =>
-          new KnexMiddleware(peripherals.getRepository(PriceRepository)),
-      }),
-  )
-
-  const descendant = new DescendantIndexer({
-    logger,
-    tag: 'price',
-    parents: indexers,
-    indexerService,
-    minHeight: Math.min(
-      ...config.prices.map((price) => price.sinceTimestamp.toNumber()),
-    ),
-  })
+  const { indexers, descendant } = createPriceIndexers(config, dependencies)
 
   return {
     start: async () => {
@@ -82,6 +27,48 @@ export function createPriceModule(
     },
     descendant,
   }
+}
+
+function createPriceIndexers(config: TvlConfig, dependencies: TvlDependencies) {
+  const indexerService = dependencies.indexerService
+  const syncOptimizer = dependencies.syncOptimizer
+  const priceService = dependencies.priceService
+  const hourlyIndexer = dependencies.hourlyIndexer
+  const logger = dependencies.logger.tag({ module: 'price' })
+
+  const byCoingeckoId = groupBy(config.prices, (price) => price.coingeckoId)
+
+  const indexers = Object.entries(byCoingeckoId).map(
+    ([coingeckoId, prices]) =>
+      new PriceIndexer({
+        logger,
+        parents: [hourlyIndexer],
+        indexerService,
+        coingeckoId: CoingeckoId(coingeckoId),
+        configurations: prices.map((price) => ({
+          properties: price,
+          minHeight: price.sinceTimestamp.toNumber(),
+          maxHeight: price.untilTimestamp?.toNumber() ?? null,
+          id: createPriceId(price),
+        })),
+        priceService,
+        serializeConfiguration,
+        syncOptimizer,
+        db: dependencies.database,
+      }),
+  )
+
+  const descendant = new DescendantIndexer({
+    logger,
+    tags: { tag: 'price' },
+    parents: indexers,
+    indexerService,
+    minHeight: Math.min(
+      ...config.prices.map((price) => price.sinceTimestamp.toNumber()),
+    ),
+  })
+
+  return { indexers, descendant }
 }
 
 function serializeConfiguration(value: CoingeckoPriceConfigEntry): string {

@@ -8,12 +8,13 @@ Implementation address is resolved by calling the libAddressManager.getAddress(i
 It does not have an owner
 
 */
-import { assert } from '@l2beat/backend-tools'
-import { ProxyDetails } from '@l2beat/discovery-types'
-import { Bytes, EthereumAddress } from '@l2beat/shared-pure'
+import { ContractValue, ProxyDetails } from '@l2beat/discovery-types'
+import { assert, Bytes, EthereumAddress } from '@l2beat/shared-pure'
 import { utils } from 'ethers'
 
+import { Indexed, LogDescription } from 'ethers/lib/utils'
 import { IProvider } from '../../provider/IProvider'
+import { getPastUpgradesSingleEvent } from '../pastUpgrades'
 
 async function getAddressManager(
   provider: IProvider,
@@ -80,14 +81,31 @@ export async function detectResolvedDelegateProxy(
     addressManager,
     implementationName,
   )
+
+  const pastUpgrades = await getPastUpgradesSingleEvent(
+    provider,
+    addressManager,
+    'event AddressSet(string indexed name, address implementation, address oldAddress)',
+    (log: LogDescription) => {
+      let name: Indexed | undefined
+      log.eventFragment.inputs.forEach((input, index) => {
+        if (input.name === 'name') {
+          name = log.args[index] as Indexed
+        }
+      })
+      return name?.hash === utils.id(implementationName)
+    },
+  )
+
   return {
-    implementations: [implementation],
-    relatives: [addressManager],
-    upgradeability: {
-      type: 'resolved delegate proxy',
-      addressManager,
-      implementationName,
-      implementation,
+    type: 'resolved delegate proxy',
+    values: {
+      $immutable: false,
+      $implementation: implementation.toString(),
+      $pastUpgrades: pastUpgrades as ContractValue,
+      $upgradeCount: pastUpgrades.length,
+      ResolvedDelegateProxy_addressManager: addressManager.toString(),
+      ResolvedDelegateProxy_implementationName: implementationName,
     },
   }
 }

@@ -10,30 +10,15 @@ visible benefits.
 You can check the detailed steps on how to add new tokens in the tvl.md file in the repository.
 */
 
-import { AssetId, ChainId, Token, UnixTime } from '@l2beat/shared-pure'
+import { assert, AssetId, Token, UnixTime } from '@l2beat/shared-pure'
 
-import { tokens } from './generated.json'
+import { chains } from '../chains'
+import generated from './generated.json'
 import { GeneratedToken } from './types'
 
-export const tokenList: Token[] = tokens
+export const tokenList: Token[] = generated.tokens
   .map((t) => GeneratedToken.parse(t))
   .map(toToken)
-
-export const canonicalTokenList: Token[] = tokenList.filter(
-  (t) => t.source === 'canonical' && t.chainId === ChainId.ETHEREUM,
-)
-
-const canonicalTokenMap = new Map(
-  canonicalTokenList.map((t) => [t.symbol, t] as const),
-)
-
-export function getCanonicalTokenBySymbol(symbol: string) {
-  const token = canonicalTokenMap.get(symbol)
-  if (!token) {
-    throw new TypeError(`Unknown token ${symbol}`)
-  }
-  return token
-}
 
 const tokenMapByAssetId = new Map(tokenList.map((t) => [t.id, t] as const))
 
@@ -50,14 +35,23 @@ export function getTokenByAssetId(assetId: AssetId) {
 }
 
 function toToken(generated: GeneratedToken): Token {
+  const chain = chains.find((c) => c.chainId === +generated.chainId)
+  assert(chain, `Chain nor found for ${generated.symbol}`)
+  assert(
+    chain.minTimestampForTvl,
+    `Token added for chain without minTimestampForTvl ${chain.name}`,
+  )
+
   const sinceTimestamp = new UnixTime(
     Math.max(
       generated.deploymentTimestamp.toNumber(),
+      chain.minTimestampForTvl.toNumber(),
       generated.coingeckoListingTimestamp.toNumber(),
     ),
   )
 
   return {
+    id: AssetId.create(chain.name, generated.address),
     ...generated,
     sinceTimestamp,
   }

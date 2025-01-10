@@ -1,17 +1,21 @@
 import crypto from 'crypto'
 import { readFileSync, readdirSync, writeFileSync } from 'fs'
 import path from 'path'
+import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
 import tinify from 'tinify'
 import { z } from 'zod'
 
 const TinifiedLogos = z.record(z.string(), z.string())
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 dotenv.config()
 const tinifiedLogosFile = path.join(__dirname, 'tinifiedLogos.json')
 const tinifiedLogos = getTinifiedLogos()
 
-const iconDirectory = path.join(__dirname, '../../src/static/icons')
+const iconDirectory = path.join(__dirname, '../../public/icons')
 
 main().catch((e) => console.error(e))
 
@@ -21,7 +25,7 @@ async function main() {
     If the limit is reached (500 contributions), create a new one for yourself at https://tinypng.com/developers.
   */
   const apiKey =
-    process.env.TINIFY_API_KEY ?? 'Dm9N238JR3vhTn64dCD42g06zHbWVDCm'
+    process.env.TINIFY_API_KEY ?? 'XTW3Qwl0dx5gRkc2TmsKtJJtY3c89790'
 
   if (!apiKey) {
     throw new Error('Missing TINIFY_API_KEY')
@@ -49,10 +53,10 @@ async function tinifyLogo(fileName: string) {
   console.time(`Tinifying ${fileName}`)
   const logoPath = path.join(iconDirectory, fileName)
 
-  const source = tinify.fromFile(logoPath)
-
   const sourceBuffer = readFileSync(logoPath)
   if (checkIfWasTinified(fileName, sourceBuffer)) return 0
+
+  const source = tinify.fromFile(logoPath)
 
   const width = sourceBuffer.readUInt32BE(16)
   const height = sourceBuffer.readUInt32BE(20)

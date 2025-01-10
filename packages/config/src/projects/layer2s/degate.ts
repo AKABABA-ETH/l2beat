@@ -7,6 +7,9 @@ import {
 import { utils } from 'ethers'
 
 import {
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -15,9 +18,9 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
 
@@ -49,6 +52,12 @@ export const degate: Layer2 = {
   isArchived: true,
   type: 'layer2',
   id: ProjectId('degate'),
+  createdAt: new UnixTime(1684838286), // 2023-05-23T10:38:06Z
+  badges: [
+    Badge.VM.AppChain,
+    Badge.DA.EthereumCalldata,
+    Badge.Fork.LoopringFork,
+  ],
   display: {
     name: 'DeGate Legacy',
     slug: 'degate',
@@ -97,18 +106,20 @@ export const degate: Layer2 = {
           selector: '0x377bb770',
           functionSignature:
             'function submitBlocks(bool isDataCompressed,bytes data)',
-          sinceTimestampInclusive: new UnixTime(1681993655),
-          untilTimestampExclusive: new UnixTime(1695902496),
+          sinceTimestamp: new UnixTime(1681993655),
+          untilTimestamp: new UnixTime(1695902496),
         },
       },
     ],
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: RISK_VIEW.STATE_ZKP_SN,
     dataAvailability: RISK_VIEW.DATA_ON_CHAIN,
     exitWindow: RISK_VIEW.EXIT_WINDOW_NON_UPGRADABLE,
@@ -139,9 +150,7 @@ export const degate: Layer2 = {
         },
       ],
     },
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   stage: getStage(
     {
       stage0: {
@@ -342,6 +351,7 @@ export const degate: Layer2 = {
       date: '2023-05-03T00:00:00Z',
       description:
         'DeGate launches mainnet beta with a deposit cap and a program to recover eventual user losses.',
+      type: 'general',
     },
   ],
 }

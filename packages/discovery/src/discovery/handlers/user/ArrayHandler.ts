@@ -3,10 +3,15 @@ import { EthereumAddress } from '@l2beat/shared-pure'
 import { utils } from 'ethers'
 import * as z from 'zod'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { Handler, HandlerResult } from '../Handler'
-import { Reference, getReferencedName, resolveReference } from '../reference'
+import {
+  Reference,
+  ReferenceInput,
+  generateReferenceInput,
+  getReferencedName,
+  resolveReference,
+} from '../reference'
 import { callMethod } from '../utils/callMethod'
 import { getFunctionFragment } from '../utils/getFunctionFragment'
 import { valueToNumber } from '../utils/valueToNumber'
@@ -33,7 +38,6 @@ export class ArrayHandler implements Handler {
     readonly field: string,
     private readonly definition: ArrayHandlerDefinition,
     abi: string[],
-    readonly logger: DiscoveryLogger,
   ) {
     const dependency = getReferencedName(definition.length)
     if (dependency) {
@@ -59,11 +63,12 @@ export class ArrayHandler implements Handler {
     address: EthereumAddress,
     previousResults: Record<string, HandlerResult | undefined>,
   ): Promise<HandlerResult> {
-    this.logger.logExecution(this.field, [
-      'Calling array ',
-      this.fragment.name + '(i)',
-    ])
-    const resolved = resolveDependencies(this.definition, previousResults)
+    const referenceInput = generateReferenceInput(
+      previousResults,
+      provider,
+      address,
+    )
+    const resolved = resolveDependencies(this.definition, referenceInput)
 
     const value: ContractValue[] = []
     const startIndex = resolved.startIndex
@@ -141,7 +146,7 @@ function createCallIndex(
 
 function resolveDependencies(
   definition: ArrayHandlerDefinition,
-  previousResults: Record<string, HandlerResult | undefined>,
+  referenceInput: ReferenceInput,
 ): {
   method: string | undefined
   length: number | undefined
@@ -152,7 +157,7 @@ function resolveDependencies(
 } {
   let length: number | undefined
   if (definition.length !== undefined) {
-    const resolved = resolveReference(definition.length, previousResults)
+    const resolved = resolveReference(definition.length, referenceInput)
     length = valueToNumber(resolved)
   }
 
@@ -161,7 +166,7 @@ function resolveDependencies(
     definition.indices !== undefined &&
     typeof definition.indices === 'string'
   ) {
-    const resolved = resolveReference(definition.indices, previousResults)
+    const resolved = resolveReference(definition.indices, referenceInput)
     if (!Array.isArray(resolved)) {
       throw new Error('Expected array of indices')
     }

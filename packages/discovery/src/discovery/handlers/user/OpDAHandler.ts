@@ -1,10 +1,13 @@
 import { EthereumAddress } from '@l2beat/shared-pure'
 import * as z from 'zod'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { Handler, HandlerResult } from '../Handler'
-import { getReferencedName, resolveReference } from '../reference'
+import {
+  generateReferenceInput,
+  getReferencedName,
+  resolveReference,
+} from '../reference'
 import { valueToAddress } from '../utils/valueToAddress'
 
 export type OpStackDAHandlerDefinition = z.infer<
@@ -41,7 +44,6 @@ export class OpStackDAHandler implements Handler {
   constructor(
     readonly field: string,
     readonly definition: OpStackDAHandlerDefinition,
-    readonly logger: DiscoveryLogger,
   ) {
     const dependency = getReferencedName(this.definition.sequencerAddress)
     if (dependency) {
@@ -51,20 +53,23 @@ export class OpStackDAHandler implements Handler {
 
   async execute(
     provider: IProvider,
-    _address: EthereumAddress,
+    currentContractAddress: EthereumAddress,
     previousResults: Record<string, HandlerResult | undefined>,
   ): Promise<HandlerResult> {
-    this.logger.logExecution(this.field, ['Checking OP Stack DA mode'])
-
+    const referenceInput = generateReferenceInput(
+      previousResults,
+      provider,
+      currentContractAddress,
+    )
     const resolved = resolveReference(
       this.definition.sequencerAddress,
-      previousResults,
+      referenceInput,
     )
     const sequencerAddress = valueToAddress(resolved)
     const last10Txs = await provider.raw(
       `optimism_sequencer_100.${sequencerAddress}.${provider.blockNumber}`,
-      ({ etherscanLikeClient }) =>
-        etherscanLikeClient.getLast10OutgoingTxs(
+      ({ etherscanClient }) =>
+        etherscanClient.getLast10OutgoingTxs(
           sequencerAddress,
           provider.blockNumber,
         ),
@@ -77,8 +82,12 @@ export class OpStackDAHandler implements Handler {
     const rpcTxs = await Promise.all(
       last10Txs.map((tx) => provider.getTransaction(tx.hash)),
     )
+    const missingIndex = rpcTxs.findIndex((x) => x === undefined)
+    if (missingIndex !== -1) {
+      throw new Error(`Transaction ${last10Txs[missingIndex]?.hash} is missing`)
+    }
     const isSequencerSendingBlobTx = rpcTxs.some(
-      (tx) => tx.type === BLOB_TX_TYPE,
+      (tx) => tx?.type === BLOB_TX_TYPE,
     )
 
     return {

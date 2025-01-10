@@ -1,96 +1,165 @@
 import { Logger } from '@l2beat/backend-tools'
-import { ProjectId } from '@l2beat/shared-pure'
-
+import { Database } from '@l2beat/database'
+import { assert, ProjectId } from '@l2beat/shared-pure'
 import { Config } from '../../config'
 import { ActivityConfig } from '../../config/Config'
-import { Peripherals } from '../../peripherals/Peripherals'
+import { Providers } from '../../providers/Providers'
 import { Clock } from '../../tools/Clock'
+import { IndexerService } from '../../tools/uif/IndexerService'
 import { ApplicationModule } from '../ApplicationModule'
-import { ActivityViewRefresher } from './ActivityViewRefresher'
-import { SequenceProcessor } from './SequenceProcessor'
-import { ActivityController } from './api/ActivityController'
-import { createActivityRouter } from './api/ActivityRouter'
-import { createSequenceProcessors } from './createSequenceProcessors'
-import { ActivityViewRepository } from './repositories/ActivityViewRepository'
+import { ActivityDependencies } from './ActivityDependencies'
+import { ActivityTransactionConfig } from './ActivityTransactionConfig'
+import { BlockActivityIndexer } from './indexers/BlockActivityIndexer'
+import { BlockTargetIndexer } from './indexers/BlockTargetIndexer'
+import { DayActivityIndexer } from './indexers/DayActivityIndexer'
+import { DayTargetIndexer } from './indexers/DayTargetIndexer'
+import { ActivityIndexer } from './indexers/types'
+import { getBatchSizeFromCallsPerMinute } from './utils/getBatchSizeFromCallsPerMinute'
 
-export function createActivityModule(
+export function initActivityModule(
   config: Config,
   logger: Logger,
-  peripherals: Peripherals,
   clock: Clock,
+  providers: Providers,
+  database: Database,
 ): ApplicationModule | undefined {
   if (!config.activity) {
     logger.info('Activity module disabled')
     return
   }
 
-  const processors = createSequenceProcessors(
-    config,
-    logger,
-    peripherals,
-    clock,
+  logger = logger.tag({
+    feature: 'activity',
+    module: 'activity',
+  })
+
+  const dependencies = new ActivityDependencies(
+    config.activity,
+    database,
+    providers,
   )
 
-  const viewRefresher = new ActivityViewRefresher(
-    processors,
-    peripherals.getRepository(ActivityViewRepository),
-    clock,
-    logger,
-  )
-
-  const includedInApiProjectIds = getIncludedInApiProjectIds(
-    processors,
+  const indexers = createActivityIndexers(
     config.activity,
     logger,
-  )
-  const activityController = new ActivityController(
-    includedInApiProjectIds,
-    processors,
-    peripherals.getRepository(ActivityViewRepository),
     clock,
+    dependencies,
   )
-  const activityV2Router = createActivityRouter(activityController)
-
-  const start = async () => {
-    logger = logger.for('ActivityModule')
-    logger.info('Starting')
-    await Promise.all(processors.map((p) => p.start()))
-    viewRefresher.start()
-    logger.info('Started')
-  }
 
   return {
-    routers: [activityV2Router],
-    start,
+    start: async () => {
+      await Promise.all(
+        indexers.map(async (indexer) => {
+          await indexer.start()
+        }),
+      )
+    },
   }
 }
 
-function getIncludedInApiProjectIds(
-  processors: SequenceProcessor[],
-  activity: ActivityConfig,
+function createActivityIndexers(
+  activityConfig: ActivityConfig,
   logger: Logger,
-): ProjectId[] {
-  return processors
-    .filter((processor) =>
-      shouldIncludeProject(processor.projectId, activity, logger),
-    )
-    .map((c) => c.projectId)
+  clock: Clock,
+  dependencies: ActivityDependencies,
+): ActivityIndexer[] {
+  const dayTargetIndexer = new DayTargetIndexer(logger, clock)
+  const indexers: ActivityIndexer[] = [dayTargetIndexer]
+
+  const indexerService = new IndexerService(dependencies.database)
+
+  activityConfig.projects.forEach((project) => {
+    switch (project.config.type) {
+      case 'rpc':
+      case 'zksync':
+      case 'starknet':
+      case 'loopring':
+      case 'degate3':
+      case 'fuel': {
+        const [blockTargetIndexer, activityIndexer] = createBlockBasedIndexer(
+          clock,
+          project,
+          dependencies,
+          indexerService,
+          logger,
+        )
+
+        indexers.push(blockTargetIndexer, activityIndexer)
+        break
+      }
+
+      case 'starkex': {
+        const activityIndexer = createStarkexIndexer(
+          dayTargetIndexer,
+          project,
+          dependencies,
+          indexerService,
+          logger,
+        )
+
+        indexers.push(activityIndexer)
+        break
+      }
+    }
+  })
+  return indexers
 }
 
-export function shouldIncludeProject(
-  projectId: ProjectId,
-  activity: ActivityConfig,
+function createBlockBasedIndexer(
+  clock: Clock,
+  project: { id: ProjectId; config: ActivityTransactionConfig },
+  dependencies: ActivityDependencies,
+  indexerService: IndexerService,
+  logger: Logger,
+): [BlockTargetIndexer, BlockActivityIndexer] {
+  assert(project.config.type !== 'starkex')
+
+  const blockTimestampProvider = dependencies.getBlockTimestampProvider(
+    project.id,
+  )
+  const blockTargetIndexer = new BlockTargetIndexer(
+    logger,
+    clock,
+    blockTimestampProvider,
+    project.id,
+  )
+
+  const txsCountService = dependencies.getTxsCountService(project.id)
+
+  const activityIndexer = new BlockActivityIndexer({
+    logger,
+    projectId: project.id,
+    batchSize: getBatchSizeFromCallsPerMinute(project.config.callsPerMinute),
+    minHeight: 1,
+    parents: [blockTargetIndexer],
+    txsCountService,
+    indexerService,
+    db: dependencies.database,
+  })
+  return [blockTargetIndexer, activityIndexer]
+}
+
+function createStarkexIndexer(
+  dayTargetIndexer: DayTargetIndexer,
+  project: { id: ProjectId; config: ActivityTransactionConfig },
+  dependencies: ActivityDependencies,
+  indexerService: IndexerService,
   logger: Logger,
 ) {
-  const isExcludedInEnv = activity.projectsExcludedFromAPI.some(
-    (p) => p === projectId.toString(),
-  )
-  if (isExcludedInEnv) {
-    logger.info(
-      `Project ${projectId.toString()} excluded from activity v2 api via .env - will not be present in the response, but will continue syncing`,
-    )
-    return false
-  }
+  assert(project.config.type === 'starkex')
 
-  return true
+  const txsCountService = dependencies.getTxsCountService(project.id)
+
+  const activityIndexer = new DayActivityIndexer({
+    logger,
+    projectId: project.id,
+    batchSize: 10,
+    minHeight: project.config.sinceTimestamp.toStartOf('day').toDays() ?? 0,
+    uncertaintyBuffer: project.config.resyncLastDays,
+    parents: [dayTargetIndexer],
+    txsCountService,
+    indexerService,
+    db: dependencies.database,
+  })
+  return activityIndexer
 }

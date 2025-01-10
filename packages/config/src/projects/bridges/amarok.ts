@@ -19,6 +19,7 @@ const mainnetSpokedisputeBlocks = discovery.getContractValue<number>(
 export const amarok: Bridge = {
   type: 'bridge',
   id: ProjectId('amarok'),
+  createdAt: new UnixTime(1680097524), // 2023-03-29T13:45:24Z
   display: {
     name: 'Connext',
     slug: 'connext',
@@ -40,6 +41,7 @@ export const amarok: Bridge = {
       link: 'https://blog.connext.network/connexts-amarok-upgrade-is-live-683099d61cbb',
       date: '2023-02-02T00:00:00Z',
       description: 'Connext Amarok mainnet deployment.',
+      type: 'general',
     },
     {
       name: 'Connext Amarok announced',
@@ -47,14 +49,17 @@ export const amarok: Bridge = {
       date: '2022-05-11T00:00:00Z',
       description:
         'The new, modular architecture for Connext Amarok has been announced.',
+      type: 'general',
     },
     {
       name: 'Bacco Upgrade',
       date: '2023-12-07T00:00:00Z',
       link: 'https://medium.com/connext/introducing-the-bacco-network-upgrade-73ad19cee9ed',
+      type: 'general',
     },
   ],
   config: {
+    associatedTokens: ['NEXT'],
     escrows: [
       {
         address: EthereumAddress('0x8898B472C54c31894e3B9bb83cEA802a5d0e63C6'),
@@ -67,6 +72,12 @@ export const amarok: Bridge = {
         address: EthereumAddress('0xC8140dA31E6bCa19b287cC35531c2212763C2059'),
         sinceTimestamp: new UnixTime(1671625595),
         tokens: ['ezETH'],
+        chain: 'ethereum',
+      },
+      {
+        address: EthereumAddress('0x22f424Bca11FE154c403c277b5F8dAb54a4bA29b'),
+        sinceTimestamp: new UnixTime(1693790555),
+        tokens: ['NEXT'],
         chain: 'ethereum',
       },
     ],
@@ -122,7 +133,6 @@ export const amarok: Bridge = {
         {
           category: 'Funds can be stolen if',
           text: 'connectors to optimistic rollups receive a fraudulent message within 7-day fraud-proof window and this is not caught by the watchers.',
-          isCritical: true,
         },
       ],
     },
@@ -168,16 +178,16 @@ export const amarok: Bridge = {
         as soon as Optimism state root is recorded on Ethereum w/out waiting for the 7-day fraud proof delay window.',
       ),
       discovery.getContractDetails(
-        'NewOptimismHubConnector',
-        'Contract for sending/receiving messages from mainnet to Optimism, duplicate of OptimismHubConnector.',
+        'BaseHubConnector',
+        'Contract for sending/receiving messages from mainnet to Base via OP stack AMB.',
       ),
       discovery.getContractDetails(
         'MantleHubConnector',
-        'Contract for sending/receiving messages from mainnet to Mantle via Optimism AMB.',
+        'Contract for sending/receiving messages from mainnet to Mantle via OP stack AMB.',
       ),
       discovery.getContractDetails(
-        'OptimismV0HubConnector',
-        'Contract for sending/receiving messages from mainnet to pre-bedrock Optimism based projects via Optimism AMB.',
+        'MetisHubConnector',
+        'Contract for sending/receiving messages from mainnet to Metis via Optimism AMB.',
       ),
       discovery.getContractDetails(
         'ArbitrumHubConnector',
@@ -197,7 +207,7 @@ export const amarok: Bridge = {
       ),
       discovery.getContractDetails(
         'ModeHubConnector',
-        'Contract for sending/receiving messages from mainnet to Mode Network via Optimism AMB.',
+        'Contract for sending/receiving messages from mainnet to Mode Network via OP stack AMB.',
       ),
     ],
     risks: [CONTRACTS.UPGRADE_NO_DELAY_RISK],
@@ -247,7 +257,7 @@ export const amarok: Bridge = {
       sentiment: 'warning',
     },
     sourceUpgradeability: {
-      value: 'YES',
+      value: 'Yes',
       description: `Connext can be upgraded by a ${discovery.getMultisigStats(
         'Connext Multisig',
       )} MultiSig`,

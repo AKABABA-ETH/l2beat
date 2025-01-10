@@ -2,7 +2,19 @@
   "$schema": "../../../../discovery/schemas/config.v2.schema.json",
   "chain": "ethereum",
   "name": "across-v3",
-  "initialAddresses": ["0xc186fA914353c44b2E33eBE05f21846F1048bEda"],
+  "initialAddresses": [
+    "0xc186fA914353c44b2E33eBE05f21846F1048bEda",
+
+    // NOTE(radomski): All addresses below this comment were added into the
+    // initialAddresses automatically during the process of removing the
+    // check-verified-contracts. When going over this project again please bear in
+    // mind that these addresses could not be used by the project anymore. Decide
+    // for yourself whether keep them here or should they be removed or fetched
+    // from some fields of other contracts.
+    "0xeE3Afe347D5C74317041E2618C49534dAf887c24",
+    "0x48d990AbDA20afa1fD1da713AbC041B60a922c65",
+    "0x3B03509645713718B78951126E0A6de6f10043f5"
+  ],
   "names": {
     "0xc186fA914353c44b2E33eBE05f21846F1048bEda": "HubPool",
     "0x7b292034084A41B9D441B71b6E3557Edd0463fa8": "GovernorV2",
@@ -15,16 +27,12 @@
     "0xee1DC6BCF1Ee967a350e9aC6CaaAA236109002ea": "BondToken",
     "0xfb55F43fB9F48F63f9269DB7Dde3BbBe1ebDC0dE": "OptimisticOracleV3",
     "0x8692B776d1Ff0664177c90465038056Dc64f8991": "OptimisticGovernor",
-    "0xE233009838CB898b50e0012a6E783FC9FeE447FB": "ZkSync_Adapter",
-    "0x7Ea0D1882D610095A45E512B0113f79cA98a8EfE": "Linea_Adapter",
-    "0xE1e74B3D6A8E2A479B62958D4E4E6eEaea5B612b": "Optimism_Adapter",
-    "0x5473CBD30bEd1Bf97C0c9d7c59d268CD620dA426": "Arbitrum_Adapter",
-    "0x8315177aB297bA92A06054cE80a67Ed4DBd7ed3a": "Arbitrum_Bridge",
-    "0x011B6E24FfB0B5f5fCc564cf4183C5BBBc96D515": "Arbitrum_Old_Bridge",
-    "0xE1421233BF7158A19f89F17c9735F9cbd3D9529c": "Base_Adapter",
-    "0x33B0Ec794c15D6Cc705818E70d4CaCe7bCfB5Af3": "Boba_Adapter",
-    "0xb4AeF0178f5725392A26eE18684C2aB62adc912e": "Polygon_Adapter",
-    "0xf1B59868697f3925b72889ede818B9E7ba0316d0": "Mode_Adapter"
+    "0xA8399e221a583A57F54Abb5bA22f31b5D6C09f32": "WorldChain_Adapter",
+    "0x6F4083304C2cA99B077ACE06a5DcF670615915Af": "Alephzero_Adapter",
+    "0x7e90A40c7519b041A7DF6498fBf5662e8cFC61d2": "Ink_Adapter",
+    "0xeE3Afe347D5C74317041E2618C49534dAf887c24": "UMAOptimisticOracle",
+    "0x48d990AbDA20afa1fD1da713AbC041B60a922c65": "PolygonTokenBridger",
+    "0x3B03509645713718B78951126E0A6de6f10043f5": "AcrossConfigStore"
   },
   "overrides": {
     "HubPool": {
@@ -34,8 +42,21 @@
           "handler": {
             "type": "stateFromEvent",
             "event": "CrossChainContractsSet",
-            "returnParams": ["l2ChainId", "adapter", "spokePool"],
-            "groupBy": "l2ChainId"
+            "returnParams": ["l2ChainId", "spokePool"],
+            "groupBy": "l2ChainId",
+            "onlyValue": true
+          }
+        },
+        "Adapters": {
+          "target": {
+            "template": "acrossv3/adapter" // this template is used to ignore common relatives (like bridged and tokens) found in adapters
+          },
+          "handler": {
+            "type": "stateFromEvent",
+            "event": "CrossChainContractsSet",
+            "groupBy": "l2ChainId",
+            "onlyValue": true,
+            "returnParams": ["l2ChainId", "adapter"]
           }
         }
       },
@@ -53,12 +74,6 @@
           }
         }
       }
-    },
-    "0xB524735356985D2f267FA010D681f061DfF03715": {
-      "ignoreInWatchMode": ["nonce"]
-    },
-    "EmergencyProposalExecutor": {
-      "ignoreInWatchMode": ["nonce"]
     },
     "ProposerV2": {
       "ignoreMethods": ["bondedProposals"],
@@ -89,79 +104,6 @@
     "VotingToken": {
       "ignoreInWatchMode": ["totalSupply", "totalSupplyAt"]
     },
-    "ZkSync_Adapter": {
-      "ignoreInWatchMode": ["getL1CallValue"], // required amount of ETH to send a message, changes depending on the gas price
-      "ignoreRelatives": [
-        "zkErc20Bridge",
-        "zkSyncEthBridge",
-        "zkSyncMessageBridge",
-        "l1Weth"
-      ]
-    },
-    "Linea_Adapter": {
-      "ignoreRelatives": [
-        "L1_MESSAGE_SERVICE",
-        "L1_TOKEN_BRIDGE",
-        "L1_USDC_BRIDGE",
-        "L1_WETH"
-      ]
-    },
-    "Optimism_Adapter": {
-      "ignoreRelatives": [
-        "cctpTokenMessenger",
-        "DAI",
-        "DAI_OPTIMISM_BRIDGE",
-        "L1_STANDARD_BRIDGE",
-        "L1_WETH",
-        "MESSENGER",
-        "SNX",
-        "SNX_OPTIMISM_BRIDGE",
-        "usdcToken"
-      ]
-    },
-    "Arbitrum_Adapter": {
-      "ignoreRelatives": [
-        "cctpTokenMessenger",
-        "L1_DAI",
-        "L1_ERC20_GATEWAY_ROUTER",
-        "L1_INBOX",
-        "L2_REFUND_L2_ADDRESS",
-        "usdcToken"
-      ]
-    },
-    "Base_Adapter": {
-      "ignoreRelatives": [
-        "cctpTokenMessenger",
-        "L1_STANDARD_BRIDGE",
-        "L1_WETH",
-        "MESSENGER",
-        "usdcToken"
-      ]
-    },
-    "Boba_Adapter": {
-      "ignoreRelatives": ["l1StandardBridge", "l1Weth", "messenger"]
-    },
-    "Polygon_Adapter": {
-      "ignoreRelatives": [
-        "cctpTokenMessenger",
-        "DEPOSIT_MANAGER",
-        "ERC20_PREDICATE",
-        "FX_STATE_SENDER",
-        "L1_MATIC",
-        "L1_WETH",
-        "ROOT_CHAIN_MANAGER",
-        "usdcToken"
-      ]
-    },
-    "Mode_Adapter": {
-      "ignoreRelatives": [
-        "cctpTokenMessenger",
-        "L1_STANDARD_BRIDGE",
-        "L1_WETH",
-        "MESSENGER",
-        "usdcToken"
-      ]
-    },
     "OptimisticOracleV3": {
       "ignoreMethods": ["getCurrentTime"],
       "ignoreRelatives": ["cachedOracle", "defaultCurrency"]
@@ -170,12 +112,17 @@
       "ignoreMethods": ["getCurrentTime"],
       "ignoreRelatives": ["collateral"]
     },
-    "Arbitrum_Bridge": {
-      "ignoreMethods": ["delayedInboxAccs", "sequencerInboxAccs"],
-      "ignoreRelatives": ["allowedOutboxList", "rollup", "sequencerInbox"]
+    "PolygonTokenBridger": {
+      "ignoreRelatives": [
+        "destination",
+        "l1PolygonRegistry",
+        "l1Weth",
+        "l2WrappedMatic",
+        "maticToken"
+      ]
     },
-    "Arbitrum_Old_Bridge": {
-      "ignoreMethods": ["inboxAccs"]
+    "UMAOptimisticOracle": {
+      "ignoreMethods": ["getCurrentTime"]
     }
   }
 }

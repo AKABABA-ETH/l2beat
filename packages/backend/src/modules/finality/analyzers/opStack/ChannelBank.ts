@@ -1,5 +1,5 @@
-import { assert, Logger } from '@l2beat/backend-tools'
-import { ProjectId } from '@l2beat/shared-pure'
+import { Logger } from '@l2beat/backend-tools'
+import { assert, ProjectId } from '@l2beat/shared-pure'
 
 const ChannelTimeoutBlocks = 300
 
@@ -87,7 +87,10 @@ export class Channel {
     projectId: ProjectId,
     private readonly logger: Logger,
   ) {
-    this.logger = this.logger.tag(`${projectId.toString()}:${this.l1Origin}`)
+    this.logger = this.logger.tag({
+      tag: `${projectId}:${this.l1Origin}`,
+      project: projectId,
+    })
   }
 
   addFrames(newFrames: Frame[]) {

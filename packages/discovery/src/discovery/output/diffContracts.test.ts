@@ -17,12 +17,10 @@ describe(diffContracts.name, () => {
     const committed: ContractParameters = {
       name: 'A',
       address: OLD_ADDRESS,
-      upgradeability: {
-        type: 'EIP1967 proxy',
-        admin: OLD_ADMIN,
-        implementation: IMPLEMENTATION,
-      },
+      proxyType: 'EIP1967 proxy',
       values: {
+        $implementation: IMPLEMENTATION.toString(),
+        $admin: OLD_ADMIN.toString(),
         A: true,
         B: true,
         C: 1,
@@ -33,13 +31,11 @@ describe(diffContracts.name, () => {
     const discovered: ContractParameters = {
       name: 'A',
       address: NEW_ADDRESS,
-      upgradeability: {
-        type: 'EIP1967 proxy',
-        admin: NEW_ADMIN,
-        implementation: IMPLEMENTATION,
-      },
+      proxyType: 'EIP1967 proxy',
       ignoreInWatchMode: ['E', 'F'],
       values: {
+        $admin: NEW_ADMIN.toString(),
+        $implementation: IMPLEMENTATION.toString(),
         A: false,
         C: 1,
         D: [1, 2, 3, 4],
@@ -59,16 +55,41 @@ describe(diffContracts.name, () => {
         key: 'address',
         before: JSON.stringify(OLD_ADDRESS),
         after: JSON.stringify(NEW_ADDRESS),
+        description: undefined,
+        severity: undefined,
       },
       {
-        key: 'upgradeability.admin',
+        key: 'values.$admin',
         before: JSON.stringify(OLD_ADMIN),
         after: JSON.stringify(NEW_ADMIN),
+        description: undefined,
+        severity: undefined,
       },
-      { key: 'values.A', before: 'true', after: 'false' },
-      { key: 'values.B', before: 'true' },
-      { key: 'values.D.3', after: '4' },
-      { key: 'values.A.F', after: '"dontIgnoreMe"' },
+      {
+        key: 'values.A',
+        before: 'true',
+        after: 'false',
+        description: undefined,
+        severity: undefined,
+      },
+      {
+        key: 'values.B',
+        before: 'true',
+        description: undefined,
+        severity: undefined,
+      },
+      {
+        key: 'values.D.3',
+        after: '4',
+        description: undefined,
+        severity: undefined,
+      },
+      {
+        key: 'values.A.F',
+        after: '"dontIgnoreMe"',
+        description: undefined,
+        severity: undefined,
+      },
     ])
   })
 })

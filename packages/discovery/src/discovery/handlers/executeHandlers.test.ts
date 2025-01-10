@@ -18,6 +18,8 @@ describe(executeHandlers.name, () => {
         const value = layout[number]
         return Bytes.fromHex(value!.toString(16).padStart(64, '0'))
       },
+      blockNumber: 123,
+      chain: 'foo',
     })
   }
 
@@ -29,19 +31,18 @@ describe(executeHandlers.name, () => {
     const values = await executeHandlers(
       provider,
       [
-        new StorageHandler(
-          'foo',
-          { type: 'storage', slot: 1, returnType: 'number' },
-          DiscoveryLogger.SILENT,
-        ),
-        new StorageHandler(
-          'bar',
-          { type: 'storage', slot: 2, returnType: 'number' },
-          DiscoveryLogger.SILENT,
-        ),
+        new StorageHandler('foo', {
+          type: 'storage',
+          slot: 1,
+          returnType: 'number',
+        }),
+        new StorageHandler('bar', {
+          type: 'storage',
+          slot: 2,
+          returnType: 'number',
+        }),
       ],
       EthereumAddress.random(),
-      DiscoveryLogger.SILENT,
     )
     expect<unknown[]>(values).toEqual([
       { field: 'foo', value: 123, ignoreRelative: undefined },
@@ -59,29 +60,28 @@ describe(executeHandlers.name, () => {
     const values = await executeHandlers(
       provider,
       [
-        new StorageHandler(
-          'xxx',
-          { type: 'storage', slot: '{{ foo }}', returnType: 'number' },
-          DiscoveryLogger.SILENT,
-        ),
-        new StorageHandler(
-          'yyy',
-          { type: 'storage', slot: '{{ bar }}', returnType: 'number' },
-          DiscoveryLogger.SILENT,
-        ),
-        new StorageHandler(
-          'foo',
-          { type: 'storage', slot: 1, returnType: 'number' },
-          DiscoveryLogger.SILENT,
-        ),
-        new StorageHandler(
-          'bar',
-          { type: 'storage', slot: 2, returnType: 'number' },
-          DiscoveryLogger.SILENT,
-        ),
+        new StorageHandler('xxx', {
+          type: 'storage',
+          slot: '{{ foo }}',
+          returnType: 'number',
+        }),
+        new StorageHandler('yyy', {
+          type: 'storage',
+          slot: '{{ bar }}',
+          returnType: 'number',
+        }),
+        new StorageHandler('foo', {
+          type: 'storage',
+          slot: 1,
+          returnType: 'number',
+        }),
+        new StorageHandler('bar', {
+          type: 'storage',
+          slot: 2,
+          returnType: 'number',
+        }),
       ],
       EthereumAddress.random(),
-      DiscoveryLogger.SILENT,
     )
     expect<unknown[]>(values).toEqual([
       { field: 'foo', value: 123, ignoreRelative: undefined },
@@ -103,59 +103,42 @@ describe(executeHandlers.name, () => {
     const values = await executeHandlers(
       provider,
       [
-        new StorageHandler(
-          'aab',
-          {
-            type: 'storage',
-            slot: '{{ a }}',
-            offset: '{{ ab }}',
-            returnType: 'number',
-          },
-          DiscoveryLogger.SILENT,
-        ),
-        new StorageHandler(
-          'ab',
-          {
-            type: 'storage',
-            slot: '{{ a }}',
-            offset: '{{ b }}',
-            returnType: 'number',
-          },
-          DiscoveryLogger.SILENT,
-        ),
-        new StorageHandler(
-          'bb',
-          {
-            type: 'storage',
-            slot: '{{ b }}',
-            offset: '{{ b }}',
-            returnType: 'number',
-          },
-          DiscoveryLogger.SILENT,
-        ),
-        new StorageHandler(
-          'a',
-          { type: 'storage', slot: 1, returnType: 'number' },
-          DiscoveryLogger.SILENT,
-        ),
-        new StorageHandler(
-          'aabbb',
-          {
-            type: 'storage',
-            slot: '{{ aab }}',
-            offset: '{{ bb }}',
-            returnType: 'number',
-          },
-          DiscoveryLogger.SILENT,
-        ),
-        new StorageHandler(
-          'b',
-          { type: 'storage', slot: 2, returnType: 'number' },
-          DiscoveryLogger.SILENT,
-        ),
+        new StorageHandler('aab', {
+          type: 'storage',
+          slot: '{{ a }}',
+          offset: '{{ ab }}',
+          returnType: 'number',
+        }),
+        new StorageHandler('ab', {
+          type: 'storage',
+          slot: '{{ a }}',
+          offset: '{{ b }}',
+          returnType: 'number',
+        }),
+        new StorageHandler('bb', {
+          type: 'storage',
+          slot: '{{ b }}',
+          offset: '{{ b }}',
+          returnType: 'number',
+        }),
+        new StorageHandler('a', {
+          type: 'storage',
+          slot: 1,
+          returnType: 'number',
+        }),
+        new StorageHandler('aabbb', {
+          type: 'storage',
+          slot: '{{ aab }}',
+          offset: '{{ bb }}',
+          returnType: 'number',
+        }),
+        new StorageHandler('b', {
+          type: 'storage',
+          slot: 2,
+          returnType: 'number',
+        }),
       ],
       EthereumAddress.random(),
-      DiscoveryLogger.SILENT,
     )
     expect<unknown[]>(values).toEqual([
       { field: 'a', value: 100, ignoreRelative: undefined },
@@ -171,15 +154,8 @@ describe(executeHandlers.name, () => {
     const provider = mockObject<IProvider>()
     const promise = executeHandlers(
       provider,
-      [
-        new StorageHandler(
-          'a',
-          { type: 'storage', slot: '{{ a }}' },
-          DiscoveryLogger.SILENT,
-        ),
-      ],
+      [new StorageHandler('a', { type: 'storage', slot: '{{ a }}' })],
       EthereumAddress.random(),
-      DiscoveryLogger.SILENT,
     )
     await expect(promise).toBeRejectedWith('Impossible to resolve dependencies')
   })
@@ -188,15 +164,8 @@ describe(executeHandlers.name, () => {
     const provider = mockObject<IProvider>()
     const promise = executeHandlers(
       provider,
-      [
-        new StorageHandler(
-          'a',
-          { type: 'storage', slot: '{{ foo }}' },
-          DiscoveryLogger.SILENT,
-        ),
-      ],
+      [new StorageHandler('a', { type: 'storage', slot: '{{ foo }}' })],
       EthereumAddress.random(),
-      DiscoveryLogger.SILENT,
     )
     await expect(promise).toBeRejectedWith('Impossible to resolve dependencies')
   })
@@ -206,19 +175,10 @@ describe(executeHandlers.name, () => {
     const promise = executeHandlers(
       provider,
       [
-        new StorageHandler(
-          'a',
-          { type: 'storage', slot: '{{ b }}' },
-          DiscoveryLogger.SILENT,
-        ),
-        new StorageHandler(
-          'b',
-          { type: 'storage', slot: '{{ a }}' },
-          DiscoveryLogger.SILENT,
-        ),
+        new StorageHandler('a', { type: 'storage', slot: '{{ b }}' }),
+        new StorageHandler('b', { type: 'storage', slot: '{{ a }}' }),
       ],
       EthereumAddress.random(),
-      DiscoveryLogger.SILENT,
     )
     await expect(promise).toBeRejectedWith('Impossible to resolve dependencies')
   })
@@ -238,7 +198,6 @@ describe(executeHandlers.name, () => {
       provider,
       [new FunkyHandler()],
       EthereumAddress.random(),
-      DiscoveryLogger.SILENT,
     )
     expect<unknown[]>(values).toEqual([{ field: 'foo', error: 'oops' }])
   })
@@ -250,19 +209,20 @@ describe(executeHandlers.name, () => {
     const provider = mockObject<IProvider>({
       getStorage: mockFn().returnsOnce(123),
       callMethod: mockFn().returns(0x12345678),
+      blockNumber: 123,
+      chain: 'foo',
     })
     const values = await executeHandlers(
       provider,
       [
-        new StorageHandler(
-          'a',
-          { type: 'storage', slot: 1, returnType: 'number' },
-          DiscoveryLogger.SILENT,
-        ),
-        new SimpleMethodHandler(method, DiscoveryLogger.SILENT),
+        new StorageHandler('a', {
+          type: 'storage',
+          slot: 1,
+          returnType: 'number',
+        }),
+        new SimpleMethodHandler(method),
       ],
       ADDRESS,
-      DiscoveryLogger.SILENT,
     )
 
     expect(values).toEqualUnsorted([
@@ -277,6 +237,8 @@ describe(executeHandlers.name, () => {
     const fragment = toFunctionFragment(method)
     const provider = mockObject<IProvider>({
       callMethod: mockFn().returnsOnce(3).returns(0x12345678),
+      blockNumber: 123,
+      chain: 'foo',
     })
     const values = await executeHandlers(
       provider,
@@ -289,12 +251,10 @@ describe(executeHandlers.name, () => {
             length: '{{ foo }}',
           },
           ['function bar(uint256) external view returns (uint256)'],
-          DiscoveryLogger.SILENT,
         ),
-        new SimpleMethodHandler(method, DiscoveryLogger.SILENT),
+        new SimpleMethodHandler(method),
       ],
       ADDRESS,
-      DiscoveryLogger.SILENT,
     )
 
     expect(values).toEqual([

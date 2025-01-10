@@ -1,33 +1,35 @@
 {
   "name": "lzomnichain",
   "chain": "base",
-  "blockNumber": 12418351,
-  "configHash": "0x00284b78b20ddd982c3a90512dff10354fc287a6d2347492f1e2d3b215d2a814",
-  "version": 3,
+  "blockNumber": 21444261,
+  "configHash": "0x489ee895d4bd7a38439afd393b89ea7e8a7d6a413f919925b9c3a2cf0a79bfcc",
   "contracts": [
     {
       "name": "LayerZero Multisig",
       "address": "0x28937ca4873f7289Ebea0708c4E42b24835eCfF0",
-      "upgradeability": {
-        "type": "gnosis safe",
-        "masterCopy": "0xfb1bffC9d739B8D520DaF37dF666da4C687191EA",
-        "modules": [],
-        "threshold": "2 of 5 (40%)"
-      },
-      "implementations": ["0xfb1bffC9d739B8D520DaF37dF666da4C687191EA"],
+      "template": "GnosisSafe",
+      "sourceHashes": [
+        "0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff",
+        "0x59fe14e95a8aa7f52213f18bae5c9329cf583a7ba31194698b15eddb97d5e825"
+      ],
+      "proxyType": "gnosis safe",
+      "ignoreInWatchMode": ["nonce"],
       "sinceTimestamp": 1689358473,
       "values": {
-        "domainSeparator": "0x90151deb6daf65b18aa073f3f4301087abf267c17f648e53af9ee20fb8a71069",
-        "getChainId": 8453,
-        "getOwners": [
+        "$immutable": false,
+        "$implementation": "0xfb1bffC9d739B8D520DaF37dF666da4C687191EA",
+        "$members": [
           "0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327",
-          "0xe095F2590eF1Ab39601445025847Ed8E4B40D687",
           "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936",
           "0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e",
           "0x67FC8c432448f9a8d541C17579EF7a142378d5aD"
         ],
-        "getThreshold": 2,
-        "nonce": 43,
+        "$threshold": 2,
+        "domainSeparator": "0x90151deb6daf65b18aa073f3f4301087abf267c17f648e53af9ee20fb8a71069",
+        "getChainId": 8453,
+        "GnosisSafe_modules": [],
+        "multisigThreshold": "2 of 4 (50%)",
+        "nonce": 130,
         "VERSION": "1.3.0"
       },
       "derivedName": "GnosisSafeL2"
@@ -35,11 +37,12 @@
     {
       "name": "MPTValidator01",
       "address": "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x965651ae50a316c3ab842d2c8c9242c34d6e40eefa61f7c731bba9a1faf2ccea"
+      ],
       "sinceTimestamp": 1689301017,
       "values": {
+        "$immutable": true,
         "getProofType": 1,
         "getUtilsVersion": 4,
         "PACKET_SIGNATURE": "0xe9bded5f24a4168e4f3bf44e00298c993b22376aad8c58c7dda9718a54cbea82",
@@ -52,11 +55,20 @@
     {
       "name": "UltraLightNodeV2",
       "address": "0x38dE71124f7a447a01D67945a51eDcE9FF491251",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x38c85ab54f670eaa1fc2b351aee39913bc12e2b26c460ee31cf89d3f1f7d59b9"
+      ],
+      "ignoreInWatchMode": [
+        "chainAddressSizeMap",
+        "defaultAppConfig",
+        "defaultAdapterParams",
+        "inboundProofLibrary",
+        "supportedOutboundProof",
+        "ulnLookup"
+      ],
       "sinceTimestamp": 1689301083,
       "values": {
+        "$immutable": true,
         "chainAddressSizeMap": {
           "101": 20,
           "102": 20,
@@ -66,12 +78,15 @@
           "110": 20,
           "111": 20,
           "112": 20,
+          "116": 20,
+          "118": 20,
           "125": 20,
           "126": 20,
           "138": 20,
           "145": 20,
           "150": 20,
           "151": 20,
+          "153": 20,
           "158": 20,
           "159": 20,
           "165": 20,
@@ -84,18 +99,33 @@
           "183": 20,
           "184": 20,
           "195": 20,
+          "198": 20,
           "199": 20,
           "202": 20,
           "210": 20,
           "212": 20,
           "213": 20,
           "214": 20,
+          "215": 20,
+          "217": 20,
           "230": 20,
           "234": 20,
           "235": 20,
+          "236": 20,
+          "237": 20,
           "238": 20,
           "243": 20,
-          "255": 20
+          "255": 20,
+          "260": 20,
+          "263": 20,
+          "265": 20,
+          "266": 20,
+          "267": 20,
+          "274": 20,
+          "290": 20,
+          "292": 20,
+          "301": 20,
+          "317": 20
         },
         "CONFIG_TYPE_INBOUND_BLOCK_CONFIRMATIONS": 2,
         "CONFIG_TYPE_INBOUND_PROOF_LIBRARY_VERSION": 1,
@@ -136,6 +166,14 @@
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           },
+          "116": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "118": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
           "125": {
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
@@ -157,6 +195,10 @@
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           },
           "151": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "153": {
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           },
@@ -208,6 +250,10 @@
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           },
+          "198": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
           "199": {
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
@@ -232,6 +278,14 @@
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           },
+          "215": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "217": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
           "230": {
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
@@ -244,6 +298,14 @@
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           },
+          "236": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "237": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
           "238": {
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
@@ -253,6 +315,46 @@
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           },
           "255": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "260": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "263": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "265": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "266": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "267": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "274": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "290": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "292": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "301": {
+            "proofType": 2,
+            "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
+          },
+          "317": {
             "proofType": 2,
             "adapterParams": "0x00010000000000000000000000000000000000000000000000000000000000030d40"
           }
@@ -322,6 +424,22 @@
             "oracle": "0xD56e4eAb23cb81f43168F9F45211Eb027b9aC7cc",
             "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
           },
+          "116": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xD56e4eAb23cb81f43168F9F45211Eb027b9aC7cc",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "118": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 10,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
           "125": {
             "inboundProofLib": 2,
             "inboundBlockConfirm": 5,
@@ -370,9 +488,17 @@
             "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
             "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
           },
+          "153": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 21,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
           "158": {
             "inboundProofLib": 2,
-            "inboundBlockConfirm": 20,
+            "inboundBlockConfirm": 225000,
             "outboundProofType": 2,
             "outboundBlockConfirm": 10,
             "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
@@ -466,6 +592,14 @@
             "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
             "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
           },
+          "198": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
           "199": {
             "inboundProofLib": 2,
             "inboundBlockConfirm": 5,
@@ -484,7 +618,7 @@
           },
           "210": {
             "inboundProofLib": 2,
-            "inboundBlockConfirm": 5,
+            "inboundBlockConfirm": 32,
             "outboundProofType": 2,
             "outboundBlockConfirm": 10,
             "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
@@ -507,6 +641,22 @@
             "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
           },
           "214": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 20,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "215": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "217": {
             "inboundProofLib": 2,
             "inboundBlockConfirm": 5,
             "outboundProofType": 2,
@@ -538,6 +688,22 @@
             "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
             "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
           },
+          "236": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "237": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
           "238": {
             "inboundProofLib": 2,
             "inboundBlockConfirm": 5,
@@ -555,6 +721,86 @@
             "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
           },
           "255": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "260": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "263": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "265": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "266": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 10,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "267": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "274": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 225000,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "290": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "292": {
+            "inboundProofLib": 2,
+            "inboundBlockConfirm": 5,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "301": {
+            "inboundProofLib": 1,
+            "inboundBlockConfirm": 300,
+            "outboundProofType": 2,
+            "outboundBlockConfirm": 10,
+            "oracle": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
+            "relayer": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+          },
+          "317": {
             "inboundProofLib": 2,
             "inboundBlockConfirm": 5,
             "outboundProofType": 2,
@@ -594,6 +840,14 @@
             "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
           ],
+          "116": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "118": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
           "125": [
             "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
@@ -615,6 +869,10 @@
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
           ],
           "151": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "153": [
             "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
           ],
@@ -663,6 +921,10 @@
             "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
           ],
+          "198": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
           "199": [
             "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
@@ -687,6 +949,14 @@
             "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
           ],
+          "215": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "217": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
           "230": [
             "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
@@ -699,6 +969,14 @@
             "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
           ],
+          "236": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "237": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
           "238": [
             "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
@@ -708,6 +986,43 @@
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
           ],
           "255": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "260": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "263": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "265": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "266": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "267": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "274": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "290": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "292": [
+            "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
+            "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
+          ],
+          "301": "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36",
+          "317": [
             "0x2D61DCDD36F10b22176E0433B86F74567d529aAa",
             "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36"
           ]
@@ -725,12 +1040,15 @@
           "110": 2,
           "111": 2,
           "112": 2,
+          "116": 2,
+          "118": 2,
           "125": 2,
           "126": 2,
           "138": 2,
           "145": 2,
           "150": 2,
           "151": 2,
+          "153": 2,
           "158": 2,
           "159": 2,
           "165": 2,
@@ -743,18 +1061,33 @@
           "183": 2,
           "184": 2,
           "195": 2,
+          "198": 2,
           "199": 2,
           "202": 2,
           "210": 2,
           "212": 2,
           "213": 2,
           "214": 2,
+          "215": 2,
+          "217": 2,
           "230": 2,
           "234": 2,
           "235": 2,
+          "236": 2,
+          "237": 2,
           "238": 2,
           "243": 2,
-          "255": 2
+          "255": 2,
+          "260": 2,
+          "263": 2,
+          "265": 2,
+          "266": 2,
+          "267": 2,
+          "274": 2,
+          "290": 2,
+          "292": 2,
+          "301": 2,
+          "317": 2
         },
         "treasuryContract": "0x980205D352F198748B626f6f7C38A8a5663Ec981",
         "treasuryZROFees": 0,
@@ -767,12 +1100,15 @@
           "110": "0x0000000000000000000000004d73adb72bc3dd368966edd0f0b2148401a178e2",
           "111": "0x0000000000000000000000004d73adb72bc3dd368966edd0f0b2148401a178e2",
           "112": "0x0000000000000000000000004d73adb72bc3dd368966edd0f0b2148401a178e2",
+          "116": "0x0000000000000000000000004d73adb72bc3dd368966edd0f0b2148401a178e2",
+          "118": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "125": "0x000000000000000000000000377530cda84dfb2673bf4d145dcf0c4d7fdcb5b6",
           "126": "0x0000000000000000000000004d73adb72bc3dd368966edd0f0b2148401a178e2",
           "138": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "145": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "150": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "151": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "153": "0x00000000000000000000000066a71dcef29a0ffbdbe3c6a460a3b5bc225cd675",
           "158": "0x000000000000000000000000fe7c30860d01e28371d40434806f4a8fcdd3a098",
           "159": "0x000000000000000000000000c1b15d3b262beec0e3565c11c9e0f6134bdacb36",
           "165": "0x000000000000000000000000042b8289c97896529ec2fe49ba1a8b9c956a86cc",
@@ -785,62 +1121,58 @@
           "183": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "184": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "195": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "198": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "199": "0x0000000000000000000000005b19bd330a84c049b62d5b0fc2ba120217a18c1c",
           "202": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "210": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "212": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "213": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "214": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "215": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "217": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "230": "0x000000000000000000000000980205d352f198748b626f6f7c38a8a5663ec981",
           "234": "0x000000000000000000000000980205d352f198748b626f6f7c38a8a5663ec981",
           "235": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "236": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "237": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
           "238": "0x0000000000000000000000004bb746ed0df6a8be563ff66dfc502f084779f9c9",
           "243": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
-          "255": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251"
+          "255": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "260": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "263": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "265": "0x000000000000000000000000e1844c5d63a9543023008d332bd3d2e6f1fe1043",
+          "266": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "267": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "274": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "290": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251",
+          "292": "0x000000000000000000000000fe7c30860d01e28371d40434806f4a8fcdd3a098",
+          "301": "0x000000000000000000000000fe5dfa6b4d6be848b57dd378b0798af60f1e6d35",
+          "317": "0x00000000000000000000000038de71124f7a447a01d67945a51edce9ff491251"
         }
       },
       "derivedName": "UltraLightNodeV2"
     },
     {
-      "name": "",
-      "address": "0x3c2269811836af69497E5F486A85D7316753cf62",
-      "unverified": true,
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xde54D17cCf5Bdb2FADA00e15D863EC395aB9b9D4",
-        "admin": "0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4"
-      },
-      "implementations": ["0xde54D17cCf5Bdb2FADA00e15D863EC395aB9b9D4"],
-      "sinceTimestamp": 1689300865
-    },
-    {
       "name": "NonceContract",
       "address": "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x895867397d61409de8476975bae4d871fec1c289e52fe97b31872726808dae38"
+      ],
       "sinceTimestamp": 1689301077,
       "values": {
+        "$immutable": true,
         "endpoint": "0xb6319cC6c8c27A8F5dAF0dD3DF91EA35C4720dd7"
       }
     },
     {
-      "name": "",
-      "address": "0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4",
-      "unverified": true,
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1689300855
-    },
-    {
       "name": "TreasuryV2",
       "address": "0x980205D352F198748B626f6f7C38A8a5663Ec981",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x9a8a40656962f8df570994ee72e4262dc5beb926ffc7686740df457bade87efb"
+      ],
       "sinceTimestamp": 1689301089,
       "values": {
+        "$immutable": true,
         "feeEnabled": false,
         "nativeBP": 0,
         "owner": "0x28937ca4873f7289Ebea0708c4E42b24835eCfF0",
@@ -853,19 +1185,19 @@
       "name": "",
       "address": "0xAaB5A48CFC03Efa9cC34A2C1aAcCCB84b4b770e4",
       "unverified": true,
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1689302073
+      "sinceTimestamp": 1689302073,
+      "values": { "$immutable": true }
     },
     {
       "name": "Endpoint",
       "address": "0xb6319cC6c8c27A8F5dAF0dD3DF91EA35C4720dd7",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x945c3299d0cf62b9ea7a77d6328295d54327299d6a153e1e7b48d85fa9b77215"
+      ],
+      "ignoreInWatchMode": ["isReceivingPayload", "isSendingPayload"],
       "sinceTimestamp": 1689300955,
       "values": {
+        "$immutable": true,
         "BLOCK_VERSION": 65535,
         "chainId": 184,
         "DEFAULT_VERSION": 0,
@@ -889,11 +1221,12 @@
     {
       "name": "FPValidator",
       "address": "0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x0d505ac1b08cd930c4b902daa632eaa029531d5c1aa50c45169b63c310b2da62"
+      ],
       "sinceTimestamp": 1689300991,
       "values": {
+        "$immutable": true,
         "getProofType": 2,
         "getUtilsVersion": 1,
         "proofType": 2,
@@ -906,22 +1239,47 @@
       "name": "",
       "address": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa",
       "unverified": true,
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x6BD792911F4B3714E88FbDf32B351632e7d22c70",
-        "admin": "0xFe7C30860D01e28371D40434806F4A8fcDD3A098"
-      },
-      "implementations": ["0x6BD792911F4B3714E88FbDf32B351632e7d22c70"],
-      "sinceTimestamp": 1689301749
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0xFe7C30860D01e28371D40434806F4A8fcDD3A098",
+          "via": []
+        }
+      ],
+      "sinceTimestamp": 1689301749,
+      "values": {
+        "$admin": "0xFe7C30860D01e28371D40434806F4A8fcDD3A098",
+        "$implementation": "0x6BD792911F4B3714E88FbDf32B351632e7d22c70",
+        "$pastUpgrades": [
+          [
+            "2023-07-14T02:29:09.000Z",
+            "0xa4b66a9ecb5c65c5c482493988bdb959dc70308762a62a97a6a568c843f32197",
+            ["0x6F475642a6e85809B1c36Fa62763669b1b48DD5B"]
+          ],
+          [
+            "2023-09-20T19:39:09.000Z",
+            "0x42b93957fda87319708cc08440a555a7dcd705261b58c9d1526694d4935c0bfd",
+            ["0x61Ab01Ce58D1dFf3562bb25870020d555e39D849"]
+          ],
+          [
+            "2023-09-22T14:19:09.000Z",
+            "0x30101034a49133ff3fbb1a01928e4faebbcceb302bc1e33e506e6941cbd8a0f5",
+            ["0x6BD792911F4B3714E88FbDf32B351632e7d22c70"]
+          ]
+        ],
+        "$upgradeCount": 3
+      }
     },
     {
       "name": "VerifierNetwork",
       "address": "0xD56e4eAb23cb81f43168F9F45211Eb027b9aC7cc",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x1be31a02ca7158d467a49eeb964f0f8aa1d1e74019df854c1881d89d51260701"
+      ],
       "sinceTimestamp": 1694219063,
       "values": {
+        "$immutable": true,
         "allowlistSize": 0,
         "DEFAULT_ADMIN_ROLE": "0x0000000000000000000000000000000000000000000000000000000000000000",
         "defaultMultiplierBps": 12100,
@@ -936,27 +1294,32 @@
     {
       "name": "VerifierFeeLib",
       "address": "0xdeA04ef31C4B4FDf31CB58923F37869739280d49",
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1694219069
+      "sourceHashes": [
+        "0x37e1cee9d0a4ad6ebb439d27dbbf23925fcd9f9c0d5b43a33a6335e62b54d18c"
+      ],
+      "sinceTimestamp": 1694219069,
+      "values": { "$immutable": true }
     },
     {
       "name": "",
       "address": "0xFe7C30860D01e28371D40434806F4A8fcDD3A098",
       "unverified": true,
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1689301191
+      "receivedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa"
+        }
+      ],
+      "sinceTimestamp": 1689301191,
+      "values": { "$immutable": true }
     }
   ],
   "eoas": [
-    "0x67FC8c432448f9a8d541C17579EF7a142378d5aD",
-    "0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e",
-    "0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327",
-    "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936",
-    "0xe095F2590eF1Ab39601445025847Ed8E4B40D687"
+    { "address": "0x0000000000000000000000000000000000000000" },
+    { "address": "0x67FC8c432448f9a8d541C17579EF7a142378d5aD" },
+    { "address": "0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e" },
+    { "address": "0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327" },
+    { "address": "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936" }
   ],
   "abis": {
     "0x28937ca4873f7289Ebea0708c4E42b24835eCfF0": [
@@ -1040,16 +1403,6 @@
       "function validateTransactionProof(uint16 _srcChainId, address _dstAddress, uint256 _gasLimit, bytes32 _lookupHash, bytes32 _blockData, bytes _transactionProof)",
       "function withdrawNative(address _to, uint256 _amount)",
       "function withdrawZRO(address _to, uint256 _amount)"
-    ],
-    "0x3c2269811836af69497E5F486A85D7316753cf62": [
-      "constructor(address _logic, address admin_, bytes _data) payable",
-      "event AdminChanged(address previousAdmin, address newAdmin)",
-      "event BeaconUpgraded(address indexed beacon)",
-      "event Upgraded(address indexed implementation)",
-      "function admin() returns (address admin_)",
-      "function implementation() returns (address implementation_)",
-      "function upgradeTo(address newImplementation)",
-      "function upgradeToAndCall(address newImplementation, bytes data) payable"
     ],
     "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675": [
       "constructor(address _endpoint)",
@@ -1265,5 +1618,8 @@
       "function simulateAndRevert(address targetContract, bytes calldataPayload)",
       "function swapOwner(address prevOwner, address oldOwner, address newOwner)"
     ]
+  },
+  "usedTemplates": {
+    "GnosisSafe": "0x18527e82c3800311291da7323caa876f588cde67692c1c84d5ecb5161da61359"
   }
 }

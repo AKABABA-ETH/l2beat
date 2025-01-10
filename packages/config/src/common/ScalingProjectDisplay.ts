@@ -1,9 +1,11 @@
+import { StringWithAutocomplete } from '@l2beat/shared-pure'
 import { WarningWithSentiment } from '../projects'
+import { ReasonForBeingInOther } from './ReasonForBeingInOther'
 import { ScalingProjectCategory } from './ScalingProjectCategory'
 import { ScalingProjectLinks } from './ScalingProjectLinks'
 import { ScalingProjectPurpose } from './ScalingProjectPurpose'
 
-export interface ScalingProjectDisplay {
+export type ScalingProjectDisplay = {
   /** Name of the scaling project, will be used as a display name on the website */
   name: string
   /** Short name of the scaling project, will be used in some places on the website as a display name */
@@ -12,15 +14,24 @@ export interface ScalingProjectDisplay {
   slug: string
   /** Name of the category the scaling project belongs to */
   category: ScalingProjectCategory
-  /** A warning displayed in the header of the project */
-  headerWarning?:
-    | {
-        /** Warning text */
-        text: string
-        /** Link to the warning source */
-        href: string
-      }
-    | string
+  /** Reasons why the scaling project is included in the other categories. If defined - project will be displayed as other */
+  reasonsForBeingOther?: ReasonForBeingInOther[]
+  mainPermissions?: {
+    proposer: {
+      value: string
+      secondLine?: string
+    }
+    challenger: {
+      value: StringWithAutocomplete<'None'>
+      secondLine?: string
+    }
+    upgrader: {
+      value: string
+      secondLine?: string
+    }
+  }
+  /** A warning displayed in the header of the project. Also will be displayed as yellow shield next to project name (table view) */
+  headerWarning?: string
   /** Warning for TVL */
   tvlWarning?: WarningWithSentiment
   /** A warning displayed above the description of the project */
@@ -37,4 +48,10 @@ export interface ScalingProjectDisplay {
   links: ScalingProjectLinks
   /** Where does the activity data come from? */
   activityDataSource?: 'Blockchain RPC' | 'Explorer API' | 'Closed API'
+  /** Name of the architecture image to show in the contract section if present, otherwise use slug */
+  architectureImage?: string
+  /** Name of the state validation image to show in the state validation section if present, otherwise use slug */
+  stateValidationImage?: string
+  /** Name of the upgrades and governance image to show in the upgrades and governance section if present, otherwise use slug */
+  upgradesAndGovernanceImage?: string
 }

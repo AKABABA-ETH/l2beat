@@ -1,9 +1,9 @@
 import { createGetStage, isSatisfied } from './stage'
 import { ChecklistTemplate } from './types'
 
-export type StageChecklist = Parameters<typeof getStage>[0]
 interface GetStageOptions {
   rollupNodeLink?: string
+  securityCouncilReference?: string
 }
 type Blueprint = ReturnType<typeof getBlueprint>
 type BlueprintChecklist = ChecklistTemplate<Blueprint>
@@ -33,18 +33,18 @@ const getBlueprint = (opts?: GetStageOptions) =>
           negative: "The project doesn't call itself a rollup.",
         },
         stateRootsPostedToL1: {
-          positive: 'L2 state roots are posted to Ethereum L1.',
-          negative: 'L2 state roots are not posted to Ethereum L1.',
+          positive: 'State roots are posted to Ethereum L1.',
+          negative: 'State roots are not posted to Ethereum L1.',
         },
         dataAvailabilityOnL1: {
           positive:
-            'Inputs for the state transition function are posted to L1.',
+            'Inputs for the state transition function are posted to Ethereum L1.',
           negative:
-            'All the data to reconstruct the L2 state is not available on L1.',
+            'All the data to reconstruct the L2 state is not available on Ethereum L1.',
         },
         rollupNodeSourceAvailable: {
           positive:
-            'A source-available node exists that can recreate the state from L1 data. Please note that the L2BEAT team has not verified the validity of the node source code.' +
+            'A source-available node exists that can recreate the state from Ethereum L1 data. Please note that the L2BEAT team has not verified the validity of the node source code.' +
             (opts?.rollupNodeLink
               ? ` [View code](${opts.rollupNodeLink})`
               : ''),
@@ -80,7 +80,11 @@ const getBlueprint = (opts?: GetStageOptions) =>
             'Upgrades executed by actors with more centralized control than a Security Council provide less than 7d for users to exit if the permissioned operator is down or censoring.',
         },
         securityCouncilProperlySetUp: {
-          positive: 'The Security Council is properly set up.',
+          positive:
+            'The Security Council is properly set up' +
+            (opts?.securityCouncilReference
+              ? ` [(List of members)](${opts.securityCouncilReference}).`
+              : '.'),
           negative: 'The Security Council is not properly set up.',
         },
       },
@@ -95,14 +99,14 @@ const getBlueprint = (opts?: GetStageOptions) =>
         },
         delayWith30DExitWindow: {
           positive:
-            'Upgrades unrelated to on-chain provable bugs provide at least 30d to exit.',
+            'Upgrades unrelated to onchain provable bugs provide at least 30d to exit.',
           negative:
-            'Upgrades unrelated to on-chain provable bugs provide less than 30d to exit.',
+            'Upgrades unrelated to onchain provable bugs provide less than 30d to exit.',
         },
         proofSystemOverriddenOnlyInCaseOfABug: {
           positive:
-            'The Security Council is limited to acting solely on on-chain provable bugs.',
-          negative: `The Security Council's actions are not confined to on-chain provable bugs.`,
+            'The Security Council is limited to acting solely on onchain provable bugs.',
+          negative: `The Security Council's actions are not confined to onchain provable bugs.`,
         },
       },
     },

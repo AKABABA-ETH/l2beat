@@ -1,4 +1,4 @@
-export interface Hash256 extends String {
+export type Hash256 = string & {
   _Hash256Brand: string
 }
 
@@ -9,6 +9,14 @@ export function Hash256(value: string): Hash256 {
     throw new TypeError('Invalid Hash256')
   }
   return value as unknown as Hash256
+}
+
+Hash256.check = function check(value: string) {
+  try {
+    return Hash256(value).toString() === value
+  } catch {
+    return false
+  }
 }
 
 Hash256.random = function random() {

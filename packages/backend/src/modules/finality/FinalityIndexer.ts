@@ -1,13 +1,13 @@
-import { assert, Logger } from '@l2beat/backend-tools'
-import { UnixTime } from '@l2beat/shared-pure'
+import { Logger } from '@l2beat/backend-tools'
+import { assert, UnixTime } from '@l2beat/shared-pure'
 import { ChildIndexer, Retries } from '@l2beat/uif'
 import { mean } from 'lodash'
 
-import { IndexerStateRepository } from '../../tools/uif/IndexerStateRepository'
+import { Database, FinalityRecord } from '@l2beat/database'
 import {
-  FinalityRecord,
-  FinalityRepository,
-} from './repositories/FinalityRepository'
+  batchToTimeToInclusionDelays,
+  batchesToStateUpdateDelays,
+} from './analyzers/types/BaseAnalyzer'
 import { FinalityConfig } from './types/FinalityConfig'
 
 const UPDATE_RETRY_STRATEGY = Retries.exponentialBackOff({
@@ -21,13 +21,19 @@ export class FinalityIndexer extends ChildIndexer {
   constructor(
     logger: Logger,
     parentIndexer: ChildIndexer,
-    private readonly stateRepository: IndexerStateRepository,
-    private readonly finalityRepository: FinalityRepository,
+    private readonly db: Database,
     private readonly configuration: FinalityConfig,
   ) {
-    super(logger.tag(configuration.projectId.toString()), [parentIndexer], {
-      updateRetryStrategy: UPDATE_RETRY_STRATEGY,
-    })
+    super(
+      logger.tag({
+        tag: configuration.projectId,
+        project: configuration.projectId,
+      }),
+      [parentIndexer],
+      {
+        updateRetryStrategy: UPDATE_RETRY_STRATEGY,
+      },
+    )
     this.indexerId = `finality_indexer_${configuration.projectId.toString()}`
   }
 
@@ -71,7 +77,7 @@ export class FinalityIndexer extends ChildIndexer {
     )
 
     if (finalityData) {
-      await this.finalityRepository.add(finalityData)
+      await this.db.finality.insert(finalityData)
     }
 
     this.logger.info('Update finished', {
@@ -85,7 +91,7 @@ export class FinalityIndexer extends ChildIndexer {
   }
 
   async isConfigurationSynced(targetTimestamp: UnixTime) {
-    const latestSynced = await this.finalityRepository.findLatestByProjectId(
+    const latestSynced = await this.db.finality.findLatestByProjectId(
       this.configuration.projectId,
     )
 
@@ -101,19 +107,25 @@ export class FinalityIndexer extends ChildIndexer {
 
     const from = to.add(-1, 'days')
 
-    const inclusionDelays = await timeToInclusion.analyzeInterval(from, to)
-
-    if (!inclusionDelays) {
+    const t2iBatches = await timeToInclusion.analyzeInterval(from, to)
+    if (!t2iBatches) {
       return
     }
+
+    const t2iDelay = t2iBatches.flatMap((batch) =>
+      batchToTimeToInclusionDelays(batch),
+    )
+    const averageTimeToInclusion = Math.round(mean(t2iDelay))
+    const minimumTimeToInclusion = minimum(t2iDelay)
+    const maximumTimeToInclusion = maximum(t2iDelay)
 
     const baseResult = {
       projectId: configuration.projectId,
       timestamp: to,
 
-      minimumTimeToInclusion: Math.min(...inclusionDelays),
-      maximumTimeToInclusion: Math.max(...inclusionDelays),
-      averageTimeToInclusion: Math.round(mean(inclusionDelays)),
+      minimumTimeToInclusion,
+      maximumTimeToInclusion,
+      averageTimeToInclusion,
     }
 
     if (stateUpdateMode !== 'analyze') {
@@ -128,12 +140,12 @@ export class FinalityIndexer extends ChildIndexer {
       `State update analyzer is not defined for ${configuration.projectId}, update module or set state update mode to 'disabled'`,
     )
 
-    const stateUpdateDelays = await stateUpdate.analyzeInterval(from, to)
-
-    if (!stateUpdateDelays) {
+    const suBatches = await stateUpdate.analyzeInterval(from, to)
+    if (!suBatches) {
       return
     }
 
+    const stateUpdateDelays = batchesToStateUpdateDelays(t2iBatches, suBatches)
     return {
       ...baseResult,
       averageStateUpdate: Math.round(mean(stateUpdateDelays)),
@@ -141,7 +153,7 @@ export class FinalityIndexer extends ChildIndexer {
   }
 
   override async initialize() {
-    const indexerState = await this.stateRepository.findIndexerState(
+    const indexerState = await this.db.indexerState.findByIndexerId(
       this.indexerId,
     )
 
@@ -155,14 +167,14 @@ export class FinalityIndexer extends ChildIndexer {
     safeHeight: number,
     _configHash?: string | undefined,
   ): Promise<void> {
-    await this.stateRepository.addOrUpdate({
+    await this.db.indexerState.upsert({
       indexerId: this.indexerId,
       safeHeight,
     })
   }
 
   async getSafeHeight(): Promise<number> {
-    const indexerState = await this.stateRepository.findIndexerState(
+    const indexerState = await this.db.indexerState.findByIndexerId(
       this.indexerId,
     )
     return (
@@ -171,7 +183,7 @@ export class FinalityIndexer extends ChildIndexer {
   }
 
   override async setSafeHeight(safeHeight: number): Promise<void> {
-    await this.stateRepository.setSafeHeight(this.indexerId, safeHeight)
+    await this.db.indexerState.updateSafeHeight(this.indexerId, safeHeight)
   }
 
   /**
@@ -188,4 +200,28 @@ export class FinalityIndexer extends ChildIndexer {
   override async invalidate(targetHeight: number): Promise<number> {
     return await Promise.resolve(targetHeight)
   }
+}
+
+function minimum(values: number[]): number {
+  if (values.length === 0) {
+    return 0
+  }
+
+  let result = Infinity
+  for (const v of values) {
+    result = Math.min(result, v)
+  }
+  return result
+}
+
+function maximum(values: number[]): number {
+  if (values.length === 0) {
+    return 0
+  }
+
+  let result = -Infinity
+  for (const v of values) {
+    result = Math.max(result, v)
+  }
+  return result
 }

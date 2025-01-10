@@ -1,46 +1,37 @@
-import { assert, EthereumAddress, UnixTime } from '@l2beat/shared-pure'
+import { EthereumAddress, UnixTime } from '@l2beat/shared-pure'
 
 import { EXITS } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
+import { ESCROW } from '../../common/escrow'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { opStackL2 } from './templates/opStack'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('blast')
 
-const upgradeability = {
-  upgradableBy: ['ProxyAdmin'],
-  upgradeDelay: 'No delay',
-}
-
-const optimismPortalImplementation =
-  discovery.getContract('OptimismPortal').implementations?.[0]
-const l2OutputOracleImplementation =
-  discovery.getContract('L2OutputOracle').implementations?.[0]
-
-assert(optimismPortalImplementation, 'OptimismPortal implementation not found')
-assert(l2OutputOracleImplementation, 'L2OutputOracle implementation not found')
-
 export const blast: Layer2 = opStackL2({
+  createdAt: new UnixTime(1700555008), // 2023-11-21T08:23:28Z
   discovery,
   display: {
     name: 'Blast',
     slug: 'blast',
+    architectureImage: 'blast',
     description:
       'Blast is an EVM-compatible Optimistic Rollup supporting native yield. It invests funds deposited into the L1 bridge into various DeFi protocols transferring yield back to the L2.',
-    purposes: ['Universal', 'DeFi'],
     links: {
       websites: ['https://blast.io/en'],
       apps: ['https://blast.io/en/bridge'],
       documentation: ['https://docs.blast.io/about-blast'],
       explorers: ['https://blastscan.io', 'https://blastexplorer.io'],
-      repositories: [],
-      socialMedia: ['https://twitter.com/Blast_L2'],
+      repositories: ['https://github.com/blast-io'],
+      socialMedia: ['https://twitter.com/blast', 'https://discord.gg/blast-l2'],
     },
     activityDataSource: 'Blockchain RPC',
     tvlWarning: {
-      content: 'The TVL does account for rehypothecated tokens.',
+      content: 'The TVS does account for rehypothecated tokens.',
       sentiment: 'bad',
     },
+    reasonsForBeingOther: [REASON_FOR_BEING_OTHER.NO_PROOFS],
   },
   nonTemplateTechnology: {
     exitMechanisms: [
@@ -55,15 +46,15 @@ export const blast: Layer2 = opStackL2({
         references: [
           {
             text: 'OptimismPortal.sol - Etherscan source code, proveWithdrawalTransaction function',
-            href: `https://etherscan.io/address/${optimismPortalImplementation.toString()}#code`,
+            href: `https://etherscan.io/address/0xA280aEBF81c917DbD2aA1b39f979dfECEc9e4391#code`,
           },
           {
             text: 'OptimismPortal.sol - Etherscan source code, finalizeWithdrawalTransaction function',
-            href: `https://etherscan.io/address/${optimismPortalImplementation.toString()}#code`,
+            href: `https://etherscan.io/address/0xA280aEBF81c917DbD2aA1b39f979dfECEc9e4391#code`,
           },
           {
             text: 'L2OutputOracle.sol - Etherscan source code, PROPOSER check',
-            href: `https://etherscan.io/address/${l2OutputOracleImplementation.toString()}#code`,
+            href: `https://etherscan.io/address/0x1C90963D451316E3DBFdD5A30354EE56C29016EB#code`,
           },
         ],
         risks: [EXITS.RISK_REHYPOTHECATED_ASSETS, EXITS.RISK_LACK_OF_LIQUIDITY],
@@ -79,7 +70,6 @@ export const blast: Layer2 = opStackL2({
       },
     ],
   },
-  upgradeability,
   rpcUrl: 'https://rpc.blast.io/',
   chainConfig: {
     name: 'blast',
@@ -101,47 +91,15 @@ export const blast: Layer2 = opStackL2({
     ],
   },
   finality: {
-    type: 'OPStack',
+    type: 'OPStack-blob',
+    // timestamp of the first blob tx
+    minTimestamp: new UnixTime(1716846455),
+    l2BlockTimeSeconds: 2,
+    genesisTimestamp: new UnixTime(1708809815),
     lag: 0,
     stateUpdate: 'disabled',
   },
   genesisTimestamp: new UnixTime(1708825259), //First sequencer transaction
-  nonTemplatePermissions: [
-    ...discovery.getMultisigPermission(
-      'BlastMultisig',
-      'This address is the owner of all upgradable contracts. It is also designated as a Guardian of the OptimismPortal, meaning it can halt withdrawals and as a Challenger. It can upgrade the bridge implementation potentially gaining access to all funds, and change the sequencer, state root proposer or any other system component (unlimited upgrade power).',
-    ),
-    {
-      name: 'SystemConfig owner',
-      description:
-        'Account privileged to change System Config parameters such as Sequencer Address and gas limit.',
-      accounts: [discovery.getPermissionedAccount('SystemConfig', 'owner')],
-    },
-  ],
-  nonTemplateContracts: [
-    discovery.getContractDetails('L1BlastBridge', {
-      description:
-        'The L1 Bridge to Blast with the facility to invest escrowed tokens.',
-      ...upgradeability,
-    }),
-    discovery.getContractDetails('ETHYieldManager', {
-      description: 'Contract managing Yield Providers for ETH.',
-      ...upgradeability,
-    }),
-    discovery.getContractDetails('USDYieldManager', {
-      description: 'Contract managing Yield Providers for stablecoins.',
-      ...upgradeability,
-    }),
-    discovery.getContractDetails('LidoYieldProvider', {
-      description: 'Yield Provider for ETH investing ETH into stETH.',
-      ...upgradeability,
-    }),
-    discovery.getContractDetails('DSRYieldProvider', {
-      description:
-        'Yield Provider for DAI investing DAI into the MakerDAO DSR.',
-      ...upgradeability,
-    }),
-  ],
   nonTemplateEscrows: [
     discovery.getEscrowDetails({
       address: EthereumAddress('0x5F6AE08B8AeB7078cf2F96AFb089D7c9f51DA47d'),
@@ -149,25 +107,21 @@ export const blast: Layer2 = opStackL2({
       description:
         'Pre-launch Blast Vault that keeps stETH. Funds from this Vault can be migrated to Blast bridge.',
       tokens: ['stETH'],
+      ...ESCROW.CANONICAL_EXTERNAL,
     }),
     discovery.getEscrowDetails({
       address: EthereumAddress('0x98078db053902644191f93988341E31289E1C8FE'),
       name: 'Interest-bearing ETH Vault',
       tokens: ['ETH', 'stETH'],
+      ...ESCROW.CANONICAL_EXTERNAL,
       description:
         'Escrow for ETH that is invested into a yield-bearing contracts such as stETH.',
     }),
-    discovery.getEscrowDetails({
-      address: EthereumAddress('0xa230285d5683C74935aD14c446e137c8c8828438'),
-      name: 'Interest-bearing DAI Vault',
-      tokens: [],
-      description:
-        'Escrow for DAI that is invested into a yield-bearing contracts such as MakerDAO DSR.',
-    }),
   ],
   isNodeAvailable: true,
-  usesBlobs: true,
+  associatedTokens: ['BLAST'],
   nodeSourceLink: 'https://github.com/blast-io/blast',
+  discoveryDrivenData: true,
   stateDerivation: {
     nodeSoftware:
       'Node software can be found [here](https://github.com/blast-io/blast).',
@@ -184,6 +138,7 @@ export const blast: Layer2 = opStackL2({
       link: 'https://x.com/Blast_L2/status/1763316176263008551?s=20',
       date: '2024-02-29T00:00:00Z',
       description: 'Blast Network is live on mainnet.',
+      type: 'general',
     },
     {
       name: 'Blast upgrades to censor exploiter',
@@ -191,12 +146,14 @@ export const blast: Layer2 = opStackL2({
       date: '2024-03-26T00:00:00Z',
       description:
         'The Munchables exploiter is prohibited from forcing transactions.',
+      type: 'incident',
     },
     {
       name: 'Blast Mainnet starts using blobs',
       link: 'https://x.com/Blast_L2/status/1793686918506623032',
       date: '2024-05-27T00:00:00Z',
       description: 'Blast Mainnet starts publishing data to blobs.',
+      type: 'general',
     },
   ],
 })

@@ -1,7 +1,15 @@
-import { EthereumAddress, ProjectId, formatSeconds } from '@l2beat/shared-pure'
+import {
+  EthereumAddress,
+  ProjectId,
+  UnixTime,
+  formatSeconds,
+} from '@l2beat/shared-pure'
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -11,7 +19,6 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import {
@@ -22,13 +29,14 @@ import {
   getSHARPVerifierUpgradeDelay,
 } from '../../discovery/starkware'
 import { delayDescriptionFromString } from '../../utils/delayDescription'
+import { Badge } from '../badges'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('reddioex')
 
-const upgradeDelaySeconds = discovery.getContractUpgradeabilityParam(
+const upgradeDelaySeconds = discovery.getContractValue<number>(
   'StarkExchange',
-  'upgradeDelay',
+  'StarkWareDiamond_upgradeDelay',
 )
 const includingSHARPUpgradeDelaySeconds = Math.min(
   upgradeDelaySeconds,
@@ -48,13 +56,23 @@ const freezeGracePeriod = discovery.getContractValue<number>(
 const committee = getCommittee(discovery)
 
 export const reddioex: Layer2 = {
+  isArchived: true,
   type: 'layer2',
   id: ProjectId('reddioex'),
+  createdAt: new UnixTime(1623153328), // 2021-06-08T11:55:28Z
+  badges: [
+    Badge.VM.AppChain,
+    Badge.DA.DAC,
+    Badge.Stack.StarkEx,
+    Badge.Infra.SHARP,
+  ],
   display: {
-    name: 'ReddioEx',
-    slug: 'reddioex',
+    name: 'RedSonic',
+    slug: 'redsonic',
+    headerWarning:
+      'This project was sunset on 2024-09-20 and deposits after that time may not be recoverable.',
     description:
-      'ReddioEx is a Validium based on the StarkEx technology. Its goal is to power the next generation of web3 apps and games by providing developers with the ability to create digital assets (NFTs) and easily integrate them in-game.',
+      'RedSonic is a Validium based on the StarkEx technology. Its goal is to power the next generation Web3 apps and games by providing developers with the APIs and SDKs to create digital assets and easily integrate them in-app and in-game.',
     purposes: ['Exchange', 'NFT', 'Gaming'],
     provider: 'StarkEx',
     category: 'Validium',
@@ -65,6 +83,7 @@ export const reddioex: Layer2 = {
         'https://dashboard.reddio.com',
         'https://bridge.reddio.com',
         'https://reddio.com/redSonic',
+        'https://points.reddio.com',
       ],
       documentation: ['https://docs.reddio.com/'],
       explorers: ['https://explorer.reddio.com/'],
@@ -97,16 +116,17 @@ export const reddioex: Layer2 = {
     },
     */
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['DAC'],
-    bridge: {
-      type: 'DAC Members',
-      membersCount: committee.accounts.length,
-      requiredSignatures: committee.minSigners,
-    },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.DAC],
+      bridge: DA_BRIDGES.DAC_MEMBERS({
+        membersCount: committee.accounts.length,
+        requiredSignatures: committee.minSigners,
+      }),
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: RISK_VIEW.STATE_ZKP_ST,
     dataAvailability: {
       ...RISK_VIEW.DATA_EXTERNAL_DAC({
@@ -134,9 +154,7 @@ export const reddioex: Layer2 = {
     ),
     sequencerFailure: RISK_VIEW.SEQUENCER_FORCE_VIA_L1(freezeGracePeriod),
     proposerFailure: RISK_VIEW.PROPOSER_USE_ESCAPE_HATCH_MP_NFT,
-    destinationToken: RISK_VIEW.CANONICAL,
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   technology: {
     stateCorrectness: STATE_CORRECTNESS.STARKEX_VALIDITY_PROOFS,
     newCryptography: NEW_CRYPTOGRAPHY.ZK_STARKS,
@@ -183,6 +201,7 @@ export const reddioex: Layer2 = {
       link: 'https://blog.reddio.com/announces-layer2-zkrollup-mainnet-launch/',
       date: '2022-09-29T00:00:00Z',
       description: 'Reddio announces its Validium Mainnet launch.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [...NUGGETS.STARKWARE],

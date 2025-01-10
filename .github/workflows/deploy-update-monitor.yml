@@ -1,7 +1,7 @@
 name: Deploy update monitor
 
 concurrency:
-  group: static
+  group: update-monitor-deployment
 permissions: {}
 
 on:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install heroku CLI
         run: curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
       - name: Login to heroku container registry
@@ -28,6 +28,9 @@ jobs:
         with:
           push: true
           file: Dockerfile.backend
+          build-args: |
+            TURBO_TEAM=${{ vars.TURBO_TEAM }}
+            TURBO_TOKEN=${{ secrets.TURBO_TOKEN }}
           tags: |
             registry.heroku.com/${{ secrets.HEROKU_UPDATE_MONITOR_DEV }}/web
             registry.heroku.com/${{ secrets.HEROKU_UPDATE_MONITOR_PROD }}/web

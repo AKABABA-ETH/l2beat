@@ -4,9 +4,13 @@ import {
   UnixTime,
   formatSeconds,
 } from '@l2beat/shared-pure'
+import { Badge } from '../badges'
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -16,10 +20,9 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { formatDelay, formatExecutionDelay } from '../../common/formatDelays'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
-import { getCommittee } from '../../discovery/starkware'
 import { delayDescriptionFromSeconds } from '../../utils/delayDescription'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
@@ -68,21 +71,31 @@ const longTimelockUpgradeability = {
   upgradableBy: ['Safety Module Admin'],
   upgradeDelay: `${formatSeconds(longTimelockDelay)}`,
 }
+const finalizationPeriod = 0
 
 export const dydx: Layer2 = {
+  isArchived: true,
   type: 'layer2',
   id: ProjectId('dydx'),
+  createdAt: new UnixTime(1623153328), // 2021-06-08T11:55:28Z
+  badges: [
+    Badge.VM.AppChain,
+    Badge.Stack.StarkEx,
+    Badge.DA.EthereumCalldata,
+    Badge.Other.Governance,
+  ],
   display: {
     name: 'dYdX v3',
     slug: 'dydx',
     warning:
       'This page describes dYdX v3, which is an L2 built on Ethereum. Recently deployed dYdX v4 is a separate blockchain based on Cosmos SDK, unrelated to Ethereum and is using different technology. No information on this page applies to dYdX v4.',
+    headerWarning:
+      'dYdX v3 shut down on October 28th and is currently processing withdrawals in escape-hatch mode. [Read more](https://dydx.exchange/blog/v3-product-sunset) or [use the escape-hatch](https://explorer.dydx.exchange/tutorials/escapehatch).',
     description:
       'dYdX v3 aims to build a powerful and professional exchange for trading crypto assets where users can truly own their trades and, eventually, the exchange itself.',
     purposes: ['Exchange'],
     provider: 'StarkEx',
     category: 'ZK Rollup',
-
     links: {
       websites: ['https://dydx.exchange/'],
       apps: [
@@ -115,7 +128,7 @@ export const dydx: Layer2 = {
         'dYdX is a ZK rollup that posts state diffs to the L1. For a transaction to be considered final, the state diffs have to be submitted and validity proof should be generated, submitted, and verified. The verification is done as part of the state update.',
     },
     finality: {
-      finalizationPeriod: 0,
+      finalizationPeriod,
     },
   },
   config: {
@@ -148,7 +161,7 @@ export const dydx: Layer2 = {
           selector: '0x9b3b76cc',
           functionSignature:
             'function verifyProofAndRegister(uint256[] proofParams, uint256[] proof, uint256[] taskMetadata, uint256[] cairoAuxInput, uint256 cairoVerifierId)',
-          sinceTimestampInclusive: new UnixTime(1615417556),
+          sinceTimestamp: new UnixTime(1615417556),
         },
       },
       {
@@ -164,20 +177,22 @@ export const dydx: Layer2 = {
           selector: '0x538f9406',
           functionSignature:
             'function updateState(uint256[] publicInput, uint256[] applicationData)',
-          sinceTimestampInclusive: new UnixTime(1613033682),
+          sinceTimestamp: new UnixTime(1613033682),
         },
       },
     ],
-    finality: 'coming soon',
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: {
       ...RISK_VIEW.STATE_ZKP_ST,
+      secondLine: formatExecutionDelay(finalizationPeriod),
       sources: [
         {
           contract: 'StarkPerpetual',
@@ -199,21 +214,16 @@ export const dydx: Layer2 = {
       ],
     },
     exitWindow: {
-      ...RISK_VIEW.EXIT_WINDOW(
+      ...RISK_VIEW.EXIT_WINDOW(maxPriorityDelay, 0),
+      description: `There is a ${formatSeconds(
         maxPriorityDelay,
-        freezeGracePeriod,
+      )} exit window (or ${formatSeconds(
         minPriorityDelay,
-      ),
-      description: `There is no exit window. Upgrades have a ${formatSeconds(
-        maxPriorityDelay,
-      )} delay, (or ${formatSeconds(
-        minPriorityDelay,
-      )} if shortened by the Priority Controller), but withdrawals can be censored for up to ${formatSeconds(
-        freezeGracePeriod,
-      )}.`,
+      )} if shortened by the Priority Controller).`,
     },
     sequencerFailure: {
       ...RISK_VIEW.SEQUENCER_FORCE_VIA_L1_STARKEX_PERPETUAL(freezeGracePeriod),
+      secondLine: formatDelay(freezeGracePeriod),
       sources: [
         {
           contract: 'StarkPerpetual',
@@ -234,9 +244,7 @@ export const dydx: Layer2 = {
         },
       ],
     },
-    destinationToken: RISK_VIEW.CANONICAL_USDC,
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   technology: {
     stateCorrectness: {
       ...STATE_CORRECTNESS.STARKEX_VALIDITY_PROOFS,
@@ -403,7 +411,7 @@ export const dydx: Layer2 = {
       description:
         'Allowed to update state of the rollup. When Operator is down the state cannot be updated.',
     },
-    getCommittee(discovery),
+    // getCommittee(discovery), # Removed because even though it is set for some reason, it is not used in updateState()
     {
       name: 'Rollup Admin',
       accounts: [
@@ -506,6 +514,7 @@ export const dydx: Layer2 = {
       date: '2021-04-06T00:00:00Z',
       description:
         'Layer 2 cross-margined Perpetuals are now live in production for all traders.',
+      type: 'general',
     },
     {
       name: 'dYdX Foundation',
@@ -513,6 +522,7 @@ export const dydx: Layer2 = {
       date: '2021-08-03T00:00:00Z',
       description:
         'Independent foundation was created to participate in the Protocol governance.',
+      type: 'general',
     },
     {
       name: 'dYdX v4 announcement',
@@ -520,6 +530,7 @@ export const dydx: Layer2 = {
       date: '2022-06-22T00:00:00Z',
       description:
         'dYdX V4 will be developed as a standalone blockchain based on the Cosmos SDK.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [

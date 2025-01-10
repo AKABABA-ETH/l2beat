@@ -1,13 +1,17 @@
 import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import { NUGGETS } from '../../common'
+import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { RISK_VIEW } from './common'
-import * as config from './multichain-config.json'
+import config from './multichain-config.json'
 import { Bridge } from './types'
+
+const discovery = new ProjectDiscovery('multichain')
 
 export const multichain: Bridge = {
   type: 'bridge',
   id: ProjectId('multichain'),
+  createdAt: new UnixTime(1662628329), // 2022-09-08T09:12:09Z
   display: {
     name: 'Multichain',
     slug: 'multichain',
@@ -36,7 +40,7 @@ export const multichain: Bridge = {
       description:
         'Multichain (formerly AnySwap) is a Hybrid Bridge that, depending on a token, can act as a Token Bridge or as a Liquidity Network.\
         It uses multiple escrows on a source chain (one per each destination) in addition to tokenized Liquidity Pools (anyToken contracts) - one anyToken contract per token.\
-        It uses an on-chain Router that, depending on the token/destination will choose either TokenBridge or Liquidity Network to bridge assets.',
+        It uses an onchain Router that, depending on the token/destination will choose either TokenBridge or Liquidity Network to bridge assets.',
       references: [],
       risks: [],
     },
@@ -50,25 +54,25 @@ export const multichain: Bridge = {
         {
           category: 'Funds can be stolen if',
           text: 'MPC nodes decide to maliciously takeover them or there is an external exploit which will result in signing malicious transaction.',
-          isCritical: true,
+
           _ignoreTextFormatting: true,
         },
         {
           category: 'Users can be censored if',
           text: 'MPC nodes decide to censor certain transactions.',
-          isCritical: true,
+
           _ignoreTextFormatting: true,
         },
         {
           category: 'Funds can be lost if',
           text: 'MPC nodes lose the private key.',
-          isCritical: true,
+
           _ignoreTextFormatting: true,
         },
         {
           category: 'Funds can be frozen if',
           text: 'MPC nodes decide to stop processing transfers.',
-          isCritical: true,
+
           _ignoreTextFormatting: true,
         },
       ],
@@ -81,7 +85,6 @@ export const multichain: Bridge = {
         {
           category: 'Funds can be stolen if',
           text: 'destination token contract is maliciously upgraded or not securely implemented.',
-          isCritical: true,
         },
       ],
       references: [],
@@ -109,16 +112,14 @@ export const multichain: Bridge = {
   contracts: {
     isIncomplete: true,
     addresses: [
-      {
-        address: EthereumAddress('0x6b7a87899490EcE95443e979cA9485CBE7E71522'),
-        name: 'AnyswapV4Router',
-        description: 'Multichain Liquidity Network Router V4.',
-      },
-      {
-        address: EthereumAddress('0xBa8Da9dcF11B50B03fd5284f164Ef5cdEF910705'),
-        name: 'AnyswapV6Router',
-        description: 'Multichain Liquidity Network Router V6.',
-      },
+      discovery.getContractDetails(
+        'AnyswapV4Router',
+        'Multichain Liquidity Network Router V4.',
+      ),
+      discovery.getContractDetails(
+        'AnyswapV6Router',
+        'Multichain Liquidity Network Router V6.',
+      ),
     ],
     risks: [],
   },
@@ -156,6 +157,7 @@ export const multichain: Bridge = {
       name: 'Anyswap rebrands to Multichain',
       date: '2021-12-16T00:00:00Z',
       link: 'https://medium.com/multichainorg/anyswap-to-officially-rebrand-as-multichain-16ee7b961ffa',
+      type: 'general',
     },
     {
       name: 'Contracts hacked for $3M',
@@ -163,6 +165,7 @@ export const multichain: Bridge = {
       description:
         'Multiple critical vulnerabilities were found in the contracts.',
       link: 'https://medium.com/multichainorg/multichain-contract-vulnerability-post-mortem-d37bfab237c8',
+      type: 'incident',
     },
     {
       name: 'anyCall was introduced',
@@ -170,6 +173,7 @@ export const multichain: Bridge = {
       description:
         'This is the generic cross-chain mechanism that Multichain uses.',
       link: 'https://medium.com/multichainorg/anycall-for-your-cross-chain-dapps-ac0ece9140e9',
+      type: 'general',
     },
     {
       name: 'fastMPC was introduced',
@@ -177,11 +181,13 @@ export const multichain: Bridge = {
       description:
         'It is an upgrade of the network that is used to check cross chain messages.',
       link: 'https://multichainorg.medium.com/fastmpc-mainnet-goes-live-running-in-a-decentralized-way-99f9fe2956b8',
+      type: 'general',
     },
     {
       name: 'Contracts hacked for $130M',
       date: '2023-07-07T00:00:00Z',
       link: 'https://blockworks.co/news/multichain-anyswap-exploit',
+      type: 'incident',
     },
   ],
   knowledgeNuggets: [

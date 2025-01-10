@@ -1,12 +1,27 @@
 import { readFileSync } from 'fs'
-import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
+import {
+  EthereumAddress,
+  ProjectId,
+  TrackedTxsConfigSubtype,
+  UnixTime,
+} from '@l2beat/shared-pure'
 import { expect } from 'earl'
 
-import { TrackedTxId } from '../types/TrackedTxId'
 import {
+  TrackedTxConfigEntry,
   TrackedTxFunctionCallConfig,
+  TrackedTxId,
+  TrackedTxSharedBridgeConfig,
   TrackedTxSharpSubmissionConfig,
-} from '../types/TrackedTxsConfig'
+  createTrackedTxId,
+} from '@l2beat/shared'
+import {
+  sharedBridgeChainId,
+  sharedBridgeCommitBatchesInput,
+  sharedBridgeCommitBatchesSelector,
+  sharedBridgeCommitBatchesSignature,
+} from '../../../test/sharedBridge'
+import { Configuration } from '../../../tools/uif/multi/types'
 import {
   BigQueryFunctionCallResult,
   TrackedTxFunctionCallResult,
@@ -34,53 +49,52 @@ const paradexProgramHash =
 
 describe(transformFunctionCallsQueryResult.name, () => {
   it('should transform results', () => {
-    const functionCalls: TrackedTxFunctionCallConfig[] = [
-      {
-        formula: 'functionCall',
+    const functionCalls = [
+      mockFunctionCall({
+        id: createTrackedTxId.random(),
         projectId: ProjectId('project1'),
         address: ADDRESS_1,
         selector: SELECTOR_1,
-        sinceTimestampInclusive: SINCE_TIMESTAMP,
-        uses: [
-          {
-            type: 'liveness',
-            subtype: 'batchSubmissions',
-            id: TrackedTxId.random(),
-          },
-        ],
-      },
-      {
         formula: 'functionCall',
+        sinceTimestamp: SINCE_TIMESTAMP,
+        subtype: 'batchSubmissions',
+      }),
+      mockFunctionCall({
+        id: createTrackedTxId.random(),
         projectId: ProjectId('project1'),
         address: ADDRESS_2,
         selector: SELECTOR_2,
-        sinceTimestampInclusive: SINCE_TIMESTAMP,
-        uses: [
-          {
-            type: 'liveness',
-            subtype: 'stateUpdates',
-            id: TrackedTxId.random(),
-          },
-        ],
-      },
+        formula: 'functionCall',
+        sinceTimestamp: SINCE_TIMESTAMP,
+        subtype: 'stateUpdates',
+      }),
     ]
 
-    const sharpSubmissions: TrackedTxSharpSubmissionConfig[] = [
-      {
-        formula: 'sharpSubmission',
+    const sharpSubmissions = [
+      mockSharpSubmission({
+        id: createTrackedTxId.random(),
         projectId: ProjectId('project2'),
-        sinceTimestampInclusive: SINCE_TIMESTAMP,
-        programHashes: [paradexProgramHash],
         address: EthereumAddress.random(),
         selector: '0x9b3b76cc',
-        uses: [
-          {
-            type: 'liveness',
-            subtype: 'proofSubmissions',
-            id: TrackedTxId.random(),
-          },
-        ],
-      },
+        formula: 'sharpSubmission',
+        sinceTimestamp: SINCE_TIMESTAMP,
+        subtype: 'proofSubmissions',
+        programHashes: [paradexProgramHash],
+      }),
+    ]
+
+    const sharedBridgeCalls = [
+      mockSharedBridgeCall({
+        id: createTrackedTxId.random(),
+        projectId: ProjectId('project2'),
+        address: EthereumAddress.random(),
+        selector: sharedBridgeCommitBatchesSelector,
+        formula: 'sharedBridge',
+        sinceTimestamp: SINCE_TIMESTAMP,
+        subtype: 'batchSubmissions',
+        chainId: sharedBridgeChainId,
+        signature: sharedBridgeCommitBatchesSignature,
+      }),
     ]
 
     const queryResults: BigQueryFunctionCallResult[] = [
@@ -115,7 +129,7 @@ describe(transformFunctionCallsQueryResult.name, () => {
         block_number: block,
         block_timestamp: timestamp,
         input: sharpInput,
-        to_address: sharpSubmissions[0].address,
+        to_address: sharpSubmissions[0].properties.params.address,
         gas_price: 30n,
         receipt_gas_used: 300,
         calldata_gas_used: 300,
@@ -126,9 +140,11 @@ describe(transformFunctionCallsQueryResult.name, () => {
     ]
     const expected: TrackedTxFunctionCallResult[] = [
       {
-        type: 'functionCall',
-        projectId: functionCalls[0].projectId,
-        use: functionCalls[0].uses[0],
+        formula: 'functionCall',
+        projectId: functionCalls[0].properties.projectId,
+        id: functionCalls[0].id,
+        type: functionCalls[0].properties.type,
+        subtype: functionCalls[0].properties.subtype,
         hash: txHashes[0],
         blockNumber: block,
         blockTimestamp: timestamp,
@@ -142,9 +158,11 @@ describe(transformFunctionCallsQueryResult.name, () => {
         receiptBlobGasUsed: null,
       },
       {
-        type: 'functionCall',
-        projectId: functionCalls[1].projectId,
-        use: functionCalls[1].uses[0],
+        formula: 'functionCall',
+        projectId: functionCalls[1].properties.projectId,
+        id: functionCalls[1].id,
+        type: functionCalls[1].properties.type,
+        subtype: functionCalls[1].properties.subtype,
         hash: txHashes[1],
         blockNumber: block,
         blockTimestamp: timestamp,
@@ -158,13 +176,15 @@ describe(transformFunctionCallsQueryResult.name, () => {
         receiptBlobGasUsed: null,
       },
       {
-        type: 'functionCall',
-        projectId: sharpSubmissions[0].projectId,
-        use: sharpSubmissions[0].uses[0],
+        formula: 'functionCall',
+        projectId: sharpSubmissions[0].properties.projectId,
+        id: sharpSubmissions[0].id,
+        subtype: sharpSubmissions[0].properties.subtype,
+        type: sharpSubmissions[0].properties.type,
         hash: txHashes[2],
         blockNumber: block,
         blockTimestamp: timestamp,
-        toAddress: sharpSubmissions[0].address,
+        toAddress: sharpSubmissions[0].properties.params.address,
         input: sharpInput,
         gasPrice: 30n,
         receiptGasUsed: 300,
@@ -174,9 +194,11 @@ describe(transformFunctionCallsQueryResult.name, () => {
         receiptBlobGasUsed: null,
       },
     ]
+
     const result = transformFunctionCallsQueryResult(
       functionCalls,
       sharpSubmissions,
+      sharedBridgeCalls,
       queryResults,
     )
 
@@ -184,15 +206,16 @@ describe(transformFunctionCallsQueryResult.name, () => {
   })
 
   it('throws when there is no matching configuration', () => {
-    const functionCalls: TrackedTxFunctionCallConfig[] = [
-      {
-        formula: 'functionCall',
+    const functionCalls = [
+      mockFunctionCall({
+        id: createTrackedTxId.random(),
         projectId: ProjectId('project1'),
         address: ADDRESS_1,
         selector: SELECTOR_1,
-        sinceTimestampInclusive: SINCE_TIMESTAMP,
-        uses: [],
-      },
+        formula: 'functionCall',
+        sinceTimestamp: SINCE_TIMESTAMP,
+        subtype: 'batchSubmissions',
+      }),
     ]
 
     const queryResults: BigQueryFunctionCallResult[] = [
@@ -212,42 +235,38 @@ describe(transformFunctionCallsQueryResult.name, () => {
     ]
 
     expect(() =>
-      transformFunctionCallsQueryResult(functionCalls, [], queryResults),
+      transformFunctionCallsQueryResult(functionCalls, [], [], queryResults),
     ).toThrow('There should be at least one matching config')
   })
 
   it('includes only configurations which program hashes were proven', () => {
-    const sharpSubmissions: TrackedTxSharpSubmissionConfig[] = [
-      {
-        formula: 'sharpSubmission',
+    const sharpSubmissions = [
+      mockSharpSubmission({
+        id: createTrackedTxId.random(),
         projectId: ProjectId('project1'),
-        sinceTimestampInclusive: SINCE_TIMESTAMP,
-        programHashes: [paradexProgramHash],
         address: EthereumAddress.random(),
         selector: '0x9b3b76cc',
-        uses: [
-          {
-            type: 'liveness',
-            subtype: 'proofSubmissions',
-            id: TrackedTxId.random(),
-          },
-        ],
-      },
-      {
         formula: 'sharpSubmission',
+        sinceTimestamp: SINCE_TIMESTAMP,
+        subtype: 'proofSubmissions',
+        programHashes: [paradexProgramHash],
+      }),
+      mockSharpSubmission({
+        id: createTrackedTxId.random(),
         projectId: ProjectId('project2'),
-        sinceTimestampInclusive: SINCE_TIMESTAMP,
-        programHashes: [paradexProgramHash + 'wrong-rest-part-of-hash'],
         address: EthereumAddress.random(),
         selector: 'random-selector-2',
-        uses: [],
-      },
+        formula: 'sharpSubmission',
+        sinceTimestamp: SINCE_TIMESTAMP,
+        subtype: 'proofSubmissions',
+        programHashes: [paradexProgramHash + 'wrong-rest-part-of-hash'],
+      }),
     ]
 
     const queryResults: BigQueryFunctionCallResult[] = [
       {
         hash: txHashes[0],
-        to_address: sharpSubmissions[0].address,
+        to_address: sharpSubmissions[0].properties.params.address,
         input: sharpInput,
         block_number: block,
         block_timestamp: timestamp,
@@ -262,13 +281,15 @@ describe(transformFunctionCallsQueryResult.name, () => {
 
     const expected: TrackedTxFunctionCallResult[] = [
       {
-        type: 'functionCall',
-        projectId: sharpSubmissions[0].projectId,
-        use: sharpSubmissions[0].uses[0],
+        formula: 'functionCall',
+        projectId: sharpSubmissions[0].properties.projectId,
+        type: sharpSubmissions[0].properties.type,
+        id: sharpSubmissions[0].id,
+        subtype: sharpSubmissions[0].properties.subtype,
         hash: txHashes[0],
         blockNumber: block,
         blockTimestamp: timestamp,
-        toAddress: sharpSubmissions[0].address,
+        toAddress: sharpSubmissions[0].properties.params.address,
         input: sharpInput,
         gasPrice: 10n,
         receiptGasUsed: 100,
@@ -282,9 +303,212 @@ describe(transformFunctionCallsQueryResult.name, () => {
     const result = transformFunctionCallsQueryResult(
       [],
       sharpSubmissions,
+      [],
+      queryResults,
+    )
+
+    expect(result).toEqual(expected)
+  })
+
+  it('includes only configurations where chain id matches', () => {
+    const sharedBridgeCalls = [
+      mockSharedBridgeCall({
+        id: createTrackedTxId.random(),
+        projectId: ProjectId('project1'),
+        address: EthereumAddress.random(),
+        selector: sharedBridgeCommitBatchesSelector,
+        formula: 'sharedBridge',
+        sinceTimestamp: SINCE_TIMESTAMP,
+        subtype: 'batchSubmissions',
+        chainId: sharedBridgeChainId,
+        signature: sharedBridgeCommitBatchesSignature,
+      }),
+      mockSharedBridgeCall({
+        id: createTrackedTxId.random(),
+        projectId: ProjectId('project2'),
+        address: EthereumAddress.random(),
+        selector: sharedBridgeCommitBatchesSelector,
+        formula: 'sharedBridge',
+        sinceTimestamp: SINCE_TIMESTAMP,
+        subtype: 'batchSubmissions',
+        chainId: 1,
+        signature: sharedBridgeCommitBatchesSignature,
+      }),
+    ]
+
+    const queryResults: BigQueryFunctionCallResult[] = [
+      {
+        hash: txHashes[0],
+        to_address: sharedBridgeCalls[0].properties.params.address,
+        input: sharedBridgeCommitBatchesInput,
+        block_number: block,
+        block_timestamp: timestamp,
+        gas_price: 10n,
+        receipt_gas_used: 100,
+        calldata_gas_used: 100,
+        data_length: 100,
+        receipt_blob_gas_price: null,
+        receipt_blob_gas_used: null,
+      },
+    ]
+
+    const expected: TrackedTxFunctionCallResult[] = [
+      {
+        formula: 'functionCall',
+        projectId: sharedBridgeCalls[0].properties.projectId,
+        type: sharedBridgeCalls[0].properties.type,
+        id: sharedBridgeCalls[0].id,
+        subtype: sharedBridgeCalls[0].properties.subtype,
+        hash: txHashes[0],
+        blockNumber: block,
+        blockTimestamp: timestamp,
+        toAddress: sharedBridgeCalls[0].properties.params.address,
+        input: sharedBridgeCommitBatchesInput,
+        gasPrice: 10n,
+        receiptGasUsed: 100,
+        calldataGasUsed: 100,
+        dataLength: 100,
+        receiptBlobGasPrice: null,
+        receiptBlobGasUsed: null,
+      },
+    ]
+
+    const result = transformFunctionCallsQueryResult(
+      [],
+      [],
+      sharedBridgeCalls,
       queryResults,
     )
 
     expect(result).toEqual(expected)
   })
 })
+
+function mockFunctionCall({
+  id,
+  projectId,
+  subtype,
+  address,
+  selector,
+  sinceTimestamp,
+  formula,
+}: {
+  id: TrackedTxId
+  projectId: ProjectId
+  subtype: TrackedTxsConfigSubtype
+  address: EthereumAddress
+  selector: string
+  sinceTimestamp: UnixTime
+  formula: TrackedTxFunctionCallConfig['formula']
+}): Configuration<
+  TrackedTxConfigEntry & {
+    params: TrackedTxFunctionCallConfig
+  }
+> {
+  return {
+    id,
+    minHeight: 0,
+    maxHeight: 0,
+    properties: {
+      id,
+      projectId,
+      type: 'liveness',
+      subtype,
+      sinceTimestamp,
+      params: {
+        formula,
+        address,
+        selector,
+      },
+    },
+  }
+}
+
+function mockSharpSubmission({
+  id,
+  projectId,
+  subtype,
+  address,
+  selector,
+  sinceTimestamp,
+  formula,
+  programHashes,
+}: {
+  id: TrackedTxId
+  projectId: ProjectId
+  subtype: TrackedTxsConfigSubtype
+  address: EthereumAddress
+  selector: string
+  sinceTimestamp: UnixTime
+  formula: TrackedTxSharpSubmissionConfig['formula']
+  programHashes: string[]
+}): Configuration<
+  TrackedTxConfigEntry & {
+    params: TrackedTxSharpSubmissionConfig
+  }
+> {
+  return {
+    id,
+    minHeight: 0,
+    maxHeight: 0,
+    properties: {
+      id,
+      projectId,
+      type: 'liveness',
+      subtype,
+      sinceTimestamp,
+      params: {
+        formula,
+        address,
+        selector,
+        programHashes,
+      },
+    },
+  }
+}
+
+function mockSharedBridgeCall({
+  id,
+  projectId,
+  subtype,
+  address,
+  selector,
+  sinceTimestamp,
+  formula,
+  chainId,
+  signature,
+}: {
+  id: TrackedTxId
+  projectId: ProjectId
+  subtype: TrackedTxsConfigSubtype
+  address: EthereumAddress
+  selector: string
+  sinceTimestamp: UnixTime
+  formula: TrackedTxSharedBridgeConfig['formula']
+  chainId: number
+  signature: `function ${string}`
+}): Configuration<
+  TrackedTxConfigEntry & {
+    params: TrackedTxSharedBridgeConfig
+  }
+> {
+  return {
+    id,
+    minHeight: 0,
+    maxHeight: 0,
+    properties: {
+      id,
+      projectId,
+      type: 'liveness',
+      subtype,
+      sinceTimestamp,
+      params: {
+        formula,
+        address,
+        selector,
+        chainId,
+        signature,
+      },
+    },
+  }
+}

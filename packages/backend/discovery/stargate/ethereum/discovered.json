@@ -1,18 +1,18 @@
 {
   "name": "stargate",
   "chain": "ethereum",
-  "blockNumber": 19532207,
-  "configHash": "0x00386bee018153f5ccd18d3bc0cd5c5dbe5cc420fe92706140f661856f134387",
-  "version": 6,
+  "blockNumber": 21264296,
+  "configHash": "0xe296e313abe7ac0bad12697a4ed750d8b5b1476794e5ff0ab09642461c887fd1",
   "contracts": [
     {
       "name": "Factory",
       "address": "0x06D538690AF257Da524f25D0CD52fD85b1c2173E",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xbc704e600b52db9b8f9530b3e75e45a8f0561c0d52beab8121e42c3fa18aefaf"
+      ],
       "sinceTimestamp": 1647504676,
       "values": {
+        "$immutable": true,
         "allPools": [
           "0xdf0770dF86a8034b3EFEf0A1Bb3c889B8332FF56",
           "0x38EA452219524Bb87e18dE1C24D3bB59510BD783",
@@ -38,6 +38,9 @@
     {
       "name": "DAI Pool",
       "address": "0x0Faf1d2d3CED330824de3B8200fc8dc6E397850d",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -48,32 +51,21 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1668459527,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
-          [
-            true,
-            111,
-            3,
-            6972,
-            29783330112,
-            12840132707,
-            11878273994,
-            29285335208
-          ],
-          [true, 109, 3, 3027, 24812468014, 26131616162, 0, 27882385236]
+          [true, 111, 3, 6972, 680169179, 4693517785, 0, 4933066040],
+          [true, 109, 3, 3027, 1181267357, 26630032591, 0, 5718050598]
         ],
         "convertRate": 1000000000000,
         "decimals": 6,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": 3082090921,
-        "eqFeePool": 539753124,
+        "deltaCredit": 17530643,
+        "eqFeePool": 1391999076,
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 2,
         "localDecimals": 18,
@@ -82,15 +74,15 @@
         "mintFeeBP": 0,
         "name": "Dai Stablecoin-LP",
         "poolId": 3,
-        "protocolFeeBalance": 49930261,
+        "protocolFeeBalance": 49267126,
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 6,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*DAI",
         "token": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-        "totalLiquidity": 298696712296,
-        "totalSupply": 298690393535,
+        "totalLiquidity": 226853743902,
+        "totalSupply": 226848944894,
         "totalWeight": 9999
       },
       "derivedName": "Pool"
@@ -98,6 +90,9 @@
     {
       "name": "SG-ETH Pool",
       "address": "0x101816545F6bd2b1076434B54383a1E633390A2E",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -108,11 +103,9 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1656354769,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
@@ -123,40 +116,40 @@
             111,
             13,
             2120,
-            "427659855182986318413",
-            "492987656014835137390",
-            "81763874069566370260",
-            "392974264851925652372"
+            "145397140171451779927",
+            "38190009569735520581",
+            0,
+            "245289599442457370084"
           ],
           [
             true,
             110,
             13,
             4192,
-            "1426605079253012544421",
-            "572992830255959321203",
+            "488260494362911721690",
+            "124714860068291863400",
             0,
-            "1426598105065366838909"
+            "739932547330062687084"
           ],
           [
             true,
             184,
             13,
             1203,
-            "149417902849296611813",
-            "91279586687594223659",
+            "55327343554268642633",
+            "8210048363143214372",
             0,
-            "149412644235710304201"
+            "65695544595942227132"
           ],
           [
             true,
             183,
             13,
             2483,
-            "71265488498491242888",
-            "1252309180769186983132",
-            "26369195560755929110",
-            "70888886249866147824"
+            "704017774418900136928",
+            0,
+            0,
+            "761633868030537444724"
           ],
           [true, 214, 13, 2300, 0, "2646491575579306304854", 0, 0]
         ],
@@ -164,8 +157,8 @@
         "decimals": 18,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": "539547654941945236",
-        "eqFeePool": "5701060965358885468",
+        "deltaCredit": "80733520770938207581",
+        "eqFeePool": "4811277723446018057",
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 7,
         "localDecimals": 18,
@@ -174,15 +167,15 @@
         "mintFeeBP": 0,
         "name": "Stargate Ether Vault-LP",
         "poolId": 13,
-        "protocolFeeBalance": "10134237220648458772",
+        "protocolFeeBalance": "1071882023712930955",
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 18,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*SGETH",
         "token": "0x72E2F4830b9E45d52F80aC08CB2bEC0FeF72eD9c",
-        "totalLiquidity": "7584593155985890284254",
-        "totalSupply": "7583070955507147135527",
+        "totalLiquidity": "2000519725899433064639",
+        "totalSupply": "1999958398482019289983",
         "totalWeight": 12298
       },
       "derivedName": "Pool"
@@ -190,6 +183,9 @@
     {
       "name": "WOO Pool",
       "address": "0x1CE66c52C36757Daf6551eDc04800A0Ec9983A09",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -200,11 +196,9 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1677032255,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
@@ -213,50 +207,50 @@
             109,
             20,
             1000,
-            "113335382476328700034885",
-            "72671422600302622968064",
-            "114296657649112409326",
-            "113513903402878784996894"
+            "110625822546651114332011",
+            "39876673089594930158344",
+            "945596442603356413253",
+            "110617790058602000386527"
           ],
           [
             true,
             111,
             20,
             1000,
-            "83827230668185972333817",
-            "73164828363775497332597",
+            "100770933046276603297285",
+            "70786162329284883315604",
             0,
-            "102093678403753494619492"
+            "101913982472226931858032"
           ],
           [
             true,
             102,
             20,
             5000,
-            "137912250954797822965528",
-            "189968296727288741475833",
+            "136082799113243546273401",
+            "42355451893449605499194",
             0,
-            "138012658486825386174221"
+            "136069809435347056652244"
           ],
           [
             true,
             110,
             20,
             2500,
-            "105869260818648723476730",
-            "118192848544819800046385",
+            "45120444086248445829737",
+            "30008704347078782025262",
             0,
-            "202954187673365036889768"
+            "202374639889986519570990"
           ],
           [
             true,
             106,
             20,
             500,
-            "108276868938224199761785",
-            "17928980263865227443182",
-            "3401500211082567530426",
-            "108270059095808099585964"
+            "108252279213856725074175",
+            "2397166514188127092990",
+            "12609326690251326458531",
+            "107571899971518353725732"
           ],
           [
             true,
@@ -273,8 +267,8 @@
         "decimals": 18,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": "8440092178058700916572",
-        "eqFeePool": "372759275112332268447",
+        "deltaCredit": "11524797802078915149237",
+        "eqFeePool": "978419575460084079783",
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 6,
         "localDecimals": 18,
@@ -283,15 +277,15 @@
         "mintFeeBP": 0,
         "name": "Wootrade Network-LP",
         "poolId": 20,
-        "protocolFeeBalance": "23096893901466522131",
+        "protocolFeeBalance": "202028035806593179576",
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 18,
         "stopSwap": false,
         "swapDeltaBP": 250,
         "symbol": "S*WOO",
         "token": "0x4691937a7508860F876c9c0a2a617E7d9E945D4B",
-        "totalLiquidity": "732685681004299205551277",
-        "totalSupply": "731777664014546274938229",
+        "totalLiquidity": "712457058166385619543681",
+        "totalSupply": "711518378695281748821170",
         "totalWeight": 10000
       },
       "derivedName": "Pool"
@@ -299,11 +293,12 @@
     {
       "name": "Bridge",
       "address": "0x296F55F8Fb28E498B858d0BcDA06D955B2Cb3f97",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xcfc56af1501e5fdb6791848b058bbdd819db31eb1e168d31c30743c57eb88a41"
+      ],
       "sinceTimestamp": 1647504669,
       "values": {
+        "$immutable": true,
         "layerZeroEndpoint": "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
         "owner": "0x65bb797c2B9830d891D87288F029ed8dACc19705",
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
@@ -313,11 +308,12 @@
     {
       "name": "TreasuryV2",
       "address": "0x3773E1E9Deb273fCdf9f80bc88bB387B1e6Ce34d",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x8b908351f18fdaeaf600ae46ef1450c535f741fc95bb25acade77f8b59fdc168"
+      ],
       "sinceTimestamp": 1661529370,
       "values": {
+        "$immutable": true,
         "feeEnabled": false,
         "nativeBP": 0,
         "owner": "0xCDa8e3ADD00c95E5035617F970096118Ca2F4C92",
@@ -329,6 +325,9 @@
     {
       "name": "USDT Pool",
       "address": "0x38EA452219524Bb87e18dE1C24D3bB59510BD783",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -339,11 +338,9 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1647511860,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
@@ -358,100 +355,55 @@
           [true, 11, 1, 0, 0, 0, 0, 0],
           [true, 12, 1, 0, 0, 0, 0, 0],
           [true, 1, 1, 0, 0, 0, 0, 0],
-          [true, 112, 1, 0, 60743258636, 7378087, 0, 0],
+          [true, 112, 1, 0, 57182239607, 7378087, 0, 0],
           [true, 101, 1, 0, 0, 0, 0, 0],
-          [
-            true,
-            111,
-            1,
-            127,
-            308696390429,
-            211671522098,
-            98800125265,
-            305413915356
-          ],
-          [
-            true,
-            106,
-            1,
-            100,
-            203448943501,
-            99622193868,
-            119416787063,
-            304341264896
-          ],
-          [
-            true,
-            106,
-            2,
-            100,
-            266768385036,
-            12793940306,
-            179240777759,
-            268155484384
-          ],
+          [true, 111, 1, 127, 112397249014, 49369618923, 0, 111927151998],
+          [true, 106, 1, 100, 37067325977, 13224025074, 0, 138761961014],
+          [true, 106, 2, 100, 16415667795, 12782768478, 0, 57453192512],
           [
             true,
             102,
             5,
             325,
-            22034096656,
-            286473943022,
-            413802718449,
-            22031970983
+            16018397921,
+            32206877841,
+            4364468934,
+            16010763448
           ],
-          [true, 102, 2, 6390, 4248101910699, 3035094988872, 0, 4301942384950],
-          [
-            true,
-            109,
-            1,
-            100,
-            261534329553,
-            133811715911,
-            97472774608,
-            366110109999
-          ],
-          [true, 109, 2, 470, 267789904043, 1081843756378, 0, 301437943590],
+          [true, 102, 2, 6390, 645809356553, 880594112748, 0, 1705405043381],
+          [true, 109, 1, 100, 145918511629, 22214031909, 0, 222205976010],
+          [true, 109, 2, 470, 16361439038, 94537905405, 0, 66476743140],
           [
             true,
             110,
             1,
             100,
-            325979935237,
-            170200324816,
-            74867337212,
-            524177827290
+            105418446711,
+            19747687250,
+            714162672,
+            105192497730
           ],
-          [true, 110, 2, 1917, 290540725901, 3210454364493, 0, 376179040128],
+          [true, 110, 2, 1917, 84479226944, 204279904417, 0, 100554070704],
           [true, 112, 21, 100, 0, 0, 486063660540, 0],
-          [true, 184, 1, 704, 1652174526490, 1495344486202, 0, 2608751992101],
-          [
-            true,
-            177,
-            2,
-            100,
-            400838372786,
-            136976093234,
-            100524956908,
-            432819498349
-          ],
+          [true, 184, 1, 704, 643836409663, 124337406960, 0, 703780270802],
+          [true, 177, 2, 100, 48685928537, 26892317386, 0, 316250832517],
           [
             true,
             181,
             2,
             675,
-            1189315447178,
-            432268214337,
-            971546561187,
-            1091519458454
+            51052399125,
+            85676926073,
+            55081703872,
+            51052399125
           ]
         ],
         "convertRate": 1,
         "decimals": 6,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": 89222830491,
-        "eqFeePool": 17731840644,
+        "deltaCredit": 91861239856,
+        "eqFeePool": 262341478,
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 26,
         "localDecimals": 6,
@@ -460,15 +412,15 @@
         "mintFeeBP": 0,
         "name": "Tether USD-LP",
         "poolId": 2,
-        "protocolFeeBalance": 36483838268,
+        "protocolFeeBalance": 32259292145,
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 6,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*USDT",
         "token": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-        "totalLiquidity": 23911265272032,
-        "totalSupply": 23885193114778,
+        "totalLiquidity": 2626169664780,
+        "totalSupply": 2623172321446,
         "totalWeight": 11208
       },
       "derivedName": "Pool"
@@ -476,6 +428,9 @@
     {
       "name": "USDT Pool2",
       "address": "0x430Ebff5E3E80A6C58E7e6ADA1d90F5c28AA116d",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -486,22 +441,20 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1673830559,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
-          [true, 151, 19, 1, 185806527021, 46465275793, 0, 199418212849]
+          [true, 151, 19, 1, 14320135939, 18530936848, 0, 12297229323]
         ],
         "convertRate": 1,
         "decimals": 6,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": 35339703923,
-        "eqFeePool": 1456356088,
+        "deltaCredit": 1,
+        "eqFeePool": 30282379,
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 1,
         "localDecimals": 6,
@@ -510,15 +463,15 @@
         "mintFeeBP": 0,
         "name": "Tether USD-LP",
         "poolId": 19,
-        "protocolFeeBalance": 391205316,
+        "protocolFeeBalance": 53996666,
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 6,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*USDT",
         "token": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-        "totalLiquidity": 927775982476,
-        "totalSupply": 927118471302,
+        "totalLiquidity": 110089103751,
+        "totalSupply": 109984730424,
         "totalWeight": 1
       },
       "derivedName": "Pool"
@@ -526,11 +479,12 @@
     {
       "name": "UltraLightNodeV2",
       "address": "0x4D73AdB72bC3DD368966edD0f0b2148401A178E2",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x38c85ab54f670eaa1fc2b351aee39913bc12e2b26c460ee31cf89d3f1f7d59b9"
+      ],
       "sinceTimestamp": 1661529280,
       "values": {
+        "$immutable": true,
         "CONFIG_TYPE_INBOUND_BLOCK_CONFIRMATIONS": 2,
         "CONFIG_TYPE_INBOUND_PROOF_LIBRARY_VERSION": 1,
         "CONFIG_TYPE_ORACLE": 6,
@@ -573,6 +527,9 @@
     {
       "name": "sUSD Pool",
       "address": "0x590d4f8A68583639f215f675F3a259Ed84790580",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -583,22 +540,18 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1668459587,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
-        "chainPaths": [
-          [true, 111, 14, 1, 25044586250, 4935842876, 0, 22246425320]
-        ],
+        "chainPaths": [[true, 111, 14, 1, 7635591774, 36423158, 0, 8729465340]],
         "convertRate": 1000000000000,
         "decimals": 6,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": 1523223,
-        "eqFeePool": 184561148,
+        "deltaCredit": 3576949385,
+        "eqFeePool": 8354285,
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 1,
         "localDecimals": 18,
@@ -607,15 +560,15 @@
         "mintFeeBP": 0,
         "name": "Synth sUSD-LP",
         "poolId": 14,
-        "protocolFeeBalance": 534634,
+        "protocolFeeBalance": 104601274,
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 6,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*sUSD",
         "token": "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
-        "totalLiquidity": 80226447556,
-        "totalSupply": 80210532758,
+        "totalLiquidity": 2519498977,
+        "totalSupply": 2518999175,
         "totalWeight": 1
       },
       "derivedName": "Pool"
@@ -624,23 +577,43 @@
       "name": "TSS Oracle",
       "address": "0x5a54fe5234E811466D5366846283323c954310B2",
       "unverified": true,
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x3eEA8d627ab6983fFFc7027ee623Fd7699343fc1",
-        "admin": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8"
-      },
-      "implementations": ["0x3eEA8d627ab6983fFFc7027ee623Fd7699343fc1"],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8",
+          "via": []
+        }
+      ],
       "sinceTimestamp": 1661536020,
+      "values": {
+        "$admin": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8",
+        "$implementation": "0x3eEA8d627ab6983fFFc7027ee623Fd7699343fc1",
+        "$pastUpgrades": [
+          [
+            "2023-02-08T19:58:23.000Z",
+            "0x552bd37cf291bcc16f62985e1c87e65f26e063eefbbbbf0c7874517af2356d59",
+            ["0xccEf13cFEB6873c167f62A365548A57C9ed29DC5"]
+          ],
+          [
+            "2023-04-27T02:38:47.000Z",
+            "0x9b7aa9602e9b7c0835daf01b281300d8ca0a51e42942ab9bda92104e05b118c5",
+            ["0x3eEA8d627ab6983fFFc7027ee623Fd7699343fc1"]
+          ]
+        ],
+        "$upgradeCount": 2
+      },
       "derivedName": ""
     },
     {
       "name": "NonceContract",
       "address": "0x5B905fE05F81F3a8ad8B28C6E17779CFAbf76068",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x895867397d61409de8476975bae4d871fec1c289e52fe97b31872726808dae38"
+      ],
       "sinceTimestamp": 1661280206,
       "values": {
+        "$immutable": true,
         "endpoint": "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675"
       }
     },
@@ -648,28 +621,30 @@
       "name": "StarGate Multisig",
       "address": "0x65bb797c2B9830d891D87288F029ed8dACc19705",
       "template": "GnosisSafe",
+      "sourceHashes": [
+        "0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff",
+        "0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"
+      ],
+      "proxyType": "gnosis safe",
       "ignoreInWatchMode": ["nonce"],
-      "upgradeability": {
-        "type": "gnosis safe",
-        "masterCopy": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
-        "modules": [],
-        "threshold": "3 of 6 (50%)"
-      },
-      "implementations": ["0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"],
       "sinceTimestamp": 1647498793,
       "values": {
-        "domainSeparator": "0x10cd04a3b7d65ccac18caff2fefc4c51c80b1d61ab414834e49fc8fbdd62f6be",
-        "getChainId": 1,
-        "getOwners": [
+        "$immutable": false,
+        "$implementation": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+        "$members": [
           "0x2E1078e128e8AA6A70eC8d1B17A79Fc4B457d437",
           "0x565cFd7224bbc2a81a6e2a1464892ecB27efB070",
           "0x1D7C6783328C145393e84fb47a7f7C548f5Ee28d",
           "0x79e2b9C1F6C9ed1375C93AaF139e6C4537f48523",
-          "0xF05F4211ad15A8e49b49C0436067CFFfEa783aA4",
+          "0x7C8D1Db01130acEEc5fF892c99a18c4b4BAdC326",
           "0xf02CC4dc84aC59Bd6089BAddcEB9d4Ef3AEFb0f0"
         ],
-        "getThreshold": 3,
-        "nonce": 680,
+        "$threshold": 3,
+        "domainSeparator": "0x10cd04a3b7d65ccac18caff2fefc4c51c80b1d61ab414834e49fc8fbdd62f6be",
+        "getChainId": 1,
+        "GnosisSafe_modules": [],
+        "multisigThreshold": "3 of 6 (50%)",
+        "nonce": 820,
         "VERSION": "1.3.0"
       },
       "derivedName": "GnosisSafe"
@@ -677,11 +652,12 @@
     {
       "name": "Endpoint",
       "address": "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x945c3299d0cf62b9ea7a77d6328295d54327299d6a153e1e7b48d85fa9b77215"
+      ],
       "sinceTimestamp": 1647316591,
       "values": {
+        "$immutable": true,
         "BLOCK_VERSION": 65535,
         "chainId": 1,
         "DEFAULT_VERSION": 0,
@@ -699,6 +675,9 @@
     {
       "name": "USDD Pool",
       "address": "0x692953e758c3669290cb1677180c64183cEe374e",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -709,11 +688,9 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1656354769,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
@@ -723,18 +700,18 @@
             102,
             11,
             1,
-            "150253250066943699079729",
-            "141946750338114003216570",
+            "150186043037684340175300",
+            "133224416947345181472090",
             0,
-            "150253250066943699079729"
+            "150185548558201074805013"
           ]
         ],
         "convertRate": 1,
         "decimals": 18,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": "2679911403302102077700",
-        "eqFeePool": "1181152093607254386",
+        "deltaCredit": "6253670480644191858626",
+        "eqFeePool": "1442848264947453051",
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 2,
         "localDecimals": 18,
@@ -743,15 +720,15 @@
         "mintFeeBP": 0,
         "name": "Decentralized USD-LP",
         "poolId": 11,
-        "protocolFeeBalance": "1026345930756282801",
+        "protocolFeeBalance": "1639757750867049959",
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 18,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*USDD",
         "token": "0x0C10bF8FcB7Bf5412187A595ab97a3609160b5c6",
-        "totalLiquidity": "150008921775705726346522",
-        "totalSupply": "149985087635743805677875",
+        "totalLiquidity": "150014791953948744839867",
+        "totalSupply": "149990084690792301371012",
         "totalWeight": 1
       },
       "derivedName": "Pool"
@@ -759,11 +736,12 @@
     {
       "name": "Router",
       "address": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xaca03a3990b02abbdfb3479c15740adb67918d89a2b2ba4a789156a84a23895f"
+      ],
       "sinceTimestamp": 1647504658,
       "values": {
+        "$immutable": true,
         "bridge": "0x296F55F8Fb28E498B858d0BcDA06D955B2Cb3f97",
         "factory": "0x06D538690AF257Da524f25D0CD52fD85b1c2173E",
         "mintFeeOwner": "0x0000000000000000000000000000000000000000",
@@ -775,11 +753,12 @@
     {
       "name": "StarGateFeeLibrary7",
       "address": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xa8c87025dca83b0d7859efc30fa933d23dc2c4a29483706d9123f2c0248ff35e"
+      ],
       "sinceTimestamp": 1686244907,
       "values": {
+        "$immutable": true,
         "DELTA_1": "600000000000000000",
         "DELTA_2": "50000000000000000",
         "DENOMINATOR": "1000000000000000000",
@@ -806,38 +785,78 @@
       "name": "LayerZero Relayer",
       "address": "0x902F09715B6303d4173037652FA7377e5b98089E",
       "unverified": true,
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xB830a5AfCBEBb936c30C607a18BbbA9f5B0a592f",
-        "admin": "0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9"
-      },
-      "implementations": ["0xB830a5AfCBEBb936c30C607a18BbbA9f5B0a592f"],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9",
+          "via": []
+        }
+      ],
       "sinceTimestamp": 1661531835,
+      "values": {
+        "$admin": "0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9",
+        "$implementation": "0xB830a5AfCBEBb936c30C607a18BbbA9f5B0a592f",
+        "$pastUpgrades": [
+          [
+            "2022-11-21T22:41:47.000Z",
+            "0x665e97daa183fb3d57ee6aac0438d555feeeb570b782e03e7b972919aa57212f",
+            ["0x4E341b9Cf90514A5b7dfec2c9A1f20AA4514C260"]
+          ],
+          [
+            "2023-02-03T23:06:47.000Z",
+            "0x368b49a019b69220edb9dfcedf34c3b9354a56bed285e21b897e8523237270c9",
+            ["0xDD55F55CB9a39EF1eed4Ee1a84EE1b7411bE306a"]
+          ],
+          [
+            "2023-04-23T04:37:11.000Z",
+            "0x1605419ac94c967804d0d4c2b809620b593fea2c47f3fc2f3f2a8cf677da7551",
+            ["0x9512a85438606dEdE54297634dEd7C7C0c231874"]
+          ],
+          [
+            "2023-06-26T23:20:23.000Z",
+            "0x26f56a3da2382a89bead8d00ea9e93ed15f4fd83627a31c5721dcebe690a1f73",
+            ["0xaF34771b16960ea77484A866a34CCDAFDc913D9C"]
+          ],
+          [
+            "2023-09-20T19:37:35.000Z",
+            "0x432c0e623817af575b5382c38b9bd117f34da874f0f4c9a3f170e74d6a71cd8f",
+            ["0x8775e9D584008f84daFe7abe75a62f6C91491027"]
+          ],
+          [
+            "2023-09-22T14:15:59.000Z",
+            "0x73b24db83de84a82dae12cc42405822b258a762a7c18206498f869be5d676866",
+            ["0xB830a5AfCBEBb936c30C607a18BbbA9f5B0a592f"]
+          ]
+        ],
+        "$upgradeCount": 6
+      },
       "derivedName": ""
     },
     {
       "name": "ProxyAdmin",
       "address": "0x967bAf657ec4d4b1cb00b06f7Cc6E8BA604e3AC8",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xeb95d39e1b35f76b6331da863f87bf2e148dd21abf5666590443b65f6a125630"
+      ],
+      "receivedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x5a54fe5234E811466D5366846283323c954310B2"
+        }
+      ],
       "sinceTimestamp": 1661448939,
       "values": {
+        "$immutable": true,
         "owner": "0x7B80f2924E3Ad59a55f4bcC38AB63480599Be6c8"
       }
     },
     {
-      "name": "",
-      "address": "0x9bfAc7947FC1b64aA9F12b24EcD519DaEcEf3Ba5",
-      "unverified": true,
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1687808651
-    },
-    {
       "name": "MAI Pool",
       "address": "0x9cef9a0b1bE0D289ac9f4a98ff317c33EAA84eb8",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -848,11 +867,9 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1668566243,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
@@ -860,7 +877,7 @@
           [true, 111, 16, 0, 89274947, 92056518, 0, 0],
           [true, 102, 16, 100, 0, 5741988893, 0, 0],
           [true, 110, 16, 0, 6569437649, 5801339, 0, 0],
-          [true, 109, 16, 0, 1100984681, 5980175, 0, 0],
+          [true, 109, 16, 0, 1100984681, 5941861, 0, 0],
           [true, 151, 16, 0, 75723213, 1840209437, 0, 0]
         ],
         "convertRate": 1000000000000,
@@ -868,7 +885,7 @@
         "defaultLPMode": false,
         "defaultSwapMode": false,
         "deltaCredit": 51286,
-        "eqFeePool": 881097,
+        "eqFeePool": 881098,
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 6,
         "localDecimals": 18,
@@ -877,14 +894,14 @@
         "mintFeeBP": 0,
         "name": "Mai Stablecoin-LP",
         "poolId": 16,
-        "protocolFeeBalance": 0,
+        "protocolFeeBalance": 1279,
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 6,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*MAI",
         "token": "0x8D6CeBD76f18E1558D4DB88138e2DeFB3909fAD6",
-        "totalLiquidity": 2436184662,
+        "totalLiquidity": 2436184665,
         "totalSupply": 2431718764,
         "totalWeight": 100
       },
@@ -893,6 +910,9 @@
     {
       "name": "mETH Pool",
       "address": "0xA572d137666DCbAdFA47C3fC41F15e90134C618c",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -903,11 +923,9 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1706854619,
       "values": {
+        "$immutable": true,
         "batched": false,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
@@ -916,10 +934,10 @@
             181,
             22,
             1,
-            "3051520385005172552070",
-            "91733282948330402602",
+            "10933205186024642259",
+            "1866459749988397248",
             0,
-            "1640672796021207030540"
+            "11389775876956819066"
           ]
         ],
         "convertRate": 1,
@@ -927,7 +945,7 @@
         "defaultLPMode": true,
         "defaultSwapMode": true,
         "deltaCredit": 0,
-        "eqFeePool": "2158401234452024741",
+        "eqFeePool": 1892782666086544,
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 1,
         "localDecimals": 18,
@@ -936,15 +954,15 @@
         "mintFeeBP": 0,
         "name": "mETH-LP",
         "poolId": 22,
-        "protocolFeeBalance": "815585531947636003",
+        "protocolFeeBalance": "1230308248594461150",
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 18,
         "stopSwap": false,
         "swapDeltaBP": 0,
         "symbol": "S*mETH",
         "token": "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
-        "totalLiquidity": "1502580871932295924132",
-        "totalSupply": "1502281506609350102710",
+        "totalLiquidity": "1409889059056220441",
+        "totalSupply": "1404536511829702396",
         "totalWeight": 1
       },
       "derivedName": "Pool"
@@ -952,51 +970,47 @@
     {
       "name": "ProxyAdmin",
       "address": "0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0xeb95d39e1b35f76b6331da863f87bf2e148dd21abf5666590443b65f6a125630"
+      ],
+      "receivedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x902F09715B6303d4173037652FA7377e5b98089E"
+        }
+      ],
       "sinceTimestamp": 1647317012,
       "values": {
+        "$immutable": true,
         "owner": "0x76F6d257CEB5736CbcAAb5c48E4225a45F74d6e5"
       }
-    },
-    {
-      "name": "",
-      "address": "0xC03f31fD86a9077785b7bCf6598Ce3598Fa91113",
-      "unverified": true,
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x13dff8847EA170eBb8439ce732c0A14Bb49fDd92",
-        "admin": "0x9bfAc7947FC1b64aA9F12b24EcD519DaEcEf3Ba5"
-      },
-      "implementations": ["0x13dff8847EA170eBb8439ce732c0A14Bb49fDd92"],
-      "sinceTimestamp": 1687808675
     },
     {
       "name": "LayerZero Multisig",
       "address": "0xCDa8e3ADD00c95E5035617F970096118Ca2F4C92",
       "template": "GnosisSafe",
+      "sourceHashes": [
+        "0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff",
+        "0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"
+      ],
+      "proxyType": "gnosis safe",
       "ignoreInWatchMode": ["nonce"],
-      "upgradeability": {
-        "type": "gnosis safe",
-        "masterCopy": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
-        "modules": [],
-        "threshold": "2 of 5 (40%)"
-      },
-      "implementations": ["0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"],
       "sinceTimestamp": 1648243585,
       "values": {
-        "domainSeparator": "0x567922b7bf591eff89c84c8a0039bbda9499c5f39de9b1c4dde48a8c912f31b9",
-        "getChainId": 1,
-        "getOwners": [
+        "$immutable": false,
+        "$implementation": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+        "$members": [
           "0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327",
-          "0xe095F2590eF1Ab39601445025847Ed8E4B40D687",
           "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936",
           "0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e",
           "0x67FC8c432448f9a8d541C17579EF7a142378d5aD"
         ],
-        "getThreshold": 2,
-        "nonce": 79,
+        "$threshold": 2,
+        "domainSeparator": "0x567922b7bf591eff89c84c8a0039bbda9499c5f39de9b1c4dde48a8c912f31b9",
+        "getChainId": 1,
+        "GnosisSafe_modules": [],
+        "multisigThreshold": "2 of 4 (50%)",
+        "nonce": 189,
         "VERSION": "1.3.0"
       },
       "derivedName": "GnosisSafe"
@@ -1004,11 +1018,12 @@
     {
       "name": "Google Cloud Oracle",
       "address": "0xD56e4eAb23cb81f43168F9F45211Eb027b9aC7cc",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x1be31a02ca7158d467a49eeb964f0f8aa1d1e74019df854c1881d89d51260701"
+      ],
       "sinceTimestamp": 1694217107,
       "values": {
+        "$immutable": true,
         "allowlistSize": 0,
         "DEFAULT_ADMIN_ROLE": "0x0000000000000000000000000000000000000000000000000000000000000000",
         "defaultMultiplierBps": 12100,
@@ -1024,6 +1039,9 @@
     {
       "name": "METIS Pool",
       "address": "0xd8772edBF88bBa2667ed011542343b0eDDaCDa47",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -1034,11 +1052,9 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1673830559,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
@@ -1057,18 +1073,18 @@
             151,
             17,
             1,
-            "1799396242412764928334",
-            "3635823977496220763922",
+            "1347004301151983893032",
+            "2089708035139011161561",
             0,
-            "7935818967903621763771"
+            "5780607640662655896296"
           ]
         ],
         "convertRate": 1,
         "decimals": 18,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": "483838597927136484404",
-        "eqFeePool": "60773400000000000",
+        "deltaCredit": "174364172190230590992",
+        "eqFeePool": "3933585923384263268",
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 2,
         "localDecimals": 18,
@@ -1077,15 +1093,15 @@
         "mintFeeBP": 0,
         "name": "Metis Token-LP",
         "poolId": 17,
-        "protocolFeeBalance": "2961471910368006725",
+        "protocolFeeBalance": "1890019790826272571",
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 18,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*Metis",
         "token": "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e",
-        "totalLiquidity": "3635823977496220763922",
-        "totalSupply": "3629203602757963275699",
+        "totalLiquidity": "3581779851493176422882",
+        "totalSupply": "3574050941104979485154",
         "totalWeight": 1
       },
       "derivedName": "Pool"
@@ -1093,14 +1109,18 @@
     {
       "name": "VerifierFeeLib",
       "address": "0xdeA04ef31C4B4FDf31CB58923F37869739280d49",
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1694217119
+      "sourceHashes": [
+        "0x37e1cee9d0a4ad6ebb439d27dbbf23925fcd9f9c0d5b43a33a6335e62b54d18c"
+      ],
+      "sinceTimestamp": 1694217119,
+      "values": { "$immutable": true }
     },
     {
       "name": "USDC Pool",
       "address": "0xdf0770dF86a8034b3EFEf0A1Bb3c889B8332FF56",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -1111,11 +1131,9 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1647511732,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
@@ -1130,55 +1148,46 @@
           [true, 11, 1, 0, 0, 0, 0, 0],
           [true, 12, 1, 0, 0, 0, 0, 0],
           [true, 1, 2, 0, 0, 0, 0, 0],
-          [true, 112, 1, 0, 59100336270, 760717, 0, 0],
+          [true, 112, 1, 0, 49530224497, 760717, 0, 0],
           [true, 101, 2, 0, 0, 0, 0, 0],
-          [true, 111, 1, 2394, 580630978192, 3939860092723, 0, 305415331343],
-          [true, 106, 1, 674, 157319569461, 592491623388, 0, 304326381791],
           [
             true,
-            106,
-            2,
-            108,
-            303071009720,
-            32414393715,
-            37018406290,
-            268062742027
+            111,
+            1,
+            2394,
+            112432912256,
+            403417249333,
+            283484929221,
+            111835207169
           ],
-          [true, 102, 5, 643, 78468404210, 923314350806, 0, 93917026240],
-          [true, 102, 2, 1119, 297020518684, 801130511680, 0, 297780793627],
-          [true, 109, 1, 932, 184073756025, 1352569234098, 0, 365851444107],
-          [true, 109, 2, 89, 229728789817, 164254406333, 0, 301420165230],
-          [true, 110, 1, 2953, 1092667578011, 3710262177252, 0, 1126597146185],
-          [
-            true,
-            110,
-            2,
-            313,
-            374502332038,
-            601094546982,
-            23766489445,
-            376435615528
-          ],
+          [true, 106, 1, 674, 43523725750, 142762419477, 0, 138760620222],
+          [true, 106, 2, 108, 2808043758, 31781419108, 0, 57499250357],
+          [true, 102, 5, 643, 68704645859, 132560667216, 0, 68704645859],
+          [true, 102, 2, 1119, 23819089440, 86458045679, 0, 118085940974],
+          [true, 109, 1, 932, 126244317656, 133771646830, 0, 222356994014],
+          [true, 109, 2, 89, 37671968462, 41963998221, 0, 66395339156],
+          [true, 110, 1, 2953, 226549482604, 256877358683, 0, 226549415000],
+          [true, 110, 2, 313, 99884960266, 77892290914, 0, 100578480267],
           [true, 112, 21, 0, 0, 0, 0, 0],
-          [true, 184, 1, 775, 256246850070, 638136283053, 0, 414385769906],
-          [true, 214, 1, 675, 0, 487639275875, 1805289549510, 0],
+          [true, 184, 1, 775, 52798337150, 36688768323, 0, 111702632318],
+          [true, 214, 1, 675, 1000000, 641631543145, 21529979913, 1000000],
           [
             true,
             181,
             1,
             675,
-            1018220517163,
-            835880464554,
-            297798338852,
-            1016635175470
+            67112478074,
+            199892494233,
+            17138996206,
+            7829995441
           ]
         ],
         "convertRate": 1,
         "decimals": 6,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": 632405301352,
-        "eqFeePool": 8000795563,
+        "deltaCredit": 89612456657,
+        "eqFeePool": 12809402881,
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 26,
         "localDecimals": 6,
@@ -1187,15 +1196,15 @@
         "mintFeeBP": 0,
         "name": "USD Coin-LP",
         "poolId": 1,
-        "protocolFeeBalance": 30334637244,
+        "protocolFeeBalance": 7710746258,
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 6,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*USDC",
         "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        "totalLiquidity": 25726769515240,
-        "totalSupply": 25706904252258,
+        "totalLiquidity": 7224553075212,
+        "totalSupply": 7218874786209,
         "totalWeight": 11350
       },
       "derivedName": "Pool"
@@ -1203,6 +1212,9 @@
     {
       "name": "LUSD Pool",
       "address": "0xE8F55368C82D38bbbbDb5533e7F56AfC2E978CC2",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -1213,23 +1225,21 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1668459587,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
-          [true, 111, 15, 7342, 241528850, 3874, 0, 74328600],
-          [true, 110, 15, 2158, 646604156, 1050178132, 0, 531478233]
+          [true, 111, 15, 7342, 2545443634, 5722588575, 0, 42472674],
+          [true, 110, 15, 2158, 4090989744, 1050178132, 1682642086, 505109912]
         ],
         "convertRate": 1000000000000,
         "decimals": 6,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": 4395835402,
-        "eqFeePool": 252476194,
+        "deltaCredit": 71387141,
+        "eqFeePool": 244890072,
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 2,
         "localDecimals": 18,
@@ -1238,15 +1248,15 @@
         "mintFeeBP": 0,
         "name": "LUSD Stablecoin-LP",
         "poolId": 15,
-        "protocolFeeBalance": 0,
+        "protocolFeeBalance": 162863,
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 6,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*LUSD",
         "token": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
-        "totalLiquidity": 102875831004,
-        "totalSupply": 102856042849,
+        "totalLiquidity": 102899720564,
+        "totalSupply": 102879927810,
         "totalWeight": 9500
       },
       "derivedName": "Pool"
@@ -1254,6 +1264,9 @@
     {
       "name": "Frax Pool",
       "address": "0xfA0F307783AC21C39E939ACFF795e27b650F6e68",
+      "sourceHashes": [
+        "0x599edeae7294922e7192ddef4fc4c244c46f9ae0b9b4e8e8207ab02bd956ba93"
+      ],
       "ignoreInWatchMode": [
         "deltaCredit",
         "eqFeePool",
@@ -1264,24 +1277,22 @@
         "getChainPathsLength",
         "totalWeight"
       ],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1668459527,
       "values": {
+        "$immutable": true,
         "batched": true,
         "BP_DENOMINATOR": 10000,
         "chainPaths": [
-          [true, 111, 7, 1803, 18000265496, 5948277200, 0, 25307429497],
-          [true, 106, 7, 4713, 1690902946, 58381645228, 0, 1713509192],
-          [true, 110, 7, 3482, 1528781213, 22093176978, 0, 1227155391]
+          [true, 111, 7, 1803, 6184976085, 723201340, 0, 5314633482],
+          [true, 106, 7, 4713, 1611054169, 1827823190, 2105343619, 1482387530],
+          [true, 110, 7, 3482, 901790456, 3363411627, 0, 902360442]
         ],
         "convertRate": 1000000000000,
         "decimals": 6,
         "defaultLPMode": false,
         "defaultSwapMode": false,
-        "deltaCredit": 7745808861,
-        "eqFeePool": 98058791,
+        "deltaCredit": 1,
+        "eqFeePool": 136101521,
         "feeLibrary": "0x8C3085D9a554884124C998CDB7f6d7219E9C1e6F",
         "getChainPathsLength": 3,
         "localDecimals": 18,
@@ -1290,35 +1301,34 @@
         "mintFeeBP": 0,
         "name": "Frax-LP",
         "poolId": 7,
-        "protocolFeeBalance": 69459597,
+        "protocolFeeBalance": 11286482,
         "router": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
         "sharedDecimals": 6,
         "stopSwap": false,
         "swapDeltaBP": 500,
         "symbol": "S*FRAX",
         "token": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
-        "totalLiquidity": 166929464561,
-        "totalSupply": 166927090791,
+        "totalLiquidity": 81820944047,
+        "totalSupply": 81819780532,
         "totalWeight": 9998
       },
       "derivedName": "Pool"
     }
   ],
   "eoas": [
-    "0x0000000000000000000000000000000000000000",
-    "0x1D7C6783328C145393e84fb47a7f7C548f5Ee28d",
-    "0x2E1078e128e8AA6A70eC8d1B17A79Fc4B457d437",
-    "0x565cFd7224bbc2a81a6e2a1464892ecB27efB070",
-    "0x67FC8c432448f9a8d541C17579EF7a142378d5aD",
-    "0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e",
-    "0x76F6d257CEB5736CbcAAb5c48E4225a45F74d6e5",
-    "0x79e2b9C1F6C9ed1375C93AaF139e6C4537f48523",
-    "0x7B80f2924E3Ad59a55f4bcC38AB63480599Be6c8",
-    "0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327",
-    "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936",
-    "0xe095F2590eF1Ab39601445025847Ed8E4B40D687",
-    "0xf02CC4dc84aC59Bd6089BAddcEB9d4Ef3AEFb0f0",
-    "0xF05F4211ad15A8e49b49C0436067CFFfEa783aA4"
+    { "address": "0x0000000000000000000000000000000000000000" },
+    { "address": "0x1D7C6783328C145393e84fb47a7f7C548f5Ee28d" },
+    { "address": "0x2E1078e128e8AA6A70eC8d1B17A79Fc4B457d437" },
+    { "address": "0x565cFd7224bbc2a81a6e2a1464892ecB27efB070" },
+    { "address": "0x67FC8c432448f9a8d541C17579EF7a142378d5aD" },
+    { "address": "0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e" },
+    { "address": "0x76F6d257CEB5736CbcAAb5c48E4225a45F74d6e5" },
+    { "address": "0x79e2b9C1F6C9ed1375C93AaF139e6C4537f48523" },
+    { "address": "0x7B80f2924E3Ad59a55f4bcC38AB63480599Be6c8" },
+    { "address": "0x7C8D1Db01130acEEc5fF892c99a18c4b4BAdC326" },
+    { "address": "0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327" },
+    { "address": "0xBb6633cc267951E938F9B6421E4F54aa5b2c1936" },
+    { "address": "0xf02CC4dc84aC59Bd6089BAddcEB9d4Ef3AEFb0f0" }
   ],
   "abis": {
     "0x06D538690AF257Da524f25D0CD52fD85b1c2173E": [
@@ -2413,16 +2423,6 @@
       "function upgrade(address proxy, address implementation)",
       "function upgradeAndCall(address proxy, address implementation, bytes data) payable"
     ],
-    "0xC03f31fD86a9077785b7bCf6598Ce3598Fa91113": [
-      "constructor(address _logic, address admin_, bytes _data) payable",
-      "event AdminChanged(address previousAdmin, address newAdmin)",
-      "event BeaconUpgraded(address indexed beacon)",
-      "event Upgraded(address indexed implementation)",
-      "function admin() returns (address admin_)",
-      "function implementation() returns (address implementation_)",
-      "function upgradeTo(address newImplementation)",
-      "function upgradeToAndCall(address newImplementation, bytes data) payable"
-    ],
     "0xCDa8e3ADD00c95E5035617F970096118Ca2F4C92": [
       "constructor(address _singleton)"
     ],
@@ -2871,5 +2871,8 @@
       "function withdrawMintFeeBalance(address _to)",
       "function withdrawProtocolFeeBalance(address _to)"
     ]
+  },
+  "usedTemplates": {
+    "GnosisSafe": "0x18527e82c3800311291da7323caa876f588cde67692c1c84d5ecb5161da61359"
   }
 }

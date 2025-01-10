@@ -1,43 +1,35 @@
 # @l2beat/frontend
 
-The statically generated frontend that is the face of L2BEAT.
+The dynamic, public-facing Next.js frontend of L2BEAT.
 
 ## Setup
 
-To run or develop the frontend you need to install and build its dependencies. You can do it by running the following
+To run or develop frontend you need to install and build its dependencies. You can do it by running the following
 commands in the repository root:
 
 ```
-yarn
-yarn build:frontend
+pnpm install
+pnpm build:dependencies
 ```
 
 ## Scripts
 
-- `yarn start` - run the development server
-- `yarn build` - compile the production static site
-- `yarn format` - check if formatting is correct with biome
-- `yarn format:fix` - run biome automatic formatter
-- `yarn lint` - check if the code satisfies the biome configuration
-- `yarn lint:fix` - run biome automatic fixer
-- `yarn tinify-logos` - resizes and optimizes logos
-- `yarn typecheck` - check if the code satisfies the typescript compiler
+- `pnpm dev` - run the Next.js development server
+- `pnpm dev:mock` - run the Next.js development server with mock data
+- `pnpm build` - compile the production build
+- `pnpm build:dependencies` - builds the dependencies of frontend
+- `pnpm format` - run biome automatic formatter
+- `pnpm format:fix` - run biome automatic formatter and apply the recommended changes
+- `pnpm lint` - run Next.js doctor and ESLint
+- `pnpm test` - run the tests
+- `pnpm typecheck` - check if the code satisfies the typescript compiler
+- `pnpm tinify-logos` - resizes and optimizes logos
 
 ### Environment variables
+If you are running `pnpm dev:mock` you do not need any environment variables.
 
-- `TINIFY_API_KEY` - API key for Tinify, useful if you are adding/changing logo of a project (500 compressions per month are free)
+If you are running `pnpm dev` or `pnpm build` you need to set the following environment variables:
+- create file `.env.local` in frontend root folder
+- `DATABASE_URL` - database connection url (read-only access is sufficient)
 
-#### .env boilerplate:
-
-```bash
-TINIFY_API_KEY=
-```
-
-## Storybook
-
-Production build requires (for some unknown reason) rebuilding dependencies in with ESM. Use `yarn storybook:build` to do exactly that.
-
-##### Known issues
-
-You should not import files that depend on node-related modules (e.g. fs) in stories. That will cause much pain searching for why the storybook is not working.
-For example you should not import layer2s from config as it imports all projects and some of them use ProjectDiscovery that uses fs.
+*if you currently work at L2BEAT: feel free to directly connect to our staging DB* 😉

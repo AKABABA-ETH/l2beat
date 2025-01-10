@@ -10,6 +10,7 @@ const discovery = new ProjectDiscovery('sygma')
 export const sygma: Bridge = {
   type: 'bridge',
   id: ProjectId('sygma'),
+  createdAt: new UnixTime(1711107103), // 2024-03-22T11:31:43Z
   display: {
     name: 'Sygma',
     slug: 'sygma',
@@ -37,7 +38,7 @@ export const sygma: Bridge = {
       ],
       apps: [
         `https://subbridge.io`,
-        'https://docs.buildwithsygma.com/environments/testnet/obtain-testnet-tokens',
+        'https://docs.buildwithsygma.com/resources/environments/testnet/#testnet-faucet',
         'https://sygma-react-widget.pages.dev/',
         'https://validator.faucet.chainsafe.dev/upload',
       ],
@@ -83,19 +84,19 @@ export const sygma: Bridge = {
         {
           category: 'Users can be censored if',
           text: 'Greater than threshold number of MPC relayer nodes decide to censor certain transactions.',
-          isCritical: true,
+
           _ignoreTextFormatting: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'Greater than threshold number of MPC relayer nodes are maliciously taken over resulting in signing of malicious transactions.',
-          isCritical: true,
+
           _ignoreTextFormatting: true,
         },
         {
           category: 'Funds can be lost if',
           text: 'Greater than threshold number of MPC relayer nodes lose access to their MPC private keys.',
-          isCritical: true,
+
           _ignoreTextFormatting: true,
         },
       ],
@@ -145,7 +146,6 @@ export const sygma: Bridge = {
       {
         category: 'Funds can be stolen if',
         text: 'admin sets a handler that allows for mismanagement of funds.',
-        isCritical: true,
       },
     ],
   },
@@ -176,12 +176,12 @@ export const sygma: Bridge = {
   knowledgeNuggets: [
     {
       title: 'Architecture overview',
-      url: 'https://docs.buildwithsygma.com/architecture',
+      url: 'https://docs.buildwithsygma.com/protocol',
       thumbnail: NUGGETS.THUMBNAILS.L2BEAT_01,
     },
     {
       title: 'Audits',
-      url: 'https://docs.buildwithsygma.com/audits',
+      url: 'https://docs.buildwithsygma.com/resources/audits',
       thumbnail: NUGGETS.THUMBNAILS.L2BEAT_03,
     },
     {

@@ -1,9 +1,20 @@
-import { NEW_CRYPTOGRAPHY, RISK_VIEW } from '../../common'
+import { EthereumAddress, UnixTime } from '@l2beat/shared-pure'
+import {
+  DA_BRIDGES,
+  DA_LAYERS,
+  NEW_CRYPTOGRAPHY,
+  RISK_VIEW,
+} from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
 import { polygonCDKStack } from './templates/polygonCDKStack'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('xlayer')
+
+const shared = new ProjectDiscovery('shared-polygon-cdk')
+const bridge = shared.getContract('Bridge')
 
 const membersCountDAC = discovery.getContractValue<number>(
   'XLayerValidiumDAC',
@@ -16,25 +27,24 @@ const requiredSignaturesDAC = discovery.getContractValue<number>(
 )
 
 const isForcedBatchDisallowed =
-  discovery.getContractValue<string>(
-    'XLayerValidiumEtrog',
-    'forceBatchAddress',
-  ) !== '0x0000000000000000000000000000000000000000'
+  discovery.getContractValue<string>('XLayerValidium', 'forceBatchAddress') !==
+  '0x0000000000000000000000000000000000000000'
 
 const upgradeability = {
-  upgradableBy: ['ProxyAdminOwner'],
+  upgradableBy: ['DACProxyAdminOwner'],
   upgradeDelay: 'No delay',
 }
 
 export const xlayer: Layer2 = polygonCDKStack({
+  createdAt: new UnixTime(1713983341), // 2024-04-24T18:29:01Z
   discovery,
+  additionalBadges: [Badge.DA.DAC, Badge.Infra.AggLayer],
   daProvider: {
-    name: 'DAC',
-    bridge: {
-      type: 'DAC Members',
+    layer: DA_LAYERS.DAC,
+    bridge: DA_BRIDGES.DAC_MEMBERS({
       requiredSignatures: requiredSignaturesDAC,
       membersCount: membersCountDAC,
-    },
+    }),
     riskView: {
       ...RISK_VIEW.DATA_EXTERNAL_DAC({
         membersCount: membersCountDAC,
@@ -42,9 +52,9 @@ export const xlayer: Layer2 = polygonCDKStack({
       }),
       sources: [
         {
-          contract: 'XLayerValidiumEtrog',
+          contract: 'PolygonDataCommittee.sol',
           references: [
-            'https://etherscan.io/address/0x2B0ee28D4D51bC9aDde5E58E295873F61F4a0507',
+            'https://etherscan.io/address/0xd620Ca1ad5c3888e4521c3374cE4088Cb78079b8#code',
           ],
         },
       ],
@@ -52,7 +62,7 @@ export const xlayer: Layer2 = polygonCDKStack({
     technology: {
       name: 'Data is not stored on chain',
       description:
-        'The transaction data is not recorded on the Ethereum main chain. Transaction data is stored off-chain and only the hashes are posted on-chain by the Sequencer, after being signed by the DAC members.',
+        'The transaction data is not recorded on the Ethereum main chain. Transaction data is stored off-chain and only the hashes are posted onchain by the Sequencer, after being signed by the DAC members.',
       risks: [
         {
           category: 'Funds can be lost if',
@@ -62,41 +72,71 @@ export const xlayer: Layer2 = polygonCDKStack({
       ],
       references: [
         {
-          text: 'XLayerValidiumEtrog.sol - Etherscan source code, sequenceBatches function',
-          href: 'https://etherscan.io/address/0x2B0ee28D4D51bC9aDde5E58E295873F61F4a0507',
+          text: 'PolygonValidiumEtrog.sol - Etherscan source code, sequenceBatchesValidium function',
+          href: 'https://etherscan.io/address/0x427113ae6F319BfFb4459bfF96eb8B6BDe1A127F#code#F1#L91',
         },
       ],
     },
   },
+  chainConfig: {
+    name: 'xlayer',
+    chainId: 196,
+    explorerUrl: 'https://rpc.xlayer.tech',
+    minTimestampForTvl: new UnixTime(1711782180),
+    multicallContracts: [
+      {
+        address: EthereumAddress('0xcA11bde05977b3631167028862bE2a173976CA11'),
+        batchSize: 150,
+        sinceBlock: 47416,
+        version: '3',
+      },
+    ],
+  },
   display: {
+    reasonsForBeingOther: [REASON_FOR_BEING_OTHER.SMALL_DAC],
     name: 'X Layer',
     slug: 'xlayer',
     description:
       'X Layer is Validium by OKX with seamless integration with OKX products. It is powered by the Polygon CDK.',
-    headerWarning:
-      'X Layer is using AggLayer, meaning it shares the TVL escrow contracts with Polygon zkEVM and other connected chains.',
-    purposes: ['Universal'],
     links: {
-      websites: ['https://okx.com/x1'],
+      websites: ['https://okx.com/xlayer'],
       apps: [],
-      documentation: ['https://okx.com/xlayer/docs'],
+      documentation: [
+        'https://okx.com/xlayer/docs/users/welcome/about-x-layer',
+      ],
       explorers: ['https://okx.com/explorer/xlayer'],
       repositories: [],
       socialMedia: ['https://twitter.com/XLayerOfficial'],
     },
     activityDataSource: 'Blockchain RPC',
   },
-  nonTemplateEscrows: [],
+  associatedTokens: ['OKB'],
+  nonTemplateEscrows: [
+    shared.getEscrowDetails({
+      address: bridge.address,
+      tokens: '*',
+      sinceTimestamp: new UnixTime(1712620800),
+      sharedEscrow: {
+        type: 'AggLayer',
+        nativeAsset: 'etherWrapped',
+        wethAddress: EthereumAddress(
+          '0x5a77f1443d16ee5761d310e38b62f77f726bc71c',
+        ),
+        tokensToAssignFromL1: ['OKB'],
+      },
+    }),
+  ],
   milestones: [
     {
       name: 'X Layer Public Launch',
       link: 'https://x.com/XLayerOfficial/status/1780056275898048562',
       date: '2024-04-16',
       description: 'X Layer is now accessible to everyone.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [],
-  rollupModuleContract: discovery.getContract('XLayerValidiumEtrog'),
+  rollupModuleContract: discovery.getContract('XLayerValidium'),
   rollupVerifierContract: discovery.getContract('XLayerVerifier'),
   rpcUrl: 'https://rpc.xlayer.tech',
   isForcedBatchDisallowed,
@@ -105,6 +145,38 @@ export const xlayer: Layer2 = polygonCDKStack({
       ...NEW_CRYPTOGRAPHY.ZK_BOTH,
     },
   },
+  nonTemplatePermissions: [
+    {
+      name: 'LocalAdmin',
+      accounts: [
+        discovery.formatPermissionedAccount(
+          discovery.getContractValue('XLayerValidium', 'admin'),
+        ),
+      ],
+      description:
+        'Admin of the XLayerValidium contract, can set core system parameters like timeouts, sequencer, activate forced transactions and update the DA mode.',
+    },
+    {
+      name: 'RollupManager',
+      accounts: [
+        discovery.formatPermissionedAccount(
+          discovery.getContractValue('XLayerValidium', 'rollupManager'),
+        ),
+      ],
+      description:
+        'Permissioned to revert batches that are not yet finalized and to initialize / upgrade the validium contract to a new (existing) version.',
+    },
+    {
+      name: 'DACProxyAdminOwner',
+      accounts: [
+        discovery.formatPermissionedAccount(
+          discovery.getContractValue('ProxyAdmin', 'owner'),
+        ),
+      ],
+      description:
+        "Owner of the XLayerValidiumDAC's ProxyAdmin. Can upgrade the contract.",
+    },
+  ],
   nonTemplateContracts: [
     discovery.getContractDetails('XLayerValidiumDAC', {
       description:

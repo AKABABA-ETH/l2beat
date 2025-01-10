@@ -7,6 +7,9 @@ import {
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -15,10 +18,11 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { formatExecutionDelay } from '../../common/formatDelays'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { HARDCODED } from '../../discovery/values/hardcoded'
+import { Badge } from '../badges'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
 
@@ -50,16 +54,19 @@ const upgrades = {
 }
 
 const forcedWithdrawalDelay = HARDCODED.ZKSYNC.PRIORITY_EXPIRATION_PERIOD
+const finalizationPeriod = 0
 
 export const zksynclite: Layer2 = {
   type: 'layer2',
   id: ProjectId('zksync'),
+  createdAt: new UnixTime(1623153328), // 2021-06-08T11:55:28Z
+  badges: [Badge.VM.AppChain, Badge.DA.EthereumCalldata],
   display: {
     name: 'ZKsync Lite',
     slug: 'zksync-lite',
     description:
       'ZKsync Lite (formerly ZKsync) is a ZK Rollup platform that supports payments, token swaps and NFT minting.',
-    purposes: ['Payments'],
+    purposes: ['Payments', 'Exchange', 'NFT'],
     provider: 'ZKsync Lite',
     category: 'ZK Rollup',
 
@@ -83,7 +90,7 @@ export const zksynclite: Layer2 = {
         'ZKsync Lite is a ZK rollup that posts state diffs to the L1. Transactions within a state diff can be considered final when proven on L1 using a ZK proof, except that an operator can revert them if not executed yet.',
     },
     finality: {
-      finalizationPeriod: 0,
+      finalizationPeriod,
     },
   },
   config: {
@@ -110,7 +117,7 @@ export const zksynclite: Layer2 = {
           selector: '0x45269298',
           functionSignature:
             'function commitBlocks((uint32,uint64,bytes32,uint256,bytes32,bytes32), (bytes32,bytes,uint256,(bytes,uint32)[],uint32,uint32)[])',
-          sinceTimestampInclusive: new UnixTime(1612885558),
+          sinceTimestamp: new UnixTime(1612885558),
         },
       },
       {
@@ -126,7 +133,7 @@ export const zksynclite: Layer2 = {
           selector: '0x83981808',
           functionSignature:
             'function proveBlocks((uint32,uint64,bytes32,uint256,bytes32,bytes32)[] calldata _committedBlocks, (uint256[],uint256[],uint256[],uint8[],uint256[16]) memory _proof)',
-          sinceTimestampInclusive: new UnixTime(1592218707),
+          sinceTimestamp: new UnixTime(1592218707),
         },
       },
       {
@@ -142,7 +149,7 @@ export const zksynclite: Layer2 = {
           selector: '0xb0705b42',
           functionSignature:
             'function executeBlocks(((uint32,uint64,bytes32,uint256,bytes32,bytes32),bytes[])[] calldata _blocksData)',
-          sinceTimestampInclusive: new UnixTime(1592218707),
+          sinceTimestamp: new UnixTime(1592218707),
         },
       },
     ],
@@ -153,14 +160,17 @@ export const zksynclite: Layer2 = {
       stateUpdate: 'disabled',
     },
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: {
       ...RISK_VIEW.STATE_ZKP_SN,
+      secondLine: formatExecutionDelay(finalizationPeriod),
       sources: [
         {
           contract: 'ZkSync',
@@ -187,7 +197,9 @@ export const zksynclite: Layer2 = {
       ],
     },
     exitWindow: {
-      ...RISK_VIEW.EXIT_WINDOW(upgradeDelay, forcedWithdrawalDelay, 0),
+      ...RISK_VIEW.EXIT_WINDOW(upgradeDelay, forcedWithdrawalDelay, {
+        upgradeDelay2: 0,
+      }),
       sentiment: 'warning',
       description: `Users have ${formatSeconds(
         upgradeDelay - forcedWithdrawalDelay,
@@ -234,9 +246,7 @@ export const zksynclite: Layer2 = {
         },
       ],
     },
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   stage: getStage(
     {
       stage0: {
@@ -250,10 +260,7 @@ export const zksynclite: Layer2 = {
         fraudProofSystemAtLeast5Outsiders: null,
         usersHave7DaysToExit: true,
         usersCanExitWithoutCooperation: true,
-        securityCouncilProperlySetUp: [
-          true,
-          'The Security Council, even though it has a threshold below the recommended 75% (currently 9/15), is considered properly set up since it has been created before the Stages requirement specification and the protocol is extremely ossified. Moreover, the threshold and list of members are hardcoded and not updateable without a contract upgrade.',
-        ],
+        securityCouncilProperlySetUp: false,
       },
       stage2: {
         proofSystemOverriddenOnlyInCaseOfABug: false,
@@ -480,12 +487,14 @@ export const zksynclite: Layer2 = {
       date: '2020-06-18T00:00:00Z',
       description:
         'ZKsync is live, bringing scalable payments to Ethereum using ZK Rollup technology.',
+      type: 'general',
     },
     {
       name: 'Rebranding',
       link: 'https://blog.matter-labs.io/all-aboard-zksync-era-mainnet-8b8964ba7c59#:~:text=ZKsync%201.0%20is%20now%20zkSync%20Lite',
       date: '2023-02-16T00:00:00Z',
       description: 'ZKsync becomes ZKsync Lite.',
+      type: 'general',
     },
   ],
 }

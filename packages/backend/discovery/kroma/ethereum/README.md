@@ -11,14 +11,14 @@ against mainnet.
 
 - `export MY_PRIVATE_KEY=0x.....`
 - `export MY_ADDRESS=0x.....`
-- `yarn run-kroma-propose-script <RPC_URL>` - make sure RPC_URL is for the network you're running it on
+- `pnpm run-kroma-propose-script <RPC_URL>` - make sure RPC_URL is for the network you're running it on
 
 # To run the ProposeRoot.s.sol script:
 
 As per [documentation](https://book.getfoundry.sh/tutorials/solidity-scripting):
 
 > Solidity scripting is a way to declaratively deploy contracts using Solidity,
-> instead of using the more limiting and less user friendly forge create. [...]
+> instead of using the more limiting and less user-friendly forge create. [...]
 > they are run on the fast Foundry EVM backend, which provides dry-run
 > capabilities.
 

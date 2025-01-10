@@ -1,6 +1,6 @@
-import { assert } from '@l2beat/backend-tools'
 import { BigNumber, ethers } from 'ethers'
 
+import { assert } from '@l2beat/shared-pure'
 import { rlpDecode } from '../../utils/rlpDecode'
 import { constants } from './const'
 import { decodeUint32 } from './numerics'
@@ -152,7 +152,7 @@ function rlpToTransaction(
   }
 
   const nonce = BigNumber.from(zeroIfEmpty(rawNonce))
-  const gasPrice = BigNumber.from(rawGasPrice)
+  const gasPrice = BigNumber.from(zeroIfEmpty(rawGasPrice))
   const gasLimit = BigNumber.from(rawGasLimit)
   let to: string | undefined = undefined
 

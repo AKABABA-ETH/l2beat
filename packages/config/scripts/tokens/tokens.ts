@@ -1,4 +1,4 @@
-import { getEnv } from '@l2beat/backend-tools'
+import { Logger, getEnv } from '@l2beat/backend-tools'
 import {
   CoinListPlatformEntry,
   CoingeckoClient,
@@ -9,10 +9,12 @@ import {
   ChainId,
   CoingeckoId,
   EthereumAddress,
+  UnixTime,
 } from '@l2beat/shared-pure'
 import { providers } from 'ethers'
 
-import { chains } from '../../src'
+import { isEqual } from 'lodash'
+import { chainConverter, chains } from '../../src'
 import { ChainConfig } from '../../src/common'
 import { GeneratedToken, Output, SourceEntry } from '../../src/tokens/types'
 import { ScriptLogger } from './utils/ScriptLogger'
@@ -40,7 +42,11 @@ async function main() {
   const result: GeneratedToken[] = output.tokens
 
   function saveToken(token: GeneratedToken) {
-    const index = result.findIndex((t) => t.id === token.id)
+    const index = result.findIndex(
+      (t) =>
+        AssetId.create(chainConverter.toName(t.chainId), t.address) ===
+        AssetId.create(chainConverter.toName(token.chainId), token.address),
+    )
 
     if (index === -1) {
       result.push(token)
@@ -72,6 +78,7 @@ async function main() {
           category,
           source,
           supply,
+          excludeFromTotal: token.excludeFromTotal,
         }
         for (const [key, value] of Object.entries(overrides)) {
           const existing = existingToken[key as keyof typeof existingToken]
@@ -81,14 +88,16 @@ async function main() {
               'from',
               existing?.toString() ?? 'undefined',
               'to',
-              value.toString(),
+              value?.toString() ?? 'undefined',
             )
           }
         }
         const bridgedUsing = token.bridgedUsing ?? existingToken.bridgedUsing
         if (
-          existingToken.bridgedUsing?.bridge !== bridgedUsing?.bridge ||
-          existingToken.bridgedUsing?.slug !== bridgedUsing?.slug ||
+          !isEqual(
+            existingToken.bridgedUsing?.bridges,
+            bridgedUsing?.bridges,
+          ) ||
           existingToken.bridgedUsing?.warning !== bridgedUsing?.warning
         ) {
           tokenLogger.overriding(
@@ -133,12 +142,10 @@ async function main() {
         chainConfig,
         token.address,
         token.symbol,
+        token.deploymentTimestamp,
       )
 
-      const assetId = getAssetId(chainConfig, token, info.name)
-
       saveToken({
-        id: assetId,
         name: info.name,
         coingeckoId: info.coingeckoId,
         address: token.address,
@@ -152,6 +159,7 @@ async function main() {
         source,
         supply,
         bridgedUsing: token.bridgedUsing,
+        excludeFromTotal: token.excludeFromTotal,
       })
 
       tokenLogger.processed()
@@ -163,7 +171,14 @@ function getCoingeckoClient() {
   const env = getEnv()
   const coingeckoApiKey = env.optionalString('COINGECKO_API_KEY')
   const http = new HttpClient()
-  const coingeckoClient = new CoingeckoClient(http, coingeckoApiKey)
+  const coingeckoClient = new CoingeckoClient({
+    http,
+    retryStrategy: 'SCRIPT',
+    callsPerMinute: coingeckoApiKey ? 400 : 10,
+    sourceName: 'coingeckoAPI',
+    apiKey: coingeckoApiKey,
+    logger: Logger.WARN,
+  })
   return coingeckoClient
 }
 
@@ -206,16 +221,6 @@ function getSupply(
   return formula
 }
 
-function getAssetId(chain: ChainConfig, token: SourceEntry, name: string) {
-  const chainPrefix = chain.name === 'ethereum' ? '' : `${chain.name}:`
-
-  return AssetId(
-    `${chainPrefix}${token.symbol.replaceAll(' ', '-').toLowerCase()}-${name
-      .replaceAll(' ', '-')
-      .toLowerCase()}`,
-  )
-}
-
 function sortByChainAndName(result: GeneratedToken[]) {
   return result.sort((a, b) => {
     if (a.chainId !== b.chainId) {
@@ -248,6 +253,7 @@ async function fetchTokenInfo(
   chain: ChainConfig,
   address: EthereumAddress,
   symbol: string,
+  deploymentTimestampOverride?: UnixTime,
 ) {
   const env = getEnv()
   const rpcUrl = env.optionalString(`${chain.name.toUpperCase()}_RPC_URL`)
@@ -264,6 +270,7 @@ async function fetchTokenInfo(
     address,
     symbol,
     coingeckoId,
+    deploymentTimestampOverride,
   )
 
   return {

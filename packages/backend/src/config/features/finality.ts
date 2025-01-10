@@ -19,7 +19,6 @@ export function getFinalityConfigurations(
       if (
         !layer2.config.finality ||
         !flags.isEnabled('finality', layer2.id.toString()) ||
-        layer2.config.finality === 'coming soon' ||
         layer2.isArchived
       ) {
         return
@@ -37,7 +36,7 @@ export function getFinalityConfigurations(
 function getChainFinalityConfig(env: Env, project: Layer2) {
   if (
     project.config.transactionApi?.type === 'loopring' ||
-    project.config.transactionApi?.type === 'degate'
+    project.config.transactionApi?.type === 'degate3'
   ) {
     return {
       url: project.config.transactionApi.defaultUrl,

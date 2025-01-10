@@ -1,15 +1,16 @@
 import { DiscoveryOutput } from '@l2beat/discovery-types'
+import { HttpClient } from '@l2beat/shared'
 import { providers } from 'ethers'
-
-import { printSharedModuleInfo } from '../cli/printSharedModuleInfo'
 import { DiscoveryChainConfig, DiscoveryModuleConfig } from '../config/types'
-import { HttpClient } from '../utils/HttpClient'
+import { printSharedModuleInfo } from '../utils/printSharedModuleInfo'
 import { DiscoveryLogger } from './DiscoveryLogger'
+import { OverwriteCacheWrapper } from './OverwriteCacheWrapper'
 import { Analysis } from './analysis/AddressAnalyzer'
 import { ConfigReader } from './config/ConfigReader'
 import { DiscoveryConfig } from './config/DiscoveryConfig'
 import { getDiscoveryEngine } from './getDiscoveryEngine'
 import { diffDiscovery } from './output/diffDiscovery'
+import { printTemplatization } from './output/printTemplatization'
 import { saveDiscoveryResult } from './output/saveDiscoveryResult'
 import { toDiscoveryOutput } from './output/toDiscoveryOutput'
 import { SQLiteCache } from './provider/SQLiteCache'
@@ -40,6 +41,7 @@ export async function runDiscovery(
     logger,
     configuredBlockNumber,
     http,
+    config.overwriteCache,
   )
 
   await saveDiscoveryResult(result, projectConfig, blockNumber, logger, {
@@ -58,8 +60,10 @@ export async function runDiscovery(
   }
 
   if (config.printStats) {
-    printProviderStats(providerStats)
+    printProviderStats(logger, providerStats)
   }
+
+  printTemplatization(logger, result, !!config.verboseTemplatization)
 }
 
 export async function dryRunDiscovery(
@@ -79,8 +83,20 @@ export async function dryRunDiscovery(
   )
 
   const [discovered, discoveredYesterday] = await Promise.all([
-    justDiscover(chainConfigs, projectConfig, blockNumber, http),
-    justDiscover(chainConfigs, projectConfig, blockNumberYesterday, http),
+    justDiscover(
+      chainConfigs,
+      projectConfig,
+      blockNumber,
+      http,
+      config.overwriteCache,
+    ),
+    justDiscover(
+      chainConfigs,
+      projectConfig,
+      blockNumberYesterday,
+      http,
+      config.overwriteCache,
+    ),
   ])
 
   const diff = diffDiscovery(
@@ -100,6 +116,7 @@ async function justDiscover(
   config: DiscoveryConfig,
   blockNumber: number,
   http: HttpClient,
+  overwriteCache: boolean,
 ): Promise<DiscoveryOutput> {
   const { result } = await discover(
     chainConfigs,
@@ -107,6 +124,7 @@ async function justDiscover(
     DiscoveryLogger.CLI,
     blockNumber,
     http,
+    overwriteCache,
   )
   return toDiscoveryOutput(
     config.name,
@@ -123,17 +141,21 @@ export async function discover(
   logger: DiscoveryLogger,
   blockNumber: number | undefined,
   http: HttpClient,
+  overwriteChache: boolean,
 ): Promise<{
   result: Analysis[]
   blockNumber: number
   providerStats: AllProviderStats
 }> {
   const sqliteCache = new SQLiteCache()
-  await sqliteCache.init()
+
+  const cache = overwriteChache
+    ? new OverwriteCacheWrapper(sqliteCache)
+    : sqliteCache
 
   const { allProviders, discoveryEngine } = getDiscoveryEngine(
     chainConfigs,
-    sqliteCache,
+    cache,
     http,
     logger,
     config.chain,

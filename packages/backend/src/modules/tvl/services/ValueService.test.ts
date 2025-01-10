@@ -1,25 +1,23 @@
+import { AmountId, PriceId } from '@l2beat/config'
+import { Database } from '@l2beat/database'
 import {
   AmountConfigEntry,
+  AssetId,
   EthereumAddress,
   ProjectId,
+  TotalSupplyEntry,
   UnixTime,
 } from '@l2beat/shared-pure'
 import { expect, mockObject } from 'earl'
-import { AmountRepository } from '../repositories/AmountRepository'
-import { PriceRepository } from '../repositories/PriceRepository'
-import { AmountId } from '../utils/createAmountId'
-import { AssetId, createAssetId } from '../utils/createAssetId'
-import { PriceId } from '../utils/createPriceId'
-import { ValueService } from './ValueService'
-
 import { MOCKS_FOR_TVL } from '../utils/test/mocks'
+import { ValueService } from './ValueService'
 
 const { amountRecord, priceRecord, valueRecord, DECIMALS, USD_DECIMALS } =
   MOCKS_FOR_TVL
 
 describe(ValueService.name, () => {
   it(ValueService.prototype.calculateTvlForTimestamps.name, async () => {
-    const amountRepository = mockObject<AmountRepository>({
+    const amountRepository = mockObject<Database['amount']>({
       getByConfigIdsInRange: async () => [
         amountRecord('a', 200),
         amountRecord('a', 300),
@@ -27,7 +25,7 @@ describe(ValueService.name, () => {
         amountRecord('b', 300),
       ],
     })
-    const priceRepository = mockObject<PriceRepository>({
+    const priceRepository = mockObject<Database['price']>({
       getByConfigIdsInRange: async () => [
         priceRecord('a', 200),
         priceRecord('a', 300),
@@ -38,29 +36,40 @@ describe(ValueService.name, () => {
 
     const project: ProjectId = ProjectId('project')
     const source: string = 'chain'
-    const CONFIG_A = mockObject<AmountConfigEntry>({
+    const addressA = EthereumAddress.random()
+    const CONFIG_A = mockObject<TotalSupplyEntry>({
+      assetId: AssetId.create('chain', addressA),
       sinceTimestamp: UnixTime.ZERO,
-      address: EthereumAddress.random(),
+      address: addressA,
       chain: 'chain',
       includeInTotal: true,
+      untilTimestamp: undefined,
       decimals: DECIMALS,
       source: 'canonical',
+      isAssociated: false,
+      category: 'ether',
     })
-    const CONFIG_B = mockObject<AmountConfigEntry>({
+    const addressB = EthereumAddress.random()
+    const CONFIG_B = mockObject<TotalSupplyEntry>({
+      assetId: AssetId.create('chain', addressB),
       sinceTimestamp: new UnixTime(300),
-      address: EthereumAddress.random(),
+      address: addressB,
       chain: 'chain',
       includeInTotal: false,
+      untilTimestamp: undefined,
       decimals: DECIMALS,
       source: 'external',
+      isAssociated: false,
+      category: 'stablecoin',
     })
     const amountConfigs: Map<AmountId, AmountConfigEntry> = new Map([
       ['a', CONFIG_A],
       ['b', CONFIG_B],
     ])
+
     const priceConfigIds: Map<AssetId, PriceId> = new Map([
-      [createAssetId(CONFIG_A), 'a'],
-      [createAssetId(CONFIG_B), 'b'],
+      [AssetId.create(CONFIG_A.chain, CONFIG_A.address), 'a'],
+      [AssetId.create(CONFIG_B.chain, CONFIG_B.address), 'b'],
     ])
     const timestamps: UnixTime[] = [
       new UnixTime(100),
@@ -68,10 +77,12 @@ describe(ValueService.name, () => {
       new UnixTime(300),
     ]
 
-    const service = new ValueService({
-      priceRepository,
-      amountRepository,
-    })
+    const service = new ValueService(
+      mockObject<Database>({
+        price: priceRepository,
+        amount: amountRepository,
+      }),
+    )
 
     const result = await service.calculateTvlForTimestamps(
       project,
@@ -87,12 +98,15 @@ describe(ValueService.name, () => {
         timestamp: new UnixTime(200),
         canonical: 200n * 10n ** BigInt(USD_DECIMALS),
         canonicalForTotal: 200n * 10n ** BigInt(USD_DECIMALS),
+        ether: 200n * 10n ** BigInt(USD_DECIMALS),
       }),
       valueRecord({
         timestamp: new UnixTime(300),
         canonical: 300n * 10n ** BigInt(USD_DECIMALS),
         canonicalForTotal: 300n * 10n ** BigInt(USD_DECIMALS),
         external: 300n * 10n ** BigInt(USD_DECIMALS),
+        ether: 300n * 10n ** BigInt(USD_DECIMALS),
+        stablecoin: 300n * 10n ** BigInt(USD_DECIMALS),
       }),
     ])
 

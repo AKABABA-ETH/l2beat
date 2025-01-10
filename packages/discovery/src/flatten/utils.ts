@@ -1,6 +1,10 @@
+import { createHash } from 'crypto'
+import { Hash256 } from '@l2beat/shared-pure'
 import { ContractSources } from '../discovery/source/SourceCodeService'
-import { FileContent, ParsedFilesManager } from './ParsedFilesManager'
-import { flattenStartingFrom } from './flattenStartingFrom'
+import { ContractSource } from '../utils/IEtherscanClient'
+import { FileContent } from './ParsedFilesManager'
+import { flattenStartingFrom } from './flatten'
+import { format } from './format'
 
 export interface HashedChunks {
   content: string
@@ -40,13 +44,52 @@ export function flattenFirstSource(
     return undefined
   }
 
-  const parsedFileManager = ParsedFilesManager.parseFiles(
+  const output = flattenStartingFrom(
+    source.name,
     input,
     source.source.remappings,
   )
-
-  const output = flattenStartingFrom(source.name, parsedFileManager)
   return output
+}
+
+export function flatteningHash(source: ContractSource): string | undefined {
+  if (!source.isVerified) {
+    return undefined
+  }
+
+  const input: FileContent[] = Object.entries(source.files)
+    .map(([fileName, content]) => ({
+      path: fileName,
+      content,
+    }))
+    .filter((e) => e.path.endsWith('.sol'))
+
+  const content =
+    input.length === 0
+      ? Object.values(source.files).join('\n')
+      : formatIntoHashable(
+          flattenStartingFrom(source.name, input, source.remappings),
+        )
+
+  return sha2_256bit(content)
+}
+
+export function formatIntoHashable(source: string) {
+  let formatted = format(source)
+
+  if (formatted.startsWith('pragma')) {
+    const firstNewlineIndex = formatted.indexOf('\n')
+    formatted =
+      firstNewlineIndex === -1
+        ? formatted
+        : formatted.slice(firstNewlineIndex + 1)
+  }
+
+  return formatted.trim()
+}
+
+export function sha2_256bit(str: string): Hash256 {
+  return Hash256(`0x${createHash('sha256').update(str).digest('hex')}`)
 }
 
 export function removeComments(source: string): string {
@@ -166,7 +209,7 @@ export function estimateSimilarity(
     lhsIndex++
   }
 
-  return sourceCopied / Math.max(lhs.content.length, rhs.content.length)
+  return (sourceCopied * 2) / (lhs.content.length + rhs.content.length)
 }
 
 function splitLineKeepingNewlines(input: string): string[] {

@@ -69,7 +69,11 @@ function getContract(
     }
   }
 
-  const viewABI = getViewABI(contract, discovery.abis, discovery.eoas)
+  const viewABI = getViewABI(
+    contract,
+    discovery.abis,
+    discovery.eoas.map((e) => e.address),
+  )
 
   const ignoreInWatchMode = getIgnoreInWatchMode(
     discovery,
@@ -98,7 +102,7 @@ function getContract(
     ignoreMethods,
     watched,
     notHandled,
-    proxyType: contract.upgradeability.type,
+    proxyType: contract.proxyType,
     isInitial,
     discoveredBy,
   }

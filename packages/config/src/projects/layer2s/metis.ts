@@ -1,20 +1,20 @@
-import {
-  EthereumAddress,
-  ProjectId,
-  UnixTime,
-  formatSeconds,
-} from '@l2beat/shared-pure'
+import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   FRONTRUNNING_RISK,
   RISK_VIEW,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
+import { formatChallengePeriod } from '../../common/formatDelays'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
 import { Layer2 } from './types'
 
 const discovery = new ProjectDiscovery('metis')
@@ -27,17 +27,20 @@ const CHALLENGE_PERIOD_SECONDS = discovery.getContractValue<number>(
 )
 
 export const metis: Layer2 = {
-  isUnderReview: false,
   type: 'layer2',
   id: ProjectId('metis'),
+  createdAt: new UnixTime(1637945259), // 2021-11-26T16:47:39Z
+  badges: [Badge.VM.EVM, Badge.DA.CustomDA, Badge.Fork.OVM],
   display: {
+    reasonsForBeingOther: [
+      REASON_FOR_BEING_OTHER.NO_PROOFS,
+      REASON_FOR_BEING_OTHER.NO_DA_ORACLE,
+    ],
     name: 'Metis Andromeda',
     shortName: 'Metis',
     slug: 'metis',
     description:
       'Metis Andromeda is an EVM-equivalent solution originally forked from Optimism OVM. Since April 2024 hashes of data blobs are posted to EOA similarly to OPStack chains. It uses a decentralized Sequencer pool running Tendermint consensus and MPC module to sign transaction batches.',
-    warning:
-      'Fraud proof system is currently under development. Users need to trust the block proposer to submit correct L1 state roots.',
     purposes: ['Universal'],
     provider: 'OVM',
     category: 'Optimium',
@@ -93,6 +96,7 @@ export const metis: Layer2 = {
         sinceTimestamp: new UnixTime(1637077208),
         tokens: '*',
         chain: 'ethereum',
+        premintedTokens: ['Metis'],
       },
     ],
     transactionApi: {
@@ -102,20 +106,22 @@ export const metis: Layer2 = {
       startBlock: 1,
     },
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['MEMO'],
-    bridge: { type: 'None' },
-    mode: 'Transactions data',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.MEMO],
+      bridge: DA_BRIDGES.NONE,
+      mode: DA_MODES.TRANSACTION_DATA,
+    }),
+  ],
+  riskView: {
     stateValidation: {
       ...RISK_VIEW.STATE_NONE,
-      secondLine: `${formatSeconds(CHALLENGE_PERIOD_SECONDS)} challenge period`,
+      secondLine: formatChallengePeriod(CHALLENGE_PERIOD_SECONDS),
     },
     dataAvailability: RISK_VIEW.DATA_EXTERNAL_MEMO,
     exitWindow: RISK_VIEW.EXIT_WINDOW(upgradeDelay, 0),
     sequencerFailure: {
-      ...RISK_VIEW.SEQUENCER_ENQUEUE_VIA_L1,
+      ...RISK_VIEW.SEQUENCER_ENQUEUE_VIA('L1'),
       sources: [
         {
           contract: 'CanonicalTransactionChain',
@@ -126,14 +132,12 @@ export const metis: Layer2 = {
       ],
     },
     proposerFailure: RISK_VIEW.PROPOSER_CANNOT_WITHDRAW,
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL('METIS'),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   technology: {
     stateCorrectness: {
-      name: 'No automatic on-chain fraud proof system',
+      name: 'No automatic onchain fraud proof system',
       description:
-        'For additional security, any staked Validator can challenge invalid state root submitted by the Sequencer. Other Validators will then act as referees in an interactive challenge game. Dishonest Validator majority can push invalid state root on-chain, and potentially slash honest Sequencer.',
+        'For additional security, any staked Validator can challenge invalid state root submitted by the Sequencer. Other Validators will then act as referees in an interactive challenge game. Dishonest Validator majority can push invalid state root onchain, and potentially slash honest Sequencer.',
       risks: [
         {
           category: 'Funds can be stolen if',
@@ -151,7 +155,7 @@ export const metis: Layer2 = {
     dataAvailability: {
       name: 'Data is recorded off-chain in MEMO',
       description:
-        'Transaction data is not stored on-chain, rather it is recorded in off-chain decentralized storage \
+        'Transaction data is not stored onchain, rather it is recorded in off-chain decentralized storage \
         MEMO from MemoLabs. Data hashes are posted to an EOA address.',
       risks: [
         {
@@ -284,18 +288,9 @@ export const metis: Layer2 = {
         'StateCommitmentChain',
         'The State Commitment Chain (SCC) stores a list of proposed state roots in a linked ChainStorageContainer contract. Only a permissioned state root proposer (MVM_Proposer) can submit new state roots.',
       ),
-      {
-        name: 'ChainStorageContainer-CTC-batches',
-        address: EthereumAddress('0x38473Feb3A6366757A249dB2cA4fBB2C663416B7'),
-      },
-      {
-        name: 'ChainStorageContainer-CTC-queue',
-        address: EthereumAddress('0xA91Ea6F5d1EDA8e6686639d6C88b309cF35D2E57'),
-      },
-      {
-        name: 'ChainStorageContainer-SCC-batches',
-        address: EthereumAddress('0x10739F09f6e62689c0aA8A1878816de9e166d6f9'),
-      },
+      discovery.getContractDetails('ChainStorageContainer-CTC-batches'),
+      discovery.getContractDetails('ChainStorageContainer-CTC-queue'),
+      discovery.getContractDetails('ChainStorageContainer-SCC-batches'),
       discovery.getContractDetails(
         'BondManager',
         "The Bond Manager contract will handle deposits in the form of an ERC20 token from bonded Proposers. It will also handle the accounting of gas costs spent by a Verifier during the course of a challenge. In the event of a successful challenge, the faulty Proposer's bond will be slashed, and the Verifier's gas costs will be refunded. Current mock implementation allows only OVM_Proposer to propose new state roots. No slashing is implemented.",
@@ -339,12 +334,14 @@ export const metis: Layer2 = {
       date: '2021-11-19T00:00:00Z',
       description:
         'Public launch of Metis Layer 2 Andromeda, based on the Optimism codebase.',
+      type: 'general',
     },
     {
       name: 'Data availability change',
       link: 'https://metisdao.medium.com/decentralized-storage-goes-live-da876dc6eb70',
       date: '2022-04-12T00:00:00Z',
       description: 'Update moving data to an off-chain committee.',
+      type: 'general',
     },
     {
       name: 'Data hashes posted to EOA',
@@ -352,6 +349,7 @@ export const metis: Layer2 = {
       date: '2023-03-15T00:00:00Z',
       description:
         'Hashes to data blobs are now posted to EOA address instead of CanonicalTransactionChain contract.',
+      type: 'general',
     },
   ],
 }

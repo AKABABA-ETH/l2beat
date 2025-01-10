@@ -22,20 +22,13 @@ const isForcedBatchDisallowed =
     'forceBatchAddress',
   ) !== '0x0000000000000000000000000000000000000000'
 
-const ESCROW_wstETH_ADDRESS = '0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01'
-const ESCROW_USDC_ADDRESS = '0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB'
-const ESCROW_DAI_ADDRESS = '0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98'
-
-// TODO(radomski): Ideally this wouldn't be here, but we can't actually share
-// one escrow between multiple projects. Can be removed once TVL2 is done.
-const shared = new ProjectDiscovery('shared-polygon-cdk')
-const bridge = shared.getContract('Bridge')
-
+const bridge = discovery.getContract('Bridge')
 const upgradeDelayString = formatSeconds(
-  shared.getContractValue<number>('Timelock', 'getMinDelay'),
+  discovery.getContractValue<number>('Timelock', 'getMinDelay'),
 )
 
 export const polygonzkevm: Layer2 = polygonCDKStack({
+  createdAt: new UnixTime(1679651674), // 2023-03-24T09:54:34Z
   rollupModuleContract: discovery.getContract('PolygonZkEVMEtrog'),
   rollupVerifierContract: discovery.getContract('PolygonzkEVMVerifier'),
   display: {
@@ -44,7 +37,6 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
     warning: 'The forced transaction mechanism is currently disabled.',
     description:
       'Polygon zkEVM is a EVM-compatible ZK Rollup built by Polygon Labs.',
-    purposes: ['Universal'],
     links: {
       websites: ['https://polygon.technology/polygon-zkevm'],
       apps: ['https://bridge.zkevm-rpc.com'],
@@ -80,6 +72,7 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
   chainConfig: {
     name: 'polygonzkevm',
     chainId: 1101,
+    blockscoutV2ApiUrl: 'https://zkevm.blockscout.com/api/v2',
     explorerUrl: 'https://zkevm.polygonscan.com',
     explorerApi: {
       url: 'https://api-zkevm.polygonscan.com/api',
@@ -100,6 +93,16 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
       'EscrowsAdmin',
       'Escrows Admin can instantly upgrade wstETH, DAI and USDC bridges.',
     ),
+    {
+      name: 'LocalAdmin',
+      accounts: [
+        discovery.formatPermissionedAccount(
+          discovery.getContractValue('PolygonZkEVMEtrog', 'admin'),
+        ),
+      ],
+      description:
+        'Admin of the PolygonZkEVMEtrog contract, can set core system parameters like timeouts, sequencer, activate forced transactions and update the DA mode. In the case on Polygon zkEVM, this is also the RollupManagerAdminMultisig.',
+    },
   ],
   nonTemplateTrackedTxs: [
     {
@@ -113,8 +116,8 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
         selector: '0xecef3f99',
         functionSignature:
           'function sequenceBatches(tuple(bytes transactions, bytes32 forcedGlobalExitRoot, uint64 forcedTimestamp, bytes32 forcedBlockHashL1)[] batches, address l2Coinbase)',
-        sinceTimestampInclusive: new UnixTime(1707824735),
-        untilTimestampExclusive: new UnixTime(1710419699),
+        sinceTimestamp: new UnixTime(1707824735),
+        untilTimestamp: new UnixTime(1710419699),
       },
     },
     {
@@ -128,35 +131,19 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
         selector: '0xdef57e54',
         functionSignature:
           'function sequenceBatches(tuple(bytes transactions, bytes32 forcedGlobalExitRoot, uint64 forcedTimestamp, bytes32 forcedBlockHashL1)[] batches, uint64 maxSequenceTimestamp, uint64 initSequencedBatch, address l2Coinbase)',
-        sinceTimestampInclusive: new UnixTime(1710419699),
+        sinceTimestamp: new UnixTime(1710419699),
       },
     },
   ],
   nonTemplateEscrows: [
-    shared.getEscrowDetails({
+    discovery.getEscrowDetails({
       address: bridge.address,
       tokens: '*',
-    }),
-    discovery.getEscrowDetails({
-      address: EthereumAddress(ESCROW_wstETH_ADDRESS),
-      sinceTimestamp: new UnixTime(1703945135),
-      tokens: ['wstETH'],
-      description: 'Escrow for wstETH',
-      upgradableBy: ['EscrowAdmin'],
-    }),
-    discovery.getEscrowDetails({
-      address: EthereumAddress(ESCROW_USDC_ADDRESS),
-      sinceTimestamp: new UnixTime(1700125979),
-      tokens: ['USDC'],
-      description: 'Escrow for USDC',
-      upgradableBy: ['EscrowAdmin'],
-    }),
-    discovery.getEscrowDetails({
-      address: EthereumAddress(ESCROW_DAI_ADDRESS),
-      sinceTimestamp: new UnixTime(1695199499),
-      tokens: ['DAI', 'sDAI'],
-      description: 'Escrow for DAI',
-      upgradableBy: ['EscrowAdmin'],
+      sharedEscrow: {
+        type: 'AggLayer',
+        nativeAsset: 'etherPreminted',
+        premintedAmount: '200000000000000000000000000',
+      },
     }),
   ],
   nonTemplateTechnology: {
@@ -190,7 +177,7 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
       'The trusted sequencer batches transactions according to the specifications documented [here](https://docs.polygon.technology/zkEVM/architecture/protocol/transaction-life-cycle/transaction-batching/).',
   },
   upgradesAndGovernance: [
-    `All main contracts and the verifier are upgradable by the ${shared.getMultisigStats(
+    `All main contracts and the verifier are upgradable by the ${discovery.getMultisigStats(
       'RollupManagerAdminMultisig',
     )} \`ProxyAdminOwner\` through a timelock that owns \`SharedProxyAdmin\`. Addresses of trusted sequencer, aggregator and operational parameters (like fees) on the \`PolygonRollupManager\` can be instantly set by the \`ProxyAdminOwner\`. Escrow contracts are upgradable by the \`EscrowsAdmin\` ${discovery.getMultisigStats(
       'EscrowsAdmin',
@@ -198,7 +185,7 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
     `\`PolygonZkEVMTimelock\` is a modified version of TimelockController that disables delay in case of a manually enabled or triggered emergency state in the \`PolygonRollupManager\`. It otherwise has a ${upgradeDelayString} delay.`,
     `The process to upgrade the \`PolygonRollupManager\`-implementation and / or the verifier has two steps: 1) A newRollupType-transaction is added by the \`ProxyAdminOwner\` to the timelock, which in turn can call the \`addNewRollupType()\` function in the \`PolygonRollupManager\`. In a non-emergency state, this allows potential reviews of the new rollup type while it sits in the timelock. 2) After the delay period, the rollup implementation can be upgraded to the new rollup type by the \`ProxyAdminOwner\` calling the \`updateRollup()\`-function in the \`PolygonRollupManager\` directly.`,
     `The critical roles in the \`PolygonRollupManager\` can be changed through the timelock, while the trusted Aggregator role can be granted by the \`ProxyAdminOwner\` directly.`,
-    `The ${shared.getMultisigStats(
+    `The ${discovery.getMultisigStats(
       'SecurityCouncil',
     )} \`SecurityCouncil\` multisig can manually enable the emergency state in the \`PolygonRollupManager\`.`,
   ].join('\n\n'),
@@ -229,6 +216,7 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
       },
     ],
     proofVerification: {
+      shortDescription: 'Polygon zkEVM is a ZK-EVM rollup on Ethereum.',
       aggregation: true,
       requiredTools: [
         {
@@ -239,19 +227,19 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
       ],
       verifiers: [
         {
-          name: 'PolygonZkEvmVerifier',
+          name: 'PolygonZkEvmVerifier (current RollupType 5)',
           description:
             'Polygon zkEVM utilizes [PIL-STARK](https://github.com/0xPolygonHermez/pil-stark) as the main proving stack for their system. PIL-STARK is an implementation of the [eSTARK](https://eprint.iacr.org/2023/474) protocol. The circuits and the computations are represented using the PIL and zkASM custom languages. The protocol makes use of recursive proof aggregation. The final eSTARK proof is wrapped in a fflonk proof.',
           verified: 'no',
           contractAddress: EthereumAddress(
-            '0x0775e11309d75aA6b0967917fB0213C5673eDf81',
+            '0xc521580cd8586Cc688A7430F9DcE0f6A803F2883',
           ),
           chainId: ChainId.ETHEREUM,
           subVerifiers: [
             {
               name: 'Final wrap',
               proofSystem: 'fflonk',
-              mainArithmetization: 'Plonk',
+              mainArithmetization: 'Plonkish',
               mainPCS: 'KZG-fflonk',
               trustedSetup: 'Powers of Tau 28',
             },
@@ -263,11 +251,46 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
               trustedSetup: 'None',
             },
             {
-              name: 'Main circuit',
+              name: 'Polygon zkEVM ROM',
               proofSystem: 'eSTARK',
               mainArithmetization: 'eAIR',
               mainPCS: 'FRI',
               trustedSetup: 'None',
+              link: 'https://github.com/0xPolygonHermez/zkevm-rom',
+            },
+          ],
+        },
+        {
+          name: 'PolygonZkEvmVerifier (old RollupType 3)',
+          description:
+            'Polygon zkEVM utilizes [PIL-STARK](https://github.com/0xPolygonHermez/pil-stark) as the main proving stack for their system. PIL-STARK is an implementation of the [eSTARK](https://eprint.iacr.org/2023/474) protocol. The circuits and the computations are represented using the PIL and zkASM custom languages. The protocol makes use of recursive proof aggregation. The final eSTARK proof is wrapped in a fflonk proof.',
+          verified: 'no',
+          contractAddress: EthereumAddress(
+            '0x0775e11309d75aA6b0967917fB0213C5673eDf81',
+          ),
+          chainId: ChainId.ETHEREUM,
+          subVerifiers: [
+            {
+              name: 'Final wrap',
+              proofSystem: 'fflonk',
+              mainArithmetization: 'Plonkish',
+              mainPCS: 'KZG-fflonk',
+              trustedSetup: 'Powers of Tau 28',
+            },
+            {
+              name: 'Aggregation circuit',
+              proofSystem: 'eSTARK',
+              mainArithmetization: 'eAIR',
+              mainPCS: 'FRI',
+              trustedSetup: 'None',
+            },
+            {
+              name: 'Polygon zkEVM ROM',
+              proofSystem: 'eSTARK',
+              mainArithmetization: 'eAIR',
+              mainPCS: 'FRI',
+              trustedSetup: 'None',
+              link: 'https://github.com/0xPolygonHermez/zkevm-rom',
             },
           ],
         },
@@ -280,12 +303,14 @@ export const polygonzkevm: Layer2 = polygonCDKStack({
       link: 'https://docs.polygon.technology/zkEVM/architecture/protocol/etrog-upgrade/#etrog-upgrade',
       date: '2024-02-13',
       description: 'Polygon zkEVM is upgraded to the Polygon Etrog version.',
+      type: 'general',
     },
     {
       name: 'Polygon zkEVM Mainnet Beta is Live',
       link: 'https://polygon.technology/blog/polygon-zkevm-mainnet-beta-is-live?utm_source=twitter&utm_medium=social&utm_campaign=zkevm-launch&utm_term=mainnet-beta-live&utm_content=blog',
       date: '2023-03-27T00:00:00Z',
       description: 'Polygon zkEVM public beta launched.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [

@@ -1,6 +1,8 @@
-import { assert, Logger } from '@l2beat/backend-tools'
-import { DiscoveryConfig, DiscoveryDiff } from '@l2beat/discovery'
+import { Logger } from '@l2beat/backend-tools'
+import { DiscoveryDiff } from '@l2beat/discovery'
 import {
+  assert,
+  ChainConverter,
   ChainId,
   EthereumAddress,
   UnixTime,
@@ -8,14 +10,14 @@ import {
 } from '@l2beat/shared-pure'
 import { isEmpty } from 'lodash'
 
+import { isDiscoveryDriven, layer2s, layer3s } from '@l2beat/config'
+import { Database } from '@l2beat/database'
 import {
   Channel,
   DiscordClient,
   MAX_MESSAGE_LENGTH,
 } from '../../peripherals/discord/DiscordClient'
-import { ChainConverter } from '../../tools/ChainConverter'
 import { fieldThrottleDiff } from './fieldThrottleDiff'
-import { UpdateNotifierRepository } from './repositories/UpdateNotifierRepository'
 import { diffToMessage } from './utils/diffToMessage'
 import { filterDiff } from './utils/filterDiff'
 import { isNineAM } from './utils/isNineAM'
@@ -35,7 +37,7 @@ const HOUR_RANGE = 12
 
 export class UpdateNotifier {
   constructor(
-    private readonly updateNotifierRepository: UpdateNotifierRepository,
+    private readonly db: Database,
     private readonly discordClient: DiscordClient | undefined,
     private readonly chainConverter: ChainConverter,
     private readonly logger: Logger,
@@ -46,14 +48,13 @@ export class UpdateNotifier {
   async handleUpdate(
     name: string,
     diff: DiscoveryDiff[],
-    config: DiscoveryConfig | undefined,
     blockNumber: number,
     chainId: ChainId,
     dependents: string[],
     unknownContracts: EthereumAddress[],
   ) {
     const nonce = await this.getInternalMessageNonce()
-    await this.updateNotifierRepository.add({
+    await this.db.updateNotifier.insert({
       projectName: name,
       diff,
       blockNumber: blockNumber,
@@ -61,7 +62,7 @@ export class UpdateNotifier {
     })
 
     const timeFence = UnixTime.now().add(-HOUR_RANGE, 'hours')
-    const previousRecords = await this.updateNotifierRepository.getNewerThan(
+    const previousRecords = await this.db.updateNotifier.getNewerThan(
       timeFence,
       name,
       chainId,
@@ -81,7 +82,6 @@ export class UpdateNotifier {
     const message = diffToMessage(
       name,
       throttled,
-      config,
       blockNumber,
       this.chainConverter.toName(chainId),
       dependents,
@@ -101,7 +101,6 @@ export class UpdateNotifier {
     const filteredMessage = diffToMessage(
       name,
       filteredDiff,
-      config,
       blockNumber,
       this.chainConverter.toName(chainId),
       dependents,
@@ -114,7 +113,7 @@ export class UpdateNotifier {
   }
 
   async getInternalMessageNonce() {
-    const latestId = await this.updateNotifierRepository.findLatestId()
+    const latestId = await this.db.updateNotifier.findLatestId()
 
     if (latestId === undefined) {
       return 0
@@ -240,8 +239,69 @@ function flattenReminders(
   return entries
 }
 
+export function generateTemplatizedStatus(): string {
+  const providers: string[] = [
+    ...new Set(
+      layer2s
+        .filter((l2) => !l2.isUpcoming && !l2.isArchived && !l2.isUnderReview)
+        .map((l2) => l2.display.provider?.toString())
+        .concat(
+          layer3s
+            .filter(
+              (l3) => !l3.isUpcoming && !l3.isArchived && !l3.isUnderReview,
+            )
+            .map((l3) => l3.display.provider?.toString()),
+        )
+        .filter((p) => p !== undefined),
+    ),
+  ]
+
+  const entries: {
+    provider: string
+    projectCount: number
+    fullyTemplatizedCount: number
+  }[] = []
+
+  for (const provider of providers) {
+    const isFullyTemplatizedL2 = layer2s
+      .filter((l2) => l2.display.provider === provider)
+      .filter((l2) => !l2.isUpcoming && !l2.isArchived && !l2.isUnderReview)
+      .map((l2) => isDiscoveryDriven(l2))
+    const isFullyTemplatizedL3 = layer3s
+      .filter((l3) => l3.display.provider === provider)
+      .filter((l3) => !l3.isUpcoming && !l3.isArchived && !l3.isUnderReview)
+      .map((l3) => isDiscoveryDriven(l3))
+    const isFullyTemplatized = isFullyTemplatizedL2.concat(isFullyTemplatizedL3)
+
+    const fullyTemplatizedCount = isFullyTemplatized.filter((t) => t).length
+    entries.push({
+      provider,
+      projectCount: isFullyTemplatized.length,
+      fullyTemplatizedCount,
+    })
+  }
+
+  const headers = ['Provider', 'Templatization status']
+  const rows = []
+  for (const e of entries.sort((a, b) => b.projectCount - a.projectCount)) {
+    const percentage = (
+      (e.fullyTemplatizedCount / e.projectCount) *
+      100
+    ).toFixed()
+    const templatizationString = `${e.fullyTemplatizedCount}/${e.projectCount} (${percentage}%)`
+
+    rows.push([e.provider, templatizationString])
+  }
+
+  const table = formatAsAsciiTable(headers, rows)
+
+  return `\n### Templatized projects:\n\`\`\`${table}\`\`\`\n`
+}
+
 function getDailyReminderHeader(timestamp: UnixTime): string {
-  return `# Daily bot report @ ${timestamp.toYYYYMMDD()}\n\n:x: Detected changes with following severities :x:`
+  const templatizedProjectsString = generateTemplatizedStatus()
+
+  return `# Daily bot report @ ${timestamp.toYYYYMMDD()}\n${templatizedProjectsString}\n:x: Detected changes with following severities :x:`
 }
 
 function countDiff(diff: DiscoveryDiff[]): number {

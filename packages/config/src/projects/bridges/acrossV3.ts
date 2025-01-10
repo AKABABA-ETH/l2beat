@@ -26,6 +26,7 @@ const bondSymbol = discovery.getContractValue<string>('BondToken', 'symbol')
 export const acrossV3: Bridge = {
   type: 'bridge',
   id: PROJECT_ID,
+  createdAt: new UnixTime(1712746402), // 2024-04-10T10:53:22Z
   display: {
     name: 'Across V3',
     slug: 'acrossv3',
@@ -34,6 +35,7 @@ export const acrossV3: Bridge = {
       websites: ['https://across.to/'],
       apps: ['https://app.across.to/bridge'],
       repositories: ['https://github.com/across-protocol/contracts-v2'],
+      documentation: ['https://docs.across.to/'],
       socialMedia: [
         'https://twitter.com/AcrossProtocol',
         'https://discord.gg/across',
@@ -44,59 +46,99 @@ export const acrossV3: Bridge = {
     description:
       'Across V3 is a cross-chain optimistic bridge that uses actors called Relayers to fulfill user transfer requests on the destination chain.',
     detailedDescription:
-      'Relayers are later reimbursed by providing a proof of their action to an Optimistic Oracle on Ethereum. Relayer reimbursements over a specific block range are bundled and posted on-chain as merkle roots which uniquely identify the set of all repayments and rebalance instructions. The architecture leverages a single liquidity pool on Ethereum and separate deposit/reimburse pools on destination chains that are rebalanced using canonical bridges.',
+      'Relayers are later reimbursed by providing a proof of their action to an Optimistic Oracle on Ethereum. Relayer reimbursements over a specific block range are bundled and posted onchain as merkle roots which uniquely identify the set of all repayments and rebalance instructions. The architecture leverages a single liquidity pool on Ethereum and separate deposit/reimburse pools on destination chains that are rebalanced using canonical bridges.',
   },
   config: {
     escrows: [
       discovery.getEscrowDetails({
         address: EthereumAddress('0xc186fA914353c44b2E33eBE05f21846F1048bEda'),
         sinceTimestamp: new UnixTime(1653124620),
-        tokens: [
-          'USDC',
-          'WETH',
-          'WBTC',
-          'DAI',
-          'BAL',
-          'UMA',
-          'BOBA',
-          'USDT',
-          'ACX',
-        ],
+        tokens: '*',
       }),
       discovery.getEscrowDetails({
         address: EthereumAddress('0x5c7BCd6E7De5423a257D81B442095A1a6ced35C5'),
         sinceTimestamp: new UnixTime(1682355155),
-        tokens: [
-          'USDC',
-          'WETH',
-          'WBTC',
-          'DAI',
-          'BAL',
-          'UMA',
-          'BOBA',
-          'USDT',
-          'ACX',
-        ],
+        tokens: '*',
       }),
       {
         // This bridge is inactive, but we keep it
         // in case we have to gather historic data
         address: EthereumAddress('0x4D9079Bb4165aeb4084c526a32695dCfd2F77381'),
         sinceTimestamp: new UnixTime(1653167083),
-        tokens: [
-          'USDC',
-          'WETH',
-          'WBTC',
-          'DAI',
-          'BAL',
-          'UMA',
-          'BOBA',
-          'USDT',
-          'ACX',
-        ],
+        tokens: '*',
         isHistorical: true,
         chain: 'ethereum',
       },
+      // multichain bridges from https://docs.across.to/reference/contract-addresses/
+      {
+        address: EthereumAddress('0xe35e9842fceaCA96570B734083f4a58e8F7C5f2A'),
+        sinceTimestamp: new UnixTime(1682355537),
+        tokens: '*',
+        chain: 'arbitrum',
+      },
+      {
+        address: EthereumAddress('0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64'),
+        sinceTimestamp: new UnixTime(1691119103),
+        tokens: '*',
+        chain: 'base',
+      },
+      {
+        address: EthereumAddress('0x2D509190Ed0172ba588407D4c2df918F955Cc6E1'),
+        sinceTimestamp: new UnixTime(1719958375),
+        tokens: '*',
+        chain: 'blast',
+      },
+      {
+        address: EthereumAddress('0x7E63A5f1a8F0B4d0934B2f2327DAED3F6bb2ee75'),
+        sinceTimestamp: new UnixTime(1709742598),
+        tokens: '*',
+        chain: 'linea',
+      },
+      // lisk is not conf'd yet
+      // {
+      //   address: EthereumAddress('0x9552a0a6624A23B848060AE5901659CDDa1f83f8'),
+      //   sinceTimestamp: new UnixTime(1719933465),
+      //   tokens: '*',
+      //   chain: 'lisk',
+      // },
+      {
+        address: EthereumAddress('0x3baD7AD0728f9917d1Bf08af5782dCbD516cDd96'),
+        sinceTimestamp: new UnixTime(1716253957),
+        tokens: '*',
+        chain: 'mode',
+      },
+      {
+        address: EthereumAddress('0x6f26Bf09B1C792e3228e5467807a900A503c0281'),
+        sinceTimestamp: new UnixTime(1682354696),
+        tokens: '*',
+        chain: 'optimism',
+      },
+      // no chainconf yet
+      // {
+      //   address: EthereumAddress('0x13fDac9F9b4777705db45291bbFF3c972c6d1d97'),
+      //   sinceTimestamp: new UnixTime(1723209335),
+      //   tokens: '*',
+      //   chain: 'redstone',
+      // },
+      {
+        address: EthereumAddress('0x3baD7AD0728f9917d1Bf08af5782dCbD516cDd96'),
+        sinceTimestamp: new UnixTime(1721124038),
+        tokens: '*',
+        chain: 'scroll',
+      },
+      {
+        address: EthereumAddress('0xE0B015E54d54fc84a6cB9B666099c46adE9335FF'),
+        sinceTimestamp: new UnixTime(1691141266),
+        tokens: '*',
+        chain: 'zksync2',
+      },
+      // no chainconf yet
+      // {
+      //   address: EthereumAddress('0x13fDac9F9b4777705db45291bbFF3c972c6d1d97'),
+      //   sinceTimestamp: new UnixTime(1723459573),
+      //   tokens: '*',
+      //   chain: 'zora',
+      // },
     ],
   },
   riskView: {
@@ -183,12 +225,10 @@ export const acrossV3: Bridge = {
         'BondToken',
         `Token (${bondSymbol}) used to bond the data worker for proposing Relayer refund bundles. It also used as a required bond to dispute a bundle proposal. Currently, the bond amount is set to ${bondAmount} ${bondSymbol}.`,
       ),
-      {
-        name: 'UMAOptimisticOracle',
-        address: EthereumAddress('0xeE3Afe347D5C74317041E2618C49534dAf887c24'),
-        description:
-          'UMA Optimistic Oracle smart contract. It registers dispute requests, status of disputes, and dispute settlement.',
-      },
+      discovery.getContractDetails(
+        'UMAOptimisticOracle',
+        'UMA Optimistic Oracle smart contract. It registers dispute requests, status of disputes, and dispute settlement.',
+      ),
       discovery.getContractDetails(
         'GovernorV2',
         'Owner of the Optimistic Oracle. This contract is used to execute a proposed UMA governance action that has been approved by UMA token holders.',
@@ -213,28 +253,30 @@ export const acrossV3: Bridge = {
       discovery.getContractDetails('Optimism_Adapter'),
       discovery.getContractDetails('Polygon_Adapter'),
       discovery.getContractDetails('ZkSync_Adapter'),
+      discovery.getContractDetails('Lisk_Adapter'),
+      discovery.getContractDetails('Scroll_Adapter'),
+      discovery.getContractDetails('Redstone_Adapter'),
+      discovery.getContractDetails('Zora_Adapter'),
+      discovery.getContractDetails('WorldChain_Adapter'),
+      discovery.getContractDetails('Alephzero_Adapter'),
+      discovery.getContractDetails('Ink_Adapter'),
       discovery.getContractDetails(
         'Ethereum_SpokePool',
         'Contract enabling depositors to transfer assets from Ethereum to L2s, and relayers to fulfill transfer from L2s to Ethereum. Deposit orders are fulfilled by off-chain relayers with the fillV3Relay() function. Relayers are later refunded with destination token out of this contract when the data worker submits a proof that the relayer correctly submitted a relay on this SpokePool.',
       ),
-      {
-        name: 'PolygonTokenBridger',
-        address: EthereumAddress('0x48d990AbDA20afa1fD1da713AbC041B60a922c65'),
-        description:
-          'Contract deployed on Ethereum and Polygon PoS to facilitate token transfers from Polygon to the HubPool.',
-      },
-      {
-        name: 'AcrossConfigStore',
-        address: EthereumAddress('0x3B03509645713718B78951126E0A6de6f10043f5'),
-        description:
-          'Contract storing configurations such as token rate models and minimum transfer thresholds, meant for off-chain consumption.',
-      },
+      discovery.getContractDetails(
+        'PolygonTokenBridger',
+        'Contract deployed on Ethereum and Polygon PoS to facilitate token transfers from Polygon to the HubPool.',
+      ),
+      discovery.getContractDetails(
+        'AcrossConfigStore',
+        'Contract storing configurations such as token rate models and minimum transfer thresholds, meant for off-chain consumption.',
+      ),
     ],
     risks: [
       {
         category: 'Funds can be stolen if',
         text: 'a Spoke Pool contract receives a malicious code upgrade. There is no delay on code upgrades.',
-        isCritical: true,
       },
     ],
   },

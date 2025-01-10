@@ -1,4 +1,376 @@
-Generated with discovered.json: 0x8dd580a52e110f12b93bf6b74ab2ef5c79901134
+Generated with discovered.json: 0x44ab48f71bfdcd945a79d579c492d972aa6299e6
+
+# Diff at Mon, 21 Oct 2024 11:08:50 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@8895d33866f5665c4c710f4ddaa32bfa63cc3c78 block: 20711342
+- current block number: 20711342
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20711342 (main branch discovery), not current.
+
+```diff
+    contract USDC Bridge (0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3) {
+    +++ description: None
+      values.$pastUpgrades.2.2:
++        ["0x8A4e51ff0F2a45899519e6049FB2D1F038Be1e77"]
+      values.$pastUpgrades.2.1:
+-        ["0x8A4e51ff0F2a45899519e6049FB2D1F038Be1e77"]
++        "0x7288e6bd014f04b9aa916599a60854eb8de2106cb95030762a2372751de95922"
+      values.$pastUpgrades.1.2:
++        ["0x8A4e51ff0F2a45899519e6049FB2D1F038Be1e77"]
+      values.$pastUpgrades.1.1:
+-        ["0x8A4e51ff0F2a45899519e6049FB2D1F038Be1e77"]
++        "0x015d716fec0e72b13c6ec480a008653d2402eb0e216c3b1adcb87d13582c6a7a"
+      values.$pastUpgrades.0.2:
++        ["0x6Fd62239f3A441d1898683C5a84ce3681bB42C16"]
+      values.$pastUpgrades.0.1:
+-        ["0x6Fd62239f3A441d1898683C5a84ce3681bB42C16"]
++        "0x25fbb19a94fb450c7254e45b992272c2d6dd6b24692e34e87052621e4df3cfed"
+    }
+```
+
+```diff
+    contract Paradex (0xF338cad020D506e8e3d9B4854986E0EcE6C23640) {
+    +++ description: None
+      values.$pastUpgrades.2.2:
++        ["0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC"]
+      values.$pastUpgrades.2.1:
+-        ["0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC"]
++        "0xe78b11cbf1332af60b8da9b2eaf51ec52cdc5bdc7cc0a89af3c2fbb0936c14d8"
+      values.$pastUpgrades.1.2:
++        ["0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24"]
+      values.$pastUpgrades.1.1:
+-        ["0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24"]
++        "0x7292984e71d89bd82d8555a1060cf741e9090f33874c6bc3b87db6d1352784d0"
+      values.$pastUpgrades.0.2:
++        ["0xA964D693cd45FCBe4303524E0EFe0988cfF5ed08"]
+      values.$pastUpgrades.0.1:
+-        ["0xA964D693cd45FCBe4303524E0EFe0988cfF5ed08"]
++        "0x7862f09db4097dc43ad1972ca9ee11eaf64a1fbfdb21fe6f84ad6b68d4b9fa56"
+    }
+```
+
+Generated with discovered.json: 0x88a9ed2bdb9de6914e7c8cfeae2a6714954671aa
+
+# Diff at Mon, 14 Oct 2024 10:54:12 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 20711342
+- current block number: 20711342
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20711342 (main branch discovery), not current.
+
+```diff
+    contract ParadexImplementationGovernorMultisig (0x0a64d3D7747549aF6d65C225D56ac8f71e436B93) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+```diff
+    contract USDC Bridge (0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a134f478bcc2b72c5f77df62e5b52cd55cefd6329f8e306ac6d28f31d467c2","0xbe08cd77d92ae2b4d333c5d2850e16d06e16d98de2a8435e0a49dc35ad73b915"]
+    }
+```
+
+```diff
+    contract Paradex (0xF338cad020D506e8e3d9B4854986E0EcE6C23640) {
+    +++ description: None
+      sourceHashes:
++        ["0xfd5ac94c5a362e7426efd613abbaca3b838cf7f6089b44d9c0d4f675ca4467b3","0x2738adbe41339934ae57e5c96fb9d7e42a43ba2b112878bc9227cc1c81de8ee6"]
+    }
+```
+
+Generated with discovered.json: 0x3feebd6e9b9d1b6de86173f784d48831f04f959c
+
+# Diff at Tue, 01 Oct 2024 10:54:01 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@bd754dc73c66120164006054f8d25c5fae9cd910 block: 20711342
+- current block number: 20711342
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20711342 (main branch discovery), not current.
+
+```diff
+    contract USDC Bridge (0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2023-08-18T06:47:11.000Z",["0x6Fd62239f3A441d1898683C5a84ce3681bB42C16"]],["2024-05-28T11:01:11.000Z",["0x8A4e51ff0F2a45899519e6049FB2D1F038Be1e77"]],["2024-06-15T09:52:23.000Z",["0x8A4e51ff0F2a45899519e6049FB2D1F038Be1e77"]]]
+      values.$upgradeCount:
++        3
+    }
+```
+
+```diff
+    contract Paradex (0xF338cad020D506e8e3d9B4854986E0EcE6C23640) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2023-07-20T11:05:35.000Z",["0xA964D693cd45FCBe4303524E0EFe0988cfF5ed08"]],["2024-03-13T16:21:59.000Z",["0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24"]],["2024-09-08T16:05:35.000Z",["0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC"]]]
+      values.$upgradeCount:
++        3
+    }
+```
+
+Generated with discovered.json: 0xdc3306b785cc9e7d6a26a2f16a3579d38722b9b2
+
+# Diff at Mon, 09 Sep 2024 06:43:56 GMT:
+
+- author: sekuba (<sekuba@users.noreply.github.com>)
+- comparing to: main@fd881462cca0d7ef4519f907f3c6cfd5fe1cde8f block: 20420390
+- current block number: 20711342
+
+## Description
+
+Aggregator compatibility upgrade. (See also recent Starknet upgrade to the same implementation / programHashes)
+- add aggregatorProgramHash and support aggregation
+- add multiple blob support
+
+## Watched changes
+
+```diff
+    contract Paradex (0xF338cad020D506e8e3d9B4854986E0EcE6C23640) {
+    +++ description: None
+      values.$implementation:
+-        "0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24"
++        "0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC"
+      values.identify:
+-        "StarkWare_Starknet_2024_8"
++        "StarkWare_Starknet_2024_9"
+      values.implementation:
+-        "0x6E0aCfDC3cf17A7f99ed34Be56C3DFb93F464e24"
++        "0x47103A9b801eB6a63555897d399e4b7c1c8Eb5bC"
++++ description: The L2 programHash which is a hash of the L2 state machine logic. Liveness config MUST be changed in the .ts as soon as this is updated.
++++ severity: HIGH
+      values.programHash:
+-        "3383082961563516565935611087683915026448707331436034043529592588079494402084"
++        "853638403225561750106379562222782223909906501242604214771127703946595519856"
+      values.aggregatorProgramHash:
++        "1161178844461337253856226043908368523817098764221830529880464854589141231910"
+    }
+```
+
+## Source code changes
+
+```diff
+.../{.flat@20420390 => .flat}/Paradex/Starknet.sol | 297 ++++++++++++++++-----
+ 1 file changed, 223 insertions(+), 74 deletions(-)
+```
+
+Generated with discovered.json: 0x0e0b96c8f79c3e7a254842be941a4c2db301e2e0
+
+# Diff at Fri, 30 Aug 2024 07:54:25 GMT:
+
+- author: Adrian Adamiak (<adrian@adamiak.net>)
+- comparing to: main@6c1bd1f41fadf5f2cb1c1805b5a2c6138a3ed35a block: 20420390
+- current block number: 20420390
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20420390 (main branch discovery), not current.
+
+```diff
+    contract ParadexImplementationGovernorMultisig (0x0a64d3D7747549aF6d65C225D56ac8f71e436B93) {
+    +++ description: None
+      receivedPermissions.0.via:
+-        []
+    }
+```
+
+Generated with discovered.json: 0xd5cc157e69ce6b3e0ed1db41e96eeb1707d6d0e1
+
+# Diff at Wed, 21 Aug 2024 10:04:53 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@2f6dde3357bf5d79196b6e94f79d853a6c4ec72b block: 20420390
+- current block number: 20420390
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20420390 (main branch discovery), not current.
+
+```diff
+    contract ParadexImplementationGovernorMultisig (0x0a64d3D7747549aF6d65C225D56ac8f71e436B93) {
+    +++ description: None
+      assignedPermissions:
+-        {"upgrade":["0xF338cad020D506e8e3d9B4854986E0EcE6C23640"]}
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0xF338cad020D506e8e3d9B4854986E0EcE6C23640","via":[]}]
+    }
+```
+
+```diff
+    contract USDC Bridge (0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0xa1F2ecaC6E3E593ED58B9ac5fa4B97962892E77c","via":[]}]
+    }
+```
+
+```diff
+    contract Paradex (0xF338cad020D506e8e3d9B4854986E0EcE6C23640) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0x0a64d3D7747549aF6d65C225D56ac8f71e436B93","via":[]},{"permission":"upgrade","target":"0x2E6fe05FE3f9a6622092Fd75439D53f01eb8A74f","via":[]}]
+    }
+```
+
+Generated with discovered.json: 0x10f525307b98b5fe66ef9ce9c3a491523cb6e8bc
+
+# Diff at Fri, 09 Aug 2024 10:11:17 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 20420390
+- current block number: 20420390
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20420390 (main branch discovery), not current.
+
+```diff
+    contract ParadexImplementationGovernorMultisig (0x0a64d3D7747549aF6d65C225D56ac8f71e436B93) {
+    +++ description: None
+      assignedPermissions.admin:
+-        ["0xF338cad020D506e8e3d9B4854986E0EcE6C23640"]
+      assignedPermissions.upgrade:
++        ["0xF338cad020D506e8e3d9B4854986E0EcE6C23640"]
+      values.$multisigThreshold:
+-        "2 of 5 (40%)"
+      values.getOwners:
+-        ["0x64F4396bb0669C72858Cc50C779b48EB25F45770","0x2871B956bC19D25961E9a7519f32D7fDaA21B403","0x804d60CB1ade94511f7915A2062948685Ca8C81f","0xBF6aAc7Ae78B351180AD42b3dc5087eAd886B4A6","0x59232aC80E6d403b6381393e52f4665ECA328558"]
+      values.getThreshold:
+-        2
+      values.$members:
++        ["0x64F4396bb0669C72858Cc50C779b48EB25F45770","0x2871B956bC19D25961E9a7519f32D7fDaA21B403","0x804d60CB1ade94511f7915A2062948685Ca8C81f","0xBF6aAc7Ae78B351180AD42b3dc5087eAd886B4A6","0x59232aC80E6d403b6381393e52f4665ECA328558"]
+      values.$threshold:
++        2
+      values.multisigThreshold:
++        "2 of 5 (40%)"
+    }
+```
+
+Generated with discovered.json: 0x19d674117e91560c9f20fdaf4005960604374454
+
+# Diff at Tue, 30 Jul 2024 15:53:58 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@51c652e40232eac8e60e9b31aa56f09071495fef block: 20110229
+- current block number: 20420390
+
+## Description
+
+Accesscontrol roles of APP_GOVERNOR and APP_ROLE_ADMIN are given to the EOA that already has the upgrade admin and GOVERNANCE_ADMIN roles, not adding any new net permissions. `maxTotalBalance' raised from 20M to 30M USDC.
+
+## Watched changes
+
+```diff
+    contract USDC Bridge (0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3) {
+    +++ description: None
+      values.accessControl.APP_GOVERNOR.members.0:
++        "0xa1F2ecaC6E3E593ED58B9ac5fa4B97962892E77c"
+      values.accessControl.APP_ROLE_ADMIN.members.0:
++        "0xa1F2ecaC6E3E593ED58B9ac5fa4B97962892E77c"
++++ description: Maximum bridge balance allowed (currentBalance + depositAmount <= maxTotalBalance)
++++ severity: MEDIUM
+      values.maxTotalBalance:
+-        20000000000000
++        30000000000000
+    }
+```
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20110229 (main branch discovery), not current.
+
+```diff
+    contract USDC Bridge (0xE3cbE3A636AB6A754e9e41B12b09d09Ce9E53Db3) {
+    +++ description: None
+      fieldMeta:
++        {"maxTotalBalance":{"severity":"MEDIUM","description":"Maximum bridge balance allowed (currentBalance + depositAmount <= maxTotalBalance)"}}
+    }
+```
+
+```diff
+    contract Paradex (0xF338cad020D506e8e3d9B4854986E0EcE6C23640) {
+    +++ description: None
+      fieldMeta:
++        {"programHash":{"severity":"HIGH","description":"The L2 programHash which is a hash of the L2 state machine logic. Liveness config MUST be changed in the .ts as soon as this is updated."}}
+    }
+```
+
+Generated with discovered.json: 0xba9734e5204d6418a6b64ea98fb1b0a818f3c2a6
+
+# Diff at Thu, 18 Jul 2024 10:32:31 GMT:
+
+- author: Adrian Adamiak (<adrian@adamiak.net>)
+- comparing to: main@d89fe52cb65d643cef712d1d7910564a7acf2dce block: 20110229
+- current block number: 20110229
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20110229 (main branch discovery), not current.
+
+```diff
+    contract ParadexImplementationGovernorMultisig (0x0a64d3D7747549aF6d65C225D56ac8f71e436B93) {
+    +++ description: None
+      assignedPermissions:
++        {"admin":["0xF338cad020D506e8e3d9B4854986E0EcE6C23640"]}
+    }
+```
+
+Generated with discovered.json: 0x093f5b4f3898a34ecc9a8ea8c23c6863f5bd5dfb
 
 # Diff at Mon, 17 Jun 2024 08:11:27 GMT:
 

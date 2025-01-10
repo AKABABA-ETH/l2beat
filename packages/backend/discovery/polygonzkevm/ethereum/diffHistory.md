@@ -1,4 +1,450 @@
-Generated with discovered.json: 0x22d2b70e2d10cf3346ebd1f527f35330baa3bae9
+Generated with discovered.json: 0x211f698e7103ca1f1041c810857bdada90077456
+
+# Diff at Mon, 21 Oct 2024 11:09:04 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@8895d33866f5665c4c710f4ddaa32bfa63cc3c78 block: 20878349
+- current block number: 20878349
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20878349 (main branch discovery), not current.
+
+```diff
+    contract daiBridge (0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98) {
+    +++ description: None
+      values.$pastUpgrades.0.2:
++        ["0xF684f2CB299cCDaAB483ffc1573B82f40C6b775b"]
+      values.$pastUpgrades.0.1:
+-        ["0xF684f2CB299cCDaAB483ffc1573B82f40C6b775b"]
++        "0x2c7c12aeaf738701352017fc49f5268db9632b84bdc6f76474e6776371f53b7e"
+    }
+```
+
+```diff
+    contract PolygonZkEVMEtrog (0x519E42c24163192Dca44CD3fBDCEBF6be9130987) {
+    +++ description: None
+      values.$pastUpgrades.3.2:
++        ["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]
+      values.$pastUpgrades.3.1:
+-        ["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]
++        "0x069690e412d29d96bc94d6bf5c816e43bb401cbf948f3e3cad261e073e2d2afe"
+      values.$pastUpgrades.2.2:
++        ["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]
+      values.$pastUpgrades.2.1:
+-        ["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]
++        "0x67e892c44b9d14709693e74dd5e17fb40d98c8c2cc1c5330265e758e8958a01b"
+      values.$pastUpgrades.1.2:
++        ["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]
+      values.$pastUpgrades.1.1:
+-        ["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]
++        "0xeba0bc3b2674c961c5a998f22f789ea610a7c3e57e622a4dd951cca2702b8be3"
+      values.$pastUpgrades.0.2:
++        ["0x79BCB82B35A335cD8A8Ec433b304a0c91f67CDE0"]
+      values.$pastUpgrades.0.1:
+-        ["0x79BCB82B35A335cD8A8Ec433b304a0c91f67CDE0"]
++        "0x4e3fc80071c2d0852584cb59bfcd784519bfb3582aa3334098a4b32b5f6aaef4"
+    }
+```
+
+```diff
+    contract usdcBridge (0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB) {
+    +++ description: None
+      values.$pastUpgrades.0.2:
++        ["0xA4e6762eAAf259DA74696F46fAAF79bA9DdE14E6"]
+      values.$pastUpgrades.0.1:
+-        ["0xA4e6762eAAf259DA74696F46fAAF79bA9DdE14E6"]
++        "0x6402dc60bb9c4f704f126f4b11e40b33c287b4ac7f73ea60c50d7452d52ce735"
+    }
+```
+
+```diff
+    contract wstETHBridge (0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01) {
+    +++ description: None
+      values.$pastUpgrades.0.2:
++        ["0x18FED1E19dC564DC917D203be9d40790472D22e9"]
+      values.$pastUpgrades.0.1:
+-        ["0x18FED1E19dC564DC917D203be9d40790472D22e9"]
++        "0x12c54f4243dc8e3b41be87984b78248eecbf98b92e30ff10b487be2599d7e3a1"
+    }
+```
+
+Generated with discovered.json: 0xa52a6e95e97f6f81ea4e73f44b254a0cf5482586
+
+# Diff at Mon, 14 Oct 2024 10:54:24 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 20878349
+- current block number: 20878349
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20878349 (main branch discovery), not current.
+
+```diff
+    contract daiBridge (0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98) {
+    +++ description: None
+      sourceHashes:
++        ["0x612fcbfe67b3a142750d4b383ec80c3df15e053a88579b6d54660253f4c19baa","0x608730e7656b64bd18a9a04f2b0024b9dc95d2145d3e6cde1f5d590f31f4fff4"]
+    }
+```
+
+```diff
+    contract PolygonZkEVMEtrog (0x519E42c24163192Dca44CD3fBDCEBF6be9130987) {
+    +++ description: None
+      sourceHashes:
++        ["0xa25e4c87882527d75fa2198c374939dd0c3b3fd509be89ee51c9b206bc62bdc4","0xf303702e52579ed796873f92868d2ebedd55360bf53043519e6061b19df3eb4b"]
+    }
+```
+
+```diff
+    contract usdcBridge (0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB) {
+    +++ description: None
+      sourceHashes:
++        ["0x74f36c1c292d2992d00c72ffd2ff8a4b8648a1c9058e63210c2742186a9daf50","0xefc52c461b0de070fb85381ef77033d1a68b13e59d2ca477477b766802ab1164"]
+    }
+```
+
+```diff
+    contract PolygonzkEVMVerifier (0xc521580cd8586Cc688A7430F9DcE0f6A803F2883) {
+    +++ description: None
+      sourceHashes:
++        ["0x1b9299553467d8c5557640b4aa02efa58c4fd2cec8e008db1a70ce0a1c5a131b"]
+    }
+```
+
+```diff
+    contract wstETHBridge (0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01) {
+    +++ description: None
+      sourceHashes:
++        ["0x612fcbfe67b3a142750d4b383ec80c3df15e053a88579b6d54660253f4c19baa","0x768cec78a852b6918281dca4675713010a4e764f5eb658f4f98c8ae258523e62"]
+    }
+```
+
+```diff
+    contract EscrowsAdmin (0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+Generated with discovered.json: 0x917901b9460d0dd2a0523a068882d3b1aa9a7536
+
+# Diff at Wed, 02 Oct 2024 14:16:59 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@d101c705b5f4fd0b3af2e251678b85e1005b31d8 block: 20871583
+- current block number: 20878349
+
+## Description
+
+Config related.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20871583 (main branch discovery), not current.
+
+```diff
+    contract daiBridge (0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2023-09-20T08:44:59.000Z",["0xF684f2CB299cCDaAB483ffc1573B82f40C6b775b"]]]
+    }
+```
+
+```diff
+    contract PolygonZkEVMEtrog (0x519E42c24163192Dca44CD3fBDCEBF6be9130987) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2024-01-27T14:16:11.000Z",["0x79BCB82B35A335cD8A8Ec433b304a0c91f67CDE0"]],["2024-03-14T12:25:35.000Z",["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]],["2024-03-24T23:36:47.000Z",["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]],["2024-10-01T14:22:59.000Z",["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]]]
+    }
+```
+
+```diff
+    contract usdcBridge (0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2023-11-16T09:12:59.000Z",["0xA4e6762eAAf259DA74696F46fAAF79bA9DdE14E6"]]]
+    }
+```
+
+```diff
+    contract wstETHBridge (0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2023-12-30T14:05:35.000Z",["0x18FED1E19dC564DC917D203be9d40790472D22e9"]]]
+    }
+```
+
+Generated with discovered.json: 0x469f25ff62470643e6bf703e44cf4a67fc26b66f
+
+# Diff at Tue, 01 Oct 2024 15:37:34 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@974999225bba0722b5e81edd4c1b80928d80ef33 block: 19976289
+- current block number: 20871583
+
+## Description
+
+PolygonZkEVMEtrog upgrades to RollupType 5. The consensus implementation is identical but the verifier was upgraded for the [Eggfruit upgrade](https://polygon.technology/blog/eggfruit-upgrade-incoming-polygon-zkevm-mainnet-beta-will-see-the-cdk-erigon-sequencer-go-live). TLDR: New Sequencer algo, double zkCounters for proofs. New verifier added to ZKCatalog
+
+## Watched changes
+
+```diff
+    contract PolygonZkEVMEtrog (0x519E42c24163192Dca44CD3fBDCEBF6be9130987) {
+    +++ description: None
+      values.$upgradeCount:
+-        3
++        4
+    }
+```
+
+```diff
++   Status: CREATED
+    contract PolygonzkEVMVerifier (0xc521580cd8586Cc688A7430F9DcE0f6A803F2883)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../ethereum/.flat/PolygonzkEVMVerifier.sol        | 1225 ++++++++++++++++++++
+ 1 file changed, 1225 insertions(+)
+```
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19976289 (main branch discovery), not current.
+
+```diff
+-   Status: DELETED
+    contract PolygonzkEVMVerifier (0x0775e11309d75aA6b0967917fB0213C5673eDf81)
+    +++ description: None
+```
+
+Generated with discovered.json: 0x1dcae3247ace42c350c893c2e841c55da2fea9e5
+
+# Diff at Fri, 30 Aug 2024 07:54:46 GMT:
+
+- author: Adrian Adamiak (<adrian@adamiak.net>)
+- comparing to: main@6c1bd1f41fadf5f2cb1c1805b5a2c6138a3ed35a block: 19976289
+- current block number: 19976289
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19976289 (main branch discovery), not current.
+
+```diff
+    contract EscrowsAdmin (0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904) {
+    +++ description: None
+      receivedPermissions.2.via:
+-        []
+      receivedPermissions.1.via:
+-        []
+      receivedPermissions.0.via:
+-        []
+    }
+```
+
+Generated with discovered.json: 0xb8ebb36c10a462b3828a207f6ce26e0f4764f292
+
+# Diff at Fri, 23 Aug 2024 09:54:18 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@67597c7d6c810bc726594446890178150240711e block: 19976289
+- current block number: 19976289
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19976289 (main branch discovery), not current.
+
+```diff
+    contract daiBridge (0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98) {
+    +++ description: None
+      values.$upgradeCount:
++        1
+    }
+```
+
+```diff
+    contract PolygonZkEVMEtrog (0x519E42c24163192Dca44CD3fBDCEBF6be9130987) {
+    +++ description: None
+      values.$upgradeCount:
++        3
+    }
+```
+
+```diff
+    contract usdcBridge (0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB) {
+    +++ description: None
+      values.$upgradeCount:
++        1
+    }
+```
+
+```diff
+    contract wstETHBridge (0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01) {
+    +++ description: None
+      values.$upgradeCount:
++        1
+    }
+```
+
+Generated with discovered.json: 0xb79a429b56b8f47389871952082996dfa58b20b8
+
+# Diff at Wed, 21 Aug 2024 10:05:07 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@2f6dde3357bf5d79196b6e94f79d853a6c4ec72b block: 19976289
+- current block number: 19976289
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19976289 (main branch discovery), not current.
+
+```diff
+    contract daiBridge (0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904","via":[]}]
+    }
+```
+
+```diff
+    contract usdcBridge (0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904","via":[]}]
+    }
+```
+
+```diff
+    contract wstETHBridge (0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904","via":[]}]
+    }
+```
+
+```diff
+    contract EscrowsAdmin (0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904) {
+    +++ description: None
+      assignedPermissions:
+-        {"upgrade":["0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98","0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB","0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01"]}
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98","via":[]},{"permission":"upgrade","target":"0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB","via":[]},{"permission":"upgrade","target":"0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01","via":[]}]
+    }
+```
+
+Generated with discovered.json: 0x901d413d0e95ba5a32961d0cd486c42bc5283372
+
+# Diff at Fri, 09 Aug 2024 12:01:29 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@bf40aa32f030fd312056ca0ef198c8550467d1d7 block: 19976289
+- current block number: 19976289
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19976289 (main branch discovery), not current.
+
+```diff
+    contract EscrowsAdmin (0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904) {
+    +++ description: None
+      assignedPermissions.upgrade.2:
+-        "0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98"
++        "0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01"
+      assignedPermissions.upgrade.1:
+-        "0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01"
++        "0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB"
+      assignedPermissions.upgrade.0:
+-        "0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB"
++        "0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98"
+    }
+```
+
+Generated with discovered.json: 0x9f68fdc6fb4ac14493a880e395842dc1abdf55d3
+
+# Diff at Fri, 09 Aug 2024 10:11:30 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 19976289
+- current block number: 19976289
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19976289 (main branch discovery), not current.
+
+```diff
+    contract EscrowsAdmin (0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904) {
+    +++ description: None
+      assignedPermissions.admin:
+-        ["0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98","0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB","0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01"]
+      assignedPermissions.upgrade:
++        ["0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB","0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01","0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98"]
+      values.$multisigThreshold:
+-        "5 of 10 (50%)"
+      values.getOwners:
+-        ["0x099198353446A9E3a20672eDC1Bd461E978842c3","0xb771380f912E4b5F6beDdf81314C383c13F16ab5","0xD09971D8ed6C6a5e57581e90d593ee5B94e348D4","0xc4591c41e01a7a654B5427f39Bbd1dEe5bD45D1D","0xE6Ee0F8D81170160d50ed77b9C91E6219473d43a","0xd1B856ee12Bd00922cae8DD86ab068f8c0F95224","0xF53D1fB2EeD22Cf1E8f7E90Da7f1CAe88344065F","0xf56AE6520776934127AB68438d1b4652BCe07F8f","0x4DE44Aa0Ef9DB64DF3eB3465d35D73d0409d44ed","0x4E83124eD15b13265240B61EC9627797CCE1032E"]
+      values.getThreshold:
+-        5
+      values.$members:
++        ["0x099198353446A9E3a20672eDC1Bd461E978842c3","0xb771380f912E4b5F6beDdf81314C383c13F16ab5","0xD09971D8ed6C6a5e57581e90d593ee5B94e348D4","0xc4591c41e01a7a654B5427f39Bbd1dEe5bD45D1D","0xE6Ee0F8D81170160d50ed77b9C91E6219473d43a","0xd1B856ee12Bd00922cae8DD86ab068f8c0F95224","0xF53D1fB2EeD22Cf1E8f7E90Da7f1CAe88344065F","0xf56AE6520776934127AB68438d1b4652BCe07F8f","0x4DE44Aa0Ef9DB64DF3eB3465d35D73d0409d44ed","0x4E83124eD15b13265240B61EC9627797CCE1032E"]
+      values.$threshold:
++        5
+      values.multisigThreshold:
++        "5 of 10 (50%)"
+    }
+```
+
+Generated with discovered.json: 0xdc92728d1ede1255c3c1eda9b00f3d1e5bf76f6f
 
 # Diff at Wed, 29 May 2024 15:03:42 GMT:
 

@@ -1,4 +1,4 @@
-import { assert, Logger } from '@l2beat/backend-tools'
+import { Logger } from '@l2beat/backend-tools'
 import {
   ChildIndexer,
   Indexer,
@@ -6,13 +6,16 @@ import {
   RetryStrategy,
 } from '@l2beat/uif'
 
+import { createIndexerId } from '@l2beat/config'
+import { assert } from '@l2beat/shared-pure'
 import { IndexerService } from './IndexerService'
-import { assetUniqueIndexerId } from './ids'
+import { assertUniqueIndexerId } from './ids'
+import { IndexerTags } from './types'
 
 export interface ManagedChildIndexerOptions extends IndexerOptions {
   parents: Indexer[]
   name: string
-  tag?: string
+  tags?: IndexerTags
   minHeight: number
   indexerService: IndexerService
   logger: Logger
@@ -24,12 +27,10 @@ export abstract class ManagedChildIndexer extends ChildIndexer {
   private readonly indexerId: string
 
   constructor(public readonly options: ManagedChildIndexerOptions) {
-    super(options.logger, options.parents, options)
-    this.indexerId = options.name
-    if (options.tag) {
-      this.indexerId += `::${options.tag}`
-    }
-    assetUniqueIndexerId(this.indexerId)
+    const logger = options.logger.tag(options.tags ?? {})
+    super(logger, options.parents, options)
+    this.indexerId = createIndexerId(options.name, options.tags?.tag)
+    assertUniqueIndexerId(this.indexerId)
   }
 
   async initialize(): Promise<{ safeHeight: number; configHash?: string }> {

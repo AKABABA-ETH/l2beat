@@ -1,37 +1,60 @@
-import { assert } from '@l2beat/backend-tools'
+import { brotliDecompressSync } from 'node:zlib'
 import { DecompressionStream } from 'stream/web'
 
-import { rlpDecode } from '../../utils/rlpDecode'
+import { assert } from '@l2beat/shared-pure'
+import { rlpDecodePartial } from '../../utils/rlpDecode'
 
-export function byteArrFromHexStr(hexString: string) {
-  const str = hexString.startsWith('0x') ? hexString.slice(2) : hexString
-  assert(str.length % 2 === 0, 'Invalid hex string length')
-  const arr = []
-  for (let i = 0; i < str.length; i += 2) {
-    arr.push(parseInt(str.substring(i, i + 2), 16))
-  }
-  return new Uint8Array(arr)
-}
-
-export function hexStrFromByteArr(byteArr: Uint8Array) {
-  return (
-    '0x' +
-    Array.from(byteArr)
-      .map((byte) => byte.toString(16).padStart(2, '0'))
-      .join('')
-  )
-}
+const CHANNEL_VERSION_BROTLI = 1
+const CHANNEL_VERSION_ZLIB_LOWER_NIBBLE_DEFALTE = 0x08
+const CHANNEL_VERSION_ZLIB_LOWER_NIBBLE_RESERVED = 0x0f
 
 export async function getBatchFromChannel(channel: Uint8Array) {
   const decompressed = await decompressToByteArray(channel)
-  const decoded = rlpDecode(decompressed)
+  const batches = []
 
-  assert(decoded instanceof Uint8Array, 'Invalid decoded type')
+  let input = decompressed
+  while (input.length > 0) {
+    const [decoded, rest] = rlpDecodePartial(input)
+    assert(decoded instanceof Uint8Array, 'Invalid decoded type')
+    batches.push(decoded)
+    input = rest
+  }
 
-  return decoded
+  return batches
 }
 
-export async function decompressToByteArray(compressedData: Uint8Array) {
+export function decompressToByteArray(compressedData: Uint8Array) {
+  const channelVersionByte = compressedData[0]
+  const lowerNibble = channelVersionByte & 0x0f
+
+  // NOTE(radomski): Based on this spec
+  // https://github.com/ethereum-optimism/specs/blob/main/specs/protocol/fjord/derivation.md#brotli-channel-compression
+  if (
+    lowerNibble === CHANNEL_VERSION_ZLIB_LOWER_NIBBLE_DEFALTE ||
+    lowerNibble === CHANNEL_VERSION_ZLIB_LOWER_NIBBLE_RESERVED
+  ) {
+    return decompressToByteArrayZlib(compressedData)
+  }
+
+  switch (channelVersionByte) {
+    case CHANNEL_VERSION_BROTLI:
+      return decompressToByteArrayBrotli(compressedData.slice(1))
+    default: {
+      assert(
+        false,
+        `Unsupported channel version (${channelVersionByte}), probably a different compression was used`,
+      )
+    }
+  }
+}
+
+function decompressToByteArrayBrotli(
+  compressedDataWithoutVersionByte: Uint8Array,
+) {
+  return brotliDecompressSync(compressedDataWithoutVersionByte)
+}
+
+async function decompressToByteArrayZlib(compressedData: Uint8Array) {
   const blob = new Blob([compressedData])
   const ds = new DecompressionStream('deflate')
   const stream = blob.stream().pipeThrough(ds)
@@ -48,7 +71,7 @@ export async function decompressToByteArray(compressedData: Uint8Array) {
       chunks.push(value)
       totalSize += value.length
     } catch (err) {
-      if (err instanceof Error && err.message === 'unexpected end of file')
+      if (err instanceof Error && 'code' in err && err.code === 'Z_BUF_ERROR')
         break
       throw err
     }

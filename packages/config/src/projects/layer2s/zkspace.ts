@@ -7,13 +7,17 @@ import {
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   NEW_CRYPTOGRAPHY,
   RISK_VIEW,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { formatExecutionDelay } from '../../common/formatDelays'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { HARDCODED } from '../../discovery/values/hardcoded'
+import { Badge } from '../badges'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
 import { zkswap } from './zkswap'
@@ -23,6 +27,7 @@ const discovery = new ProjectDiscovery('zkspace')
 const upgradeDelay = HARDCODED.ZKSPACE.UPGRADE_NOTICE_PERIOD
 const upgradeDelayString = formatSeconds(upgradeDelay)
 const forcedWithdrawalDelay = HARDCODED.ZKSPACE.PRIORITY_EXPIRATION_PERIOD
+const finalizationPeriod = 0
 
 const upgradeability = {
   upgradableBy: ['zkSpace Admin'],
@@ -32,15 +37,20 @@ const upgradeability = {
 export const zkspace: Layer2 = {
   type: 'layer2',
   id: ProjectId('zkspace'),
+  createdAt: new UnixTime(1629199654), // 2021-08-17T11:27:34Z
+  badges: [
+    Badge.VM.AppChain,
+    Badge.DA.EthereumCalldata,
+    Badge.Fork.ZKsyncLiteFork,
+  ],
   display: {
     name: 'ZKSpace',
     slug: 'zkspace',
     description:
       'ZKSpace consists of three main parts: an AMM DEX utilizing ZK Rollups technology ZKSwap v3, a payment service called ZKSquare, and an NFT marketplace called ZKSea.',
-    purposes: ['NFT', 'AMM', 'Payments'],
+    purposes: ['NFT', 'Exchange', 'Payments'],
     provider: 'ZKsync Lite',
     category: 'ZK Rollup',
-
     links: {
       websites: ['https://zks.org/'],
       apps: ['https://zks.app'],
@@ -60,7 +70,7 @@ export const zkspace: Layer2 = {
         'ZK Space is a ZK rollup based on ZKsync Lite’s code base that posts state diffs to the L1. For a transaction to be considered final, the state diffs have to be submitted and validity proof should be generated, submitted, and verified. ',
     },
     finality: {
-      finalizationPeriod: 0,
+      finalizationPeriod,
     },
   },
   config: {
@@ -92,7 +102,7 @@ export const zkspace: Layer2 = {
           selector: '0x6898e6fc',
           functionSignature:
             'function verifyBlocks(uint32 _blockNumberFrom, uint32 _blockNumberTo, uint256[] _recursiveInput, uint256[] _proof, uint256[] _subProofLimbs)',
-          sinceTimestampInclusive: new UnixTime(1639569183),
+          sinceTimestamp: new UnixTime(1639569183),
         },
       },
     ],
@@ -102,16 +112,18 @@ export const zkspace: Layer2 = {
         to: 'proofSubmissions',
       },
     },
-    finality: 'coming soon',
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
     stateValidation: {
       ...RISK_VIEW.STATE_ZKP_SN,
+      secondLine: formatExecutionDelay(finalizationPeriod),
       sources: [
         {
           contract: 'Verifier',
@@ -167,9 +179,7 @@ export const zkspace: Layer2 = {
         },
       ],
     },
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   stage: getStage({
     stage0: {
       callsItselfRollup: true,
@@ -264,12 +274,14 @@ export const zkspace: Layer2 = {
       date: '2021-12-20T00:00:00Z',
       description:
         'All-in-One Layer2 Platform ZKSpace, Featuring ZKSwap v3.0, NFTs, & Payments is launched.',
+      type: 'general',
     },
     {
       name: 'Token Deposit Campaign started',
       link: 'https://medium.com/@zkspaceofficial/zkspace-releases-token-deposit-campaign-with-fascinating-zks-rewards-151e2492549e',
       date: '2022-02-21T00:00:00Z',
       description: 'Incentives program to onboard new users has started.',
+      type: 'general',
     },
   ],
 }

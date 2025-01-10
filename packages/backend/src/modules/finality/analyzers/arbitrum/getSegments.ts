@@ -1,15 +1,14 @@
 import zlib from 'zlib'
 import { assert } from '@l2beat/shared-pure'
 
+import { Blob } from '@l2beat/shared'
+import { byteArrFromHexStr } from '../../utils/byteArrFromHexStr'
 import { RlpSerializable, rlpDecode } from '../../utils/rlpDecode'
-import { byteArrFromHexStr } from '../opStack/utils'
 import { blobsToData } from './blobsToData'
 import { numberToByteArr } from './utils'
 
-export function getSegments(
-  relevantBlobs: { blob: string }[],
-): RlpSerializable[] {
-  const blobs = relevantBlobs.map(({ blob }) => byteArrFromHexStr(blob))
+export function getSegments(relevantBlobs: Blob[]): RlpSerializable[] {
+  const blobs = relevantBlobs.map(({ data }) => byteArrFromHexStr(data))
   const payload = blobsToData(blobs)
   const decompressed = decompressPayload(payload)
   // I do not understand why this is necessary, but it is
@@ -23,7 +22,7 @@ export function getSegments(
 }
 
 const BROTLI_COMPRESSION_TYPE = 0x00
-export function decompressPayload(payload: Uint8Array): Uint8Array {
+function decompressPayload(payload: Uint8Array): Uint8Array {
   const compressionType = payload[0]
   assert(
     compressionType === BROTLI_COMPRESSION_TYPE,
@@ -34,7 +33,7 @@ export function decompressPayload(payload: Uint8Array): Uint8Array {
   return Uint8Array.from(decompressedData)
 }
 
-export function concatWithLengthForRlp(decompressedBytes: Uint8Array) {
+function concatWithLengthForRlp(decompressedBytes: Uint8Array) {
   const totalLength = decompressedBytes.length
   const lengthBytes = numberToByteArr(totalLength)
   const lengthBytesLength = lengthBytes.length

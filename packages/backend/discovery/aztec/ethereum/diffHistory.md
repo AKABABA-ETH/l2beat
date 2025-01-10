@@ -1,4 +1,193 @@
-Generated with discovered.json: 0xc487c6b94108193752637e4e07f8796cead0572c
+Generated with discovered.json: 0x2f4ce62254dbbb7ee54f687f9e15eecb6bf7e23d
+
+# Diff at Tue, 10 Dec 2024 09:52:07 GMT:
+
+- author: Luca Donno (<donnoh99@gmail.com>)
+- comparing to: main@08d3ccfe28a784d003a319e971007097ac1aec27 block: 20361394
+- current block number: 21371328
+
+## Description
+
+Partial discodrive.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20361394 (main branch discovery), not current.
+
+```diff
+    contract AztecFeeDistributor (0x41A57F5581aDf11b25F3eDb7C1DB19f18bb76734) {
+    +++ description: Contract responsible for collecting transaction fees and reimbursing gas to whitelisted Rollup Providers.
+      template:
++        "aztecv1/AztecFeeDistributor"
+      description:
++        "Contract responsible for collecting transaction fees and reimbursing gas to whitelisted Rollup Providers."
+    }
+```
+
+```diff
+    contract TurboVerifier (0x48Cb7BA00D087541dC8E2B3738f80fDd1FEe8Ce8) {
+    +++ description: Turbo Plonk ZK verifier.
+      template:
++        "aztecv1/TurboVerifier"
+      description:
++        "Turbo Plonk ZK verifier."
+    }
+```
+
+```diff
+    contract RollupProcessor (0x737901bea3eeb88459df9ef1BE8fF3Ae1B42A2ba) {
+    +++ description: None
+      template:
++        "aztecv1/RollupProcessor"
+    }
+```
+
+```diff
+-   Status: DELETED
+    contract HistoricalTurboVerifier (0xd3a6D9De4cbC2CC7529361941e85b1c3269CcBb1)
+    +++ description: None
+```
+
+```diff
+    contract AztecMultisig (0xE298a76986336686CC3566469e3520d23D1a8aaD) {
+    +++ description: None
+      name:
+-        "Aztec Multisig"
++        "AztecMultisig"
+    }
+```
+
+Generated with discovered.json: 0xa09907ba10fd4a69aa6f0c4a8b9a18a9d3e86ce3
+
+# Diff at Mon, 14 Oct 2024 10:49:32 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 20361394
+- current block number: 20361394
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20361394 (main branch discovery), not current.
+
+```diff
+    contract AztecFeeDistributor (0x41A57F5581aDf11b25F3eDb7C1DB19f18bb76734) {
+    +++ description: None
+      sourceHashes:
++        ["0x13139c06d2946718f6b4470f6346e54f4e2b26075fe5daa3b3a631092f7dd76e"]
+    }
+```
+
+```diff
+    contract TurboVerifier (0x48Cb7BA00D087541dC8E2B3738f80fDd1FEe8Ce8) {
+    +++ description: None
+      sourceHashes:
++        ["0x72846aa5544e4499c54463014cbacb03ad291385be297b56c638ccfb15717b8b"]
+    }
+```
+
+```diff
+    contract RollupProcessor (0x737901bea3eeb88459df9ef1BE8fF3Ae1B42A2ba) {
+    +++ description: None
+      sourceHashes:
++        ["0xc055a6555317d1508d60d0c1bf5b2332973126ca1ba545b095e733d95e490844"]
+    }
+```
+
+```diff
+    contract HistoricalTurboVerifier (0xd3a6D9De4cbC2CC7529361941e85b1c3269CcBb1) {
+    +++ description: None
+      sourceHashes:
++        ["0x3026ade4746f8009a4bb4fbd6de2afc3c1af13c8d71ff5a54d3cf3c006de26d8"]
+    }
+```
+
+```diff
+    contract Aztec Multisig (0xE298a76986336686CC3566469e3520d23D1a8aaD) {
+    +++ description: None
+      sourceHashes:
++        ["0xd5a33441170541b7df25812e0e3dff6562b2f09ab835a6b431cb9e7198a47605","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+Generated with discovered.json: 0x15aabbbd4c3efb19deb557855dd1cac208f3e577
+
+# Diff at Fri, 09 Aug 2024 10:08:41 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 20361394
+- current block number: 20361394
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20361394 (main branch discovery), not current.
+
+```diff
+    contract Aztec Multisig (0xE298a76986336686CC3566469e3520d23D1a8aaD) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "1 of 2 (50%)"
+      values.getOwners:
+-        ["0x1D93fE338A035f297819EA867275661a4f5B4fdD","0x7fb9f93Cc6614dDd76c893EC8b5310674aC3Fc5f"]
+      values.getThreshold:
+-        1
+      values.$members:
++        ["0x1D93fE338A035f297819EA867275661a4f5B4fdD","0x7fb9f93Cc6614dDd76c893EC8b5310674aC3Fc5f"]
+      values.$threshold:
++        1
+      values.multisigThreshold:
++        "1 of 2 (50%)"
+    }
+```
+
+Generated with discovered.json: 0xa284c75555316d712b5034cee198158e871e0ef6
+
+# Diff at Tue, 30 Jul 2024 11:10:58 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@b2b6471ff62871f4956541f42ec025c356c08f7e block: 20361394
+- current block number: 20361394
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20361394 (main branch discovery), not current.
+
+```diff
+    contract AztecFeeDistributor (0x41A57F5581aDf11b25F3eDb7C1DB19f18bb76734) {
+    +++ description: None
+      fieldMeta:
++        {"reimburseConstant":{"severity":"LOW","description":"Tip that gets added to a gas reimbursement for processing the rollup."}}
+    }
+```
+
+```diff
+    contract RollupProcessor (0x737901bea3eeb88459df9ef1BE8fF3Ae1B42A2ba) {
+    +++ description: None
+      fieldMeta:
++        {"rollupProviders":{"severity":"LOW","description":"Can call the ProcessRollup function"},"verifier":{"severity":"LOW","description":"Address of the ZK verifier."}}
+    }
+```
+
+Generated with discovered.json: 0x543d288e15332f4aea3249d780750ca7d63d4735
 
 # Diff at Mon, 06 May 2024 14:22:13 GMT:
 

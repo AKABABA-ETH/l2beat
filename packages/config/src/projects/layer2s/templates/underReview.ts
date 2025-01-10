@@ -1,4 +1,4 @@
-import { ProjectId } from '@l2beat/shared-pure'
+import { ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import {
   CONTRACTS,
@@ -8,24 +8,28 @@ import {
   TECHNOLOGY,
   UNDER_REVIEW_RISK_VIEW,
 } from '../../../common'
+import { BadgeId } from '../../badges'
 import { type Layer3, type Layer3Display } from '../../layer3s'
 import { type Layer2, type Layer2Display } from '../types'
 
-export interface UnderReviewConfigCommon {
+interface UnderReviewConfigCommon {
   id: string
+  createdAt: UnixTime
   rpcUrl?: string
   escrows?: ScalingProjectEscrow[]
   chainConfig?: ChainConfig
   transactionApi?: ScalingProjectTransactionApi
+  badges?: BadgeId[]
+  isArchived?: boolean
 }
 
 export interface UnderReviewConfigL2 extends UnderReviewConfigCommon {
-  display: Omit<Layer2Display, 'dataAvailabilityMode'>
+  display: Layer2Display
   associatedTokens?: string[]
 }
 
 export interface UnderReviewConfigL3 extends UnderReviewConfigCommon {
-  display: Omit<Layer3Display, 'dataAvailabilityMode'>
+  display: Layer3Display
   hostChain: Layer3['hostChain']
   associatedTokens?: string[]
 }
@@ -35,11 +39,15 @@ export function underReviewL2(templateVars: UnderReviewConfigL2): Layer2 {
     isUnderReview: true,
     type: 'layer2',
     id: ProjectId(templateVars.id),
-    display: {
-      ...templateVars.display,
-    },
+    createdAt: templateVars.createdAt,
+    isArchived: templateVars.isArchived ?? undefined,
+    display: templateVars.display,
     stage: {
-      stage: 'UnderReview',
+      stage:
+        templateVars.display.category === 'Optimistic Rollup' ||
+        templateVars.display.category === 'ZK Rollup'
+          ? 'UnderReview'
+          : 'NotApplicable',
     },
     config: {
       associatedTokens: templateVars.associatedTokens,
@@ -59,6 +67,7 @@ export function underReviewL2(templateVars: UnderReviewConfigL2): Layer2 {
     technology: TECHNOLOGY.UNDER_REVIEW,
     contracts: CONTRACTS.UNDER_REVIEW,
     chainConfig: templateVars.chainConfig,
+    badges: templateVars.badges,
   }
 }
 
@@ -67,6 +76,8 @@ export function underReviewL3(templateVars: UnderReviewConfigL3): Layer3 {
     type: 'layer3',
     isUnderReview: true,
     id: ProjectId(templateVars.id),
+    createdAt: templateVars.createdAt,
+    isArchived: templateVars.isArchived ?? undefined,
     hostChain: templateVars.hostChain,
     display: {
       ...templateVars.display,
@@ -85,9 +96,18 @@ export function underReviewL3(templateVars: UnderReviewConfigL3): Layer3 {
             }
           : undefined),
     },
+    stage: {
+      stage:
+        templateVars.display.category === 'Optimistic Rollup' ||
+        templateVars.display.category === 'ZK Rollup'
+          ? 'UnderReview'
+          : 'NotApplicable',
+    },
     riskView: UNDER_REVIEW_RISK_VIEW,
+    stackedRiskView: UNDER_REVIEW_RISK_VIEW,
     technology: TECHNOLOGY.UNDER_REVIEW,
     contracts: CONTRACTS.UNDER_REVIEW,
     chainConfig: templateVars.chainConfig,
+    badges: templateVars.badges,
   }
 }

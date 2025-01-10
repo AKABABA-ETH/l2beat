@@ -1,14 +1,18 @@
 import { bridges, layer2s, layer3s, onChainProjects } from '@l2beat/config'
-import { ConfigReader, DiscoveryConfig } from '@l2beat/discovery'
+import { ConfigReader, TemplateService } from '@l2beat/discovery'
 import { assert, EthereumAddress } from '@l2beat/shared-pure'
 import { expect } from 'earl'
 import { isEqual } from 'lodash'
-
+import { discoveryNeedsRefresh } from '../../../tools/discoveryNeedsRefresh'
 import { getDiffHistoryHash, getDiscoveryHash } from '../utils/hashing'
 
 describe('discovery config.jsonc', () => {
   const configReader = new ConfigReader()
-  let chainConfigs: DiscoveryConfig[][] | undefined
+  const templateService = new TemplateService()
+
+  const chainConfigs = configReader
+    .readAllChains()
+    .map((chain) => configReader.readAllConfigsForChain(chain))
 
   const projectIds = layer2s
     .map((p) => p.id.toString())
@@ -16,102 +20,52 @@ describe('discovery config.jsonc', () => {
     .concat(layer3s.map((p) => p.id.toString()))
     .concat(onChainProjects)
 
-  before(async () => {
-    chainConfigs = await Promise.all(
-      configReader
-        .readAllChains()
-        .map((chain) => configReader.readAllConfigsForChain(chain)),
-    )
-  })
-
   it('every config name corresponds to ProjectId', () => {
     const notCorresponding =
       chainConfigs
         ?.flat()
         ?.filter((c) => !c.name.startsWith('shared-'))
+        // TODO!: Please remove this check once transporter bridge is back in the config
+        ?.filter((c) => c.name !== 'transporter')
         ?.filter((c) => !projectIds.includes(c.name))
         .map((c) => c.name) ?? []
 
-    assert(
-      notCorresponding.length === 0,
-      'Following projects do not have the same name as ProjectIds: ' +
-        notCorresponding.join(', ') +
-        '. Add them to config/src/projects/[layer2s|bridges|layer3s|onChainProjects]',
-    )
+    expect(notCorresponding).toBeEmpty()
+    if (notCorresponding.length > 0) {
+      console.log(
+        'Following projects do not have the same name as ProjectIds: ' +
+          notCorresponding.join(', ') +
+          '. Add them to config/src/projects/[layer2s|bridges|layer3s|onChainProjects]',
+      )
+    }
   })
 
-  it('every config name is equal to the name in discovery.json', async () => {
+  it('every config name is equal to the name in discovery.json', () => {
     const notEqual = []
 
-    for (const configs of chainConfigs ?? []) {
-      if (configs.length > 0) {
-        for (const c of configs) {
-          const discovery = await configReader.readDiscovery(c.name, c.chain)
-          if (discovery.name !== c.name) {
-            notEqual.push(c.name)
-          }
-        }
-      }
-    }
-
-    assert(
-      notEqual.length === 0,
-      'Following projects do not have the same name in config and discovery.json. Run "yarn discover <config.name>"',
-    )
-  })
-
-  it('fields inside ignoreInWatchMode exist in discovery', async () => {
-    for (const configs of chainConfigs ?? []) {
+    for (const configs of chainConfigs) {
       for (const c of configs) {
-        const discovery = await configReader.readDiscovery(c.name, c.chain)
-
-        for (const override of c.overrides) {
-          if (override.ignoreDiscovery === true) {
-            continue
-          }
-
-          const contract = discovery.contracts.find(
-            (c) => c.address === override.address,
-          )
-
-          if (contract?.ignoreInWatchMode === undefined) {
-            continue
-          }
-
-          const errorPrefix = `${c.name} (chain: ${
-            c.chain
-          }) - ${override.address.toString()}`
-
-          assert(
-            contract,
-            `${errorPrefix} - contract does not exist in discovery.json`,
-          )
-
-          assert(
-            contract.values,
-            `${errorPrefix} - values does not exist for this contract in discovery.json`,
-          )
-
-          const ignore = contract.ignoreInWatchMode
-          const values = Object.keys(contract.values)
-
-          assert(
-            ignore.every((x) => values.includes(x)),
-            `${errorPrefix} - [${ignore.join(
-              ',',
-            )}] - fields do not exist in discovery.json`,
-          )
+        const discovery = configReader.readDiscovery(c.name, c.chain)
+        if (discovery.name !== c.name) {
+          notEqual.push(c.name)
         }
       }
     }
+
+    expect(notEqual).toBeEmpty()
+    notEqual.forEach((p) => {
+      console.log(
+        `Following projects do not have the same name in config and discovery.json. Run "pnpm discover <config.name>" - ${p}`,
+      )
+    })
   })
 
-  it('every discovery.json has sorted contracts', async () => {
+  it('every discovery.json has sorted contracts', () => {
     const notSorted: string[] = []
 
     for (const configs of chainConfigs ?? []) {
       for (const c of configs) {
-        const discovery = await configReader.readDiscovery(c.name, c.chain)
+        const discovery = configReader.readDiscovery(c.name, c.chain)
 
         if (
           !isEqual(
@@ -133,33 +87,32 @@ describe('discovery config.jsonc', () => {
     )
   })
 
-  it('committed discovery config hash matches committed config hash', async () => {
-    const outdatedHashes: string[] = []
+  it('committed discovery config hash, template hashes and shapeFilesHash are up to date', () => {
     for (const configs of chainConfigs ?? []) {
       for (const c of configs) {
-        const discovery = await configReader.readDiscovery(c.name, c.chain)
+        const discovery = configReader.readDiscovery(c.name, c.chain)
 
-        if (discovery.configHash !== c.hash) {
-          outdatedHashes.push(`${c.chain}-${c.name}`)
-        }
+        const needsDiscoveryReason = discoveryNeedsRefresh(
+          discovery,
+          c,
+          templateService,
+        )
+        assert(
+          needsDiscoveryReason === undefined,
+          `${c.chain}/${c.name} project is outdated: ${needsDiscoveryReason}.\n Run "pnpm refresh-discovery"`,
+        )
       }
-      assert(
-        outdatedHashes.length === 0,
-        `Following projects have outdated hashes (chain-project): ${outdatedHashes.join(
-          ', ',
-        )}. Run yarn discover <chain> <project>`,
-      )
     }
   })
 
-  it('discovery.json does not include errors', async () => {
+  it('discovery.json does not include errors', () => {
     for (const configs of chainConfigs ?? []) {
       for (const c of configs) {
-        const discovery = await configReader.readDiscovery(c.name, c.chain)
+        const discovery = configReader.readDiscovery(c.name, c.chain)
 
         assert(
           discovery.contracts.every((c) => c.errors === undefined),
-          `${c.name} discovery.json includes errors. Run "yarn discover ${c.name}".`,
+          `${c.name} discovery.json includes errors. Run "pnpm discover ${c.name}".`,
         )
       }
     }
@@ -168,57 +121,59 @@ describe('discovery config.jsonc', () => {
   describe('overrides', () => {
     // this test ensures that every named override resolves to an address
     // do not remove it unless you know what you are doing
-    it('every override correspond to existing contract', async () => {
+    describe('every override correspond to existing contract', () => {
       for (const configs of chainConfigs ?? []) {
         for (const c of configs) {
-          for (const key of Object.keys(c.raw.overrides ?? {})) {
-            if (!EthereumAddress.check(key)) {
-              expect(() => c.overrides.get(key)).not.toThrow()
+          it(`${c.name} on ${c.chain}`, () => {
+            for (const key of Object.keys(c.raw.overrides ?? {})) {
+              if (!EthereumAddress.check(key)) {
+                expect(() => c.overrides.get(key)).not.toThrow()
+              }
             }
-          }
+          })
         }
       }
     })
 
-    it('all shared modules exist', async () => {
+    describe('all shared modules exist', () => {
       for (const configs of chainConfigs ?? []) {
         for (const c of configs) {
-          for (const sharedModule of c.sharedModules) {
-            assert(
-              chainConfigs?.flat()?.some((x) => x.name === sharedModule),
-              `Shared module ${sharedModule} does not exist (${c.name})`,
-            )
-          }
+          it(`${c.name} on ${c.chain}`, () => {
+            for (const sharedModule of c.sharedModules) {
+              assert(
+                chainConfigs?.flat()?.some((x) => x.name === sharedModule),
+                `Shared module ${sharedModule} does not exist (${c.name})`,
+              )
+            }
+          })
         }
       }
     })
 
     // inversion logic depends on this
-    it('all accessControl fields keys are accessControl', async () => {
+    describe('all accessControl fields keys are accessControl', () => {
       for (const configs of chainConfigs ?? []) {
         for (const c of configs) {
-          for (const override of c.overrides) {
-            if (override.fields === undefined) {
-              continue
-            }
-
-            for (const [key, value] of Object.entries(override.fields)) {
-              if (value.handler?.type === 'accessControl') {
-                assert(
-                  key === 'accessControl',
-                  `${
-                    c.name
-                  } - ${override.address.toString()} - accessControl field must be named accessControl`,
-                )
+          it(`${c.name}:${c.chain}`, () => {
+            for (const override of c.overrides) {
+              for (const [key, value] of Object.entries(
+                override.fields ?? {},
+              )) {
+                if (
+                  value.handler?.type === 'accessControl' &&
+                  value.handler.pickRoleMembers === undefined
+                ) {
+                  expect(key).toEqual('accessControl')
+                }
               }
             }
-          }
+          })
         }
       }
     })
   })
 
-  it('every name in config.jsonc is unique', async () => {
+  it('every name in config.jsonc is unique', () => {
     for (const configs of chainConfigs ?? []) {
       for (const c of configs) {
         if (c.raw.names === undefined) {

@@ -1,11 +1,14 @@
-import { assert } from '@l2beat/backend-tools'
-import { EthereumAddress } from '@l2beat/shared-pure'
+import { assert, EthereumAddress } from '@l2beat/shared-pure'
 import * as z from 'zod'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
+import { Transaction } from '../../../utils/IEtherscanClient'
 import { IProvider } from '../../provider/IProvider'
 import { Handler, HandlerResult } from '../Handler'
-import { getReferencedName, resolveReference } from '../reference'
+import {
+  generateReferenceInput,
+  getReferencedName,
+  resolveReference,
+} from '../reference'
 import { valueToAddress } from '../utils/valueToAddress'
 
 export type OpStackSequencerInboxHandlerDefinition = z.infer<
@@ -19,10 +22,15 @@ export const OpStackSequencerInboxHandlerDefinition = z.strictObject({
 export class OpStackSequencerInboxHandler implements Handler {
   readonly dependencies: string[] = []
 
+  // NOTE(radomski): Let's just say that it needs to 8/10 transactions to a
+  // single address. Saying that all transactions need to go to the same
+  // address is a little too extreme. If the sequencer EOA wants to move ETH
+  // funds or anything else this fails
+  readonly qualificationThreshold: number = 0.8
+
   constructor(
     readonly field: string,
     readonly definition: OpStackSequencerInboxHandlerDefinition,
-    readonly logger: DiscoveryLogger,
   ) {
     const dependency = getReferencedName(this.definition.sequencerAddress)
     if (dependency) {
@@ -32,37 +40,57 @@ export class OpStackSequencerInboxHandler implements Handler {
 
   async execute(
     provider: IProvider,
-    _address: EthereumAddress,
+    currentContractAddress: EthereumAddress,
     previousResults: Record<string, HandlerResult | undefined>,
   ): Promise<HandlerResult> {
-    this.logger.logExecution(this.field, [
-      'Checking OP Stack Sequencer Inbox Address',
-    ])
+    const referenceInput = generateReferenceInput(
+      previousResults,
+      provider,
+      currentContractAddress,
+    )
     const resolved = resolveReference(
       this.definition.sequencerAddress,
-      previousResults,
+      referenceInput,
     )
     const sequencerAddress = valueToAddress(resolved)
 
     const last10Txs = await provider.raw(
       `optimism_sequencer_100.${sequencerAddress}.${provider.blockNumber}`,
-      ({ etherscanLikeClient }) =>
-        etherscanLikeClient.getLast10OutgoingTxs(
+      ({ etherscanClient }) =>
+        etherscanClient.getLast10OutgoingTxs(
           sequencerAddress,
           provider.blockNumber,
         ),
     )
 
-    // check if all last 10 txs have the same to address
-    const toAddress = last10Txs[0]?.to
-    assert(toAddress, 'No to address found')
-    for (const tx of last10Txs) {
-      assert(tx.to === toAddress, 'Different to address')
-    }
-
     return {
       field: this.field,
-      value: toAddress.toString(),
+      value: this.getInboxAddress(last10Txs),
     }
+  }
+
+  getInboxAddress(lastTxs: Transaction[]): string {
+    const toAddresses = lastTxs.map((tx) => tx.to)
+    const occurrence = toAddresses.reduce(
+      (acc, address) => {
+        const str = address.toString()
+        acc[str] ??= 0
+        acc[str] += 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
+    const entries = Object.entries(occurrence).sort((a, b) => {
+      return b[1] - a[1]
+    })
+
+    // biome-ignore lint/style/noNonNullAssertion: we know it's there
+    const [inboxAddress, addressFrequency] = entries[0]!
+    assert(
+      addressFrequency / lastTxs.length >= this.qualificationThreshold,
+      'Sequencer posts too many different addresses',
+    )
+
+    return inboxAddress
   }
 }

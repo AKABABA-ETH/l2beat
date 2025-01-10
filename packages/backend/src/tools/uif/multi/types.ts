@@ -1,3 +1,9 @@
+import { Logger } from '@l2beat/backend-tools'
+import { Database } from '@l2beat/database'
+import { Indexer, IndexerOptions, RetryStrategy } from '@l2beat/uif'
+import { IndexerService } from '../IndexerService'
+import { IndexerTags } from '../types'
+
 export interface Configuration<T> {
   id: string
   properties: T
@@ -5,10 +11,6 @@ export interface Configuration<T> {
   minHeight: number
   /** Inclusive */
   maxHeight: number | null
-}
-
-export interface UpdateConfiguration<T> extends Configuration<T> {
-  hasData: boolean
 }
 
 export interface SavedConfiguration<T> extends Configuration<T> {
@@ -29,4 +31,17 @@ export interface ConfigurationRange<T> {
   /** Inclusive */
   to: number
   configurations: Configuration<T>[]
+}
+
+export interface ManagedMultiIndexerOptions<T> extends IndexerOptions {
+  parents: Indexer[]
+  name: string
+  tags?: IndexerTags
+  indexerService: IndexerService
+  configurations: Configuration<T>[]
+  serializeConfiguration: (value: T) => string
+  logger: Logger
+  updateRetryStrategy?: RetryStrategy
+  /** Used for saving data in transaction */
+  db: Database
 }

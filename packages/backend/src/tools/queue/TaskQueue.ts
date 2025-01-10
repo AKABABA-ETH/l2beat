@@ -1,15 +1,13 @@
-import assert from 'assert'
 import { Logger } from '@l2beat/backend-tools'
 import { EventTracker } from '@l2beat/shared'
 import {
+  assert,
   Retries,
   ShouldRetry,
   getErrorMessage,
   getErrorStackTrace,
   json,
-  wrapAndMeasure,
 } from '@l2beat/shared-pure'
-import { Histogram } from 'prom-client'
 import { setTimeout as wait } from 'timers/promises'
 
 const ONE_HOUR = 1 * 60 * 60000
@@ -27,13 +25,6 @@ interface Job<T> {
   executeAt: number
 }
 
-const taskQueueHistogram = new Histogram<string>({
-  name: 'task_queue_task_execution_duration_histogram',
-  help: 'Histogram showing TaskQueue sync duration',
-  buckets: [0.25, 0.5, 1, 2.5, 5, 10, 25, 50],
-  labelNames: ['id'],
-})
-
 export type TaskQueueEventTracker = EventTracker<
   'started' | 'success' | 'error' | 'retry'
 >
@@ -50,7 +41,6 @@ export interface TaskQueueOpts {
  * This can be customized by changing `shouldRetry` function and `shouldStopAfterFailedRetries` parameter.
  */
 export class TaskQueue<T> {
-  private readonly executeTask: Task<T>
   private readonly queue: Job<T>[] = []
   private busyWorkers = 0
   private readonly workers: number
@@ -60,7 +50,7 @@ export class TaskQueue<T> {
   private stopped = false
 
   constructor(
-    executeTask: Task<T>,
+    private readonly executeTask: Task<T>,
     private readonly logger: Logger,
     opts: TaskQueueOpts,
   ) {
@@ -75,13 +65,6 @@ export class TaskQueue<T> {
     }
     this.shouldStopAfterFailedRetries =
       opts.shouldStopAfterFailedRetries ?? true
-
-    this.executeTask = wrapAndMeasure(executeTask, {
-      histogram: taskQueueHistogram,
-      labels: {
-        id: opts.metricsId,
-      },
-    })
   }
 
   get length() {

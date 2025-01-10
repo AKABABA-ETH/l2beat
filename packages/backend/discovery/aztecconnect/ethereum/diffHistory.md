@@ -1,4 +1,345 @@
-Generated with discovered.json: 0xc4e7a43e1c2753efc3092c94ce019c1d8ce22fc4
+Generated with discovered.json: 0xc1ff6521f89449f133d26ac1f28ed97afae5a4d5
+
+# Diff at Tue, 10 Dec 2024 10:37:00 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@9ed5a41ddcad978cfdf826bc7a4827bf4a91c814 block: 21041827
+- current block number: 21041827
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 21041827 (main branch discovery), not current.
+
+```diff
++   Status: CREATED
+    contract AztecFeeDistributor (0x4cf32670a53657596E641DFCC6d40f01e4d64927)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract Aztec Multisig (0xE298a76986336686CC3566469e3520d23D1a8aaD)
+    +++ description: None
+```
+
+Generated with discovered.json: 0xa1ec9af4eeae57032afb3dfc89bf2faf162aad87
+
+# Diff at Thu, 28 Nov 2024 11:02:01 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@4e0645053ebfcfcef2e7fd8c8410bad53373a3c4 block: 21041827
+- current block number: 21041827
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 21041827 (main branch discovery), not current.
+
+```diff
+    contract ProxyAdmin (0xC5b735d05c26579B701Be9bED253Bb588503B26B) {
+    +++ description: None
+      directlyReceivedPermissions:
+-        [{"permission":"upgrade","target":"0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455"}]
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455"}]
+    }
+```
+
+```diff
+    contract RollupProcessorV3 (0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455) {
+    +++ description: None
+      issuedPermissions.0.target:
+-        "0x0000000000000000000000000000000000000000"
++        "0xC5b735d05c26579B701Be9bED253Bb588503B26B"
+      issuedPermissions.0.via.0:
+-        {"address":"0xC5b735d05c26579B701Be9bED253Bb588503B26B","delay":0}
+    }
+```
+
+Generated with discovered.json: 0x71c0d46ab3fbd5ceace5752319b78c495b1f74a2
+
+# Diff at Fri, 25 Oct 2024 09:47:25 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@e7501f424c0cea9b5438386ee76e509448999836 block: 19816414
+- current block number: 21041827
+
+## Description
+
+Config related.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19816414 (main branch discovery), not current.
+
+```diff
+    contract ProxyAdmin (0xC5b735d05c26579B701Be9bED253Bb588503B26B) {
+    +++ description: None
+      receivedPermissions:
+-        [{"permission":"upgrade","target":"0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455"}]
+      template:
++        "global/ProxyAdmin"
+      directlyReceivedPermissions:
++        [{"permission":"upgrade","target":"0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455"}]
+    }
+```
+
+```diff
+    contract RollupProcessorV3 (0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455) {
+    +++ description: None
+      issuedPermissions.0.target:
+-        "0xC5b735d05c26579B701Be9bED253Bb588503B26B"
++        "0x0000000000000000000000000000000000000000"
+      issuedPermissions.0.via.0:
++        {"address":"0xC5b735d05c26579B701Be9bED253Bb588503B26B","delay":0}
+    }
+```
+
+Generated with discovered.json: 0xe8e10e2752a9b321eb8eac5388cdd3ace2fcb5c5
+
+# Diff at Mon, 21 Oct 2024 11:04:31 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@8895d33866f5665c4c710f4ddaa32bfa63cc3c78 block: 19816414
+- current block number: 19816414
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19816414 (main branch discovery), not current.
+
+```diff
+    contract RollupProcessorV3 (0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455) {
+    +++ description: None
+      values.$pastUpgrades.2.2:
++        ["0x7d657Ddcf7e2A5fD118dC8A6dDc3dC308AdC2728"]
+      values.$pastUpgrades.2.1:
+-        ["0x7d657Ddcf7e2A5fD118dC8A6dDc3dC308AdC2728"]
++        "0x540d7db72d3a04eef10b2c57b05382653c1bfb89a4a5bec24873747fa981c68c"
+      values.$pastUpgrades.1.2:
++        ["0x8430Be7B8fd28Cc58EA70A25C9c7A624F26f5D09"]
+      values.$pastUpgrades.1.1:
+-        ["0x8430Be7B8fd28Cc58EA70A25C9c7A624F26f5D09"]
++        "0xe5e9eb537607a7998e112f673812580f7bb0c588a659df1d1a52a7aebc43af7f"
+      values.$pastUpgrades.0.2:
++        ["0x3f972e325CecD99a6be267fd36ceB46DCa7C3F28"]
+      values.$pastUpgrades.0.1:
+-        ["0x3f972e325CecD99a6be267fd36ceB46DCa7C3F28"]
++        "0x837765f53d9ae32bf1b507fec696052d3ee2a245515dccebc13b3717bc987921"
+    }
+```
+
+Generated with discovered.json: 0x8d9a0a95d3aa11dcfa7af73f65dccf0b530d8b0e
+
+# Diff at Mon, 14 Oct 2024 10:49:34 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 19816414
+- current block number: 19816414
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19816414 (main branch discovery), not current.
+
+```diff
+    contract DefiBridgeProxy (0xA1BBa894a6D39D79C0D1ef9c68a2139c84B81487) {
+    +++ description: None
+      sourceHashes:
++        ["0x4c3447f738f38931105bfe030716b1bdc26c6e9ca0bbed38fff31afccabc90fb"]
+    }
+```
+
+```diff
+    contract Verifier28x32 (0xb7baA1420f88b7758E341c93463426A2b7651CFB) {
+    +++ description: None
+      sourceHashes:
++        ["0x55fc1304c184842e528edeff31d00322f57295e9f369b6e457f0c9944bc77de9"]
+    }
+```
+
+```diff
+    contract ProxyAdmin (0xC5b735d05c26579B701Be9bED253Bb588503B26B) {
+    +++ description: None
+      sourceHashes:
++        ["0xf944f88083f41ff959fefbdcd6fc3ae633692b072b8497fb14cbdd843eded490"]
+    }
+```
+
+```diff
+    contract RollupProcessorV3 (0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455) {
+    +++ description: None
+      sourceHashes:
++        ["0xa7e3f6c355703ed46fcb2156862c4f01792b87beb10a87a81ce3bd5beee79b67","0xca3afcf92a9c12ce307d9de265b57fe02f7022f6a5f0eab38511eccafbfff478"]
+    }
+```
+
+Generated with discovered.json: 0x3c5215d997e8351ca277c5a3aa3274c3d2a6f161
+
+# Diff at Tue, 01 Oct 2024 10:49:57 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@bd754dc73c66120164006054f8d25c5fae9cd910 block: 19816414
+- current block number: 19816414
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19816414 (main branch discovery), not current.
+
+```diff
+    contract RollupProcessorV3 (0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2022-06-07T21:43:14.000Z",["0x3f972e325CecD99a6be267fd36ceB46DCa7C3F28"]],["2022-12-08T17:38:23.000Z",["0x8430Be7B8fd28Cc58EA70A25C9c7A624F26f5D09"]],["2024-04-09T18:42:35.000Z",["0x7d657Ddcf7e2A5fD118dC8A6dDc3dC308AdC2728"]]]
+    }
+```
+
+Generated with discovered.json: 0x3c53c44d40c9bad7c5226fca36e29f5940b27f82
+
+# Diff at Fri, 30 Aug 2024 07:51:26 GMT:
+
+- author: Adrian Adamiak (<adrian@adamiak.net>)
+- comparing to: main@6c1bd1f41fadf5f2cb1c1805b5a2c6138a3ed35a block: 19816414
+- current block number: 19816414
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19816414 (main branch discovery), not current.
+
+```diff
+    contract ProxyAdmin (0xC5b735d05c26579B701Be9bED253Bb588503B26B) {
+    +++ description: None
+      receivedPermissions.0.via:
+-        []
+    }
+```
+
+Generated with discovered.json: 0x087d03a086d807b24d6bd37993400755412c4ae6
+
+# Diff at Fri, 23 Aug 2024 09:51:19 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@67597c7d6c810bc726594446890178150240711e block: 19816414
+- current block number: 19816414
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19816414 (main branch discovery), not current.
+
+```diff
+    contract RollupProcessorV3 (0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455) {
+    +++ description: None
+      values.$upgradeCount:
++        3
+    }
+```
+
+Generated with discovered.json: 0x747b28f962c7a6fd65af13b35c07447a4d76707e
+
+# Diff at Wed, 21 Aug 2024 10:02:05 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@2f6dde3357bf5d79196b6e94f79d853a6c4ec72b block: 19816414
+- current block number: 19816414
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19816414 (main branch discovery), not current.
+
+```diff
+    contract ProxyAdmin (0xC5b735d05c26579B701Be9bED253Bb588503B26B) {
+    +++ description: None
+      assignedPermissions:
+-        {"upgrade":["0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455"]}
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455","via":[]}]
+    }
+```
+
+```diff
+    contract RollupProcessorV3 (0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0xC5b735d05c26579B701Be9bED253Bb588503B26B","via":[]}]
+    }
+```
+
+Generated with discovered.json: 0x39fc71387a47587540725472d60544e040a382ac
+
+# Diff at Fri, 09 Aug 2024 10:08:43 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 19816414
+- current block number: 19816414
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 19816414 (main branch discovery), not current.
+
+```diff
+    contract ProxyAdmin (0xC5b735d05c26579B701Be9bED253Bb588503B26B) {
+    +++ description: None
+      assignedPermissions.admin:
+-        ["0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455"]
+      assignedPermissions.upgrade:
++        ["0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455"]
+    }
+```
+
+Generated with discovered.json: 0x671317ae0ac7f934dcaf37d70b48fc7c3411b9bb
 
 # Diff at Tue, 07 May 2024 06:31:48 GMT:
 

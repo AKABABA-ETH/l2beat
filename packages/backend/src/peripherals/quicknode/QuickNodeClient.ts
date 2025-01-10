@@ -1,6 +1,7 @@
 import { createGzip } from 'zlib'
+import { RateLimiter } from '@l2beat/backend-tools'
 import { HttpClient } from '@l2beat/shared'
-import { assert, RateLimiter } from '@l2beat/shared-pure'
+import { assert } from '@l2beat/shared-pure'
 import { chain } from 'stream-chain'
 import { parser } from 'stream-json'
 import { pick } from 'stream-json/filters/Pick'
@@ -43,7 +44,7 @@ export class QuickNodeClient {
     stateId: 'head' | 'gensis' | 'finalized' | 'justified' | 'slot' | Hex
     status?: string[]
   }) {
-    const response = await this.httpClient.fetch(
+    const response = await this.httpClient.fetchRaw(
       `${
         this.url
       }/eth/v1/beacon/states/${stateId}/validators?${new URLSearchParams({
@@ -74,7 +75,8 @@ export class QuickNodeClient {
     let effectiveBalance = 0n
 
     for await (const { value } of pipeline) {
-      effectiveBalance += BigInt(value) / 10n ** 8n
+      // gwei to wei
+      effectiveBalance += BigInt(value) * 10n ** 9n
     }
 
     return {

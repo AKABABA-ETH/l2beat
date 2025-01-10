@@ -1,6 +1,9 @@
 import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
 
 import {
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NUGGETS,
@@ -9,14 +12,16 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { Badge } from '../badges'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
 
 export const fuelv1: Layer2 = {
   type: 'layer2',
   id: ProjectId('fuelv1'),
+  createdAt: new UnixTime(1623153328), // 2021-06-08T11:55:28Z
+  badges: [Badge.VM.AppChain, Badge.DA.EthereumCalldata],
   display: {
     name: 'Fuel v1',
     slug: 'fuelv1',
@@ -55,20 +60,20 @@ export const fuelv1: Layer2 = {
       },
     ],
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'Transactions data',
-  }),
-  riskView: makeBridgeCompatible({
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.TRANSACTION_DATA,
+    }),
+  ],
+  riskView: {
     stateValidation: RISK_VIEW.STATE_FP_1R,
     dataAvailability: RISK_VIEW.DATA_ON_CHAIN,
     exitWindow: RISK_VIEW.EXIT_WINDOW_NON_UPGRADABLE,
     sequencerFailure: RISK_VIEW.SEQUENCER_SELF_SEQUENCE(),
     proposerFailure: RISK_VIEW.PROPOSER_SELF_PROPOSE_ROOTS,
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
+  },
   stage: getStage(
     {
       stage0: {
@@ -162,6 +167,8 @@ export const fuelv1: Layer2 = {
       {
         address: EthereumAddress('0x6880f6Fd960D1581C2730a451A22EED1081cfD72'),
         name: 'Fuel',
+        // Verified manually
+        isVerified: true,
       },
     ],
     risks: [],
@@ -172,6 +179,7 @@ export const fuelv1: Layer2 = {
       link: 'https://twitter.com/fuellabs_/status/1344707195250896899',
       date: '2020-12-31T00:00:00Z',
       description: 'First trustless Optimistic Rollup is live on Mainnet.',
+      type: 'general',
     },
   ],
   knowledgeNuggets: [

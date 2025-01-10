@@ -1,8 +1,10 @@
 import { expect } from 'earl'
 
-import { assert } from '@l2beat/backend-tools'
-import { ProjectId } from '@l2beat/shared-pure'
+import { assert, ChainId } from '@l2beat/shared-pure'
+import { uniq } from 'lodash'
+import { chains } from '../../chains'
 import { NUGGETS } from '../../common'
+import { tokenList } from '../../tokens'
 import { layer2s } from '../layer2s'
 import { layer3s } from './index'
 
@@ -29,36 +31,62 @@ describe('layer3s', () => {
       }
     })
   })
-  it('every layer3 has a valid host chain except those with Multiple', () => {
-    for (const layer3 of layer3s.filter((x) => x.hostChain !== 'Multiple')) {
+
+  it('every layer3 has a valid host chain', () => {
+    for (const layer3 of layer3s) {
       expect(layer3.hostChain).not.toBeNullish()
       const hostChain = layer2s.find((x) => x.id === layer3.hostChain)
       expect(hostChain).not.toBeNullish()
     }
   })
 
-  describe('every contract and escrow in layer3 has a chain different than ethereum', () => {
+  describe('every escrow can resolve all of its tokens', () => {
+    const chainsMap = new Map<string, ChainId>(
+      chains.map((c) => [c.name, ChainId(c.chainId)]),
+    )
     for (const layer3 of layer3s) {
-      it(layer3.display.name, () => {
-        const contracts = layer3.contracts.addresses
-        for (const contract of contracts) {
-          expect(contract.chain).not.toBeNullish()
-          expect(contract.chain).not.toEqual('ethereum')
-        }
+      for (const escrow of layer3.config.escrows) {
+        const chainId = chainsMap.get(escrow.chain)
+        if (!chainId) continue
+        const tokensOnChain = tokenList.filter((t) => t.chainId === chainId)
 
-        if (
-          layer3.id !== ProjectId('zklinknova') &&
-          layer3.id !== ProjectId('mxc')
-        ) {
-          const escrows = layer3.config.escrows
-          for (const escrow of escrows) {
-            expect(escrow.newVersion).toEqual(true)
-            assert(escrow.newVersion) // to make typescript happy
-            expect(escrow.contract.chain).not.toBeNullish()
-            expect(escrow.contract.chain).not.toEqual('ethereum')
-          }
+        if (escrow.tokens === '*') continue
+        for (const token of escrow.tokens) {
+          it(`${layer3.id.toString()}:${escrow.address.toString()}:${token}`, () => {
+            const foundToken = tokensOnChain.find((t) => t.symbol === token)
+            assert(
+              foundToken,
+              `Please add token with symbol ${token} on ${escrow.chain} chain`,
+            )
+            expect(foundToken).not.toBeNullish()
+          })
         }
-      })
+      }
+    }
+  })
+
+  describe('every escrow sinceTimestamp is greater or equal to chains minTimestampForTvl', () => {
+    for (const layer3 of layer3s) {
+      for (const escrow of layer3.config.escrows) {
+        const chain = chains.find((c) => c.name === escrow.chain)
+
+        it(`${layer3.id.toString()} : ${escrow.address.toString()}`, () => {
+          assert(
+            chain,
+            `Chain not found for escrow ${escrow.address.toString()}`,
+          )
+          assert(
+            chain.minTimestampForTvl,
+            `Escrow ${escrow.address.toString()} added for chain without minTimestampForTvl ${
+              chain.name
+            }`,
+          )
+
+          expect(escrow.sinceTimestamp.toNumber()).toBeGreaterThanOrEqual(
+            chain.minTimestampForTvl.toNumber(),
+          )
+        })
+      }
     }
   })
 
@@ -70,18 +98,6 @@ describe('layer3s', () => {
         })
       }
     })
-  })
-
-  describe('every purpose is short', () => {
-    const purposes = layer3s.map((x) => x.display.purposes)
-    for (const purpose of purposes) {
-      const totalLength = purpose.reduce((acc, curr) => {
-        return acc + curr.length
-      }, 0)
-      it(purpose.join(', '), () => {
-        expect(totalLength).toBeLessThanOrEqual(20)
-      })
-    }
   })
 
   describe('milestones', () => {
@@ -122,5 +138,16 @@ describe('layer3s', () => {
         })
       }
     })
+  })
+
+  describe('badges', () => {
+    for (const layer3 of layer3s) {
+      if (layer3.badges === undefined) {
+        continue
+      }
+      it(`${layer3.display.name} does not have duplicated badges`, () => {
+        expect(layer3.badges?.length).toEqual(uniq(layer3.badges).length)
+      })
+    }
   })
 })

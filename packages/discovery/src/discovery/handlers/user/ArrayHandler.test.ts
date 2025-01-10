@@ -1,7 +1,6 @@
 import { EthereumAddress } from '@l2beat/shared-pure'
 import { expect, mockObject } from 'earl'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { ArrayHandler } from './ArrayHandler'
 
@@ -16,7 +15,6 @@ describe(ArrayHandler.name, () => {
           length: 1,
         },
         [],
-        DiscoveryLogger.SILENT,
       )
 
       expect(handler.dependencies).toEqual([])
@@ -31,7 +29,6 @@ describe(ArrayHandler.name, () => {
           length: '{{ foo }}',
         },
         [],
-        DiscoveryLogger.SILENT,
       )
 
       expect(handler.dependencies).toEqual(['foo'])
@@ -46,7 +43,6 @@ describe(ArrayHandler.name, () => {
           indices: '{{ foo }}',
         },
         [],
-        DiscoveryLogger.SILENT,
       )
 
       expect(handler.dependencies).toEqual(['foo'])
@@ -62,7 +58,6 @@ describe(ArrayHandler.name, () => {
           method: 'function foo(uint i) view returns (uint)',
         },
         [],
-        DiscoveryLogger.SILENT,
       )
 
       expect(handler.getMethod()).toEqual(
@@ -80,7 +75,6 @@ describe(ArrayHandler.name, () => {
               method: 'function foo() view returns (uint)',
             },
             [],
-            DiscoveryLogger.SILENT,
           ),
       ).toThrow('Invalid method abi')
     })
@@ -95,23 +89,17 @@ describe(ArrayHandler.name, () => {
               method: 'function foo(uint256 i) returns (uint)',
             },
             [],
-            DiscoveryLogger.SILENT,
           ),
       ).toThrow('Invalid method abi')
     })
 
     it('finds the method by field name', () => {
-      const handler = new ArrayHandler(
-        'someName',
-        { type: 'array' },
-        [
-          'function foo(uint256 i) view returns (uint256)',
-          'function someName(uint256 i) view returns (uint256)',
-          'function someName(uint256 a, uint256 b) view returns (uint256)',
-          'function someName() view returns (uint256)',
-        ],
-        DiscoveryLogger.SILENT,
-      )
+      const handler = new ArrayHandler('someName', { type: 'array' }, [
+        'function foo(uint256 i) view returns (uint256)',
+        'function someName(uint256 i) view returns (uint256)',
+        'function someName(uint256 a, uint256 b) view returns (uint256)',
+        'function someName() view returns (uint256)',
+      ])
 
       expect(handler.getMethod()).toEqual(
         'function someName(uint256 i) view returns (uint256)',
@@ -121,16 +109,11 @@ describe(ArrayHandler.name, () => {
     it('throws if it cannot find the method by field name', () => {
       expect(
         () =>
-          new ArrayHandler(
-            'someName',
-            { type: 'array' },
-            [
-              'function foo(uint256 i) view returns (uint256)',
-              'function someName(uint256 a, uint256 b) view returns (uint256)',
-              'function someName() view returns (uint256)',
-            ],
-            DiscoveryLogger.SILENT,
-          ),
+          new ArrayHandler('someName', { type: 'array' }, [
+            'function foo(uint256 i) view returns (uint256)',
+            'function someName(uint256 a, uint256 b) view returns (uint256)',
+            'function someName() view returns (uint256)',
+          ]),
       ).toThrow('Cannot find a matching method for someName')
     })
 
@@ -147,7 +130,6 @@ describe(ArrayHandler.name, () => {
           'function bar(uint256 a, uint256 b) view returns (uint256)',
           'function bar() view returns (uint256)',
         ],
-        DiscoveryLogger.SILENT,
       )
 
       expect(handler.getMethod()).toEqual(
@@ -158,19 +140,14 @@ describe(ArrayHandler.name, () => {
     it('throws if it cannot find the method by method name', () => {
       expect(
         () =>
-          new ArrayHandler(
-            'someName',
-            { type: 'array', method: 'bar' },
-            [
-              'function foo(uint256 i) view returns (uint256)',
-              'function someName(uint256 i) view returns (uint256)',
-              'function someName(uint256 a, uint256 b) view returns (uint256)',
-              'function someName() view returns (uint256)',
-              'function bar(uint256 a, uint256 b) view returns (uint256)',
-              'function bar() view returns (uint256)',
-            ],
-            DiscoveryLogger.SILENT,
-          ),
+          new ArrayHandler('someName', { type: 'array', method: 'bar' }, [
+            'function foo(uint256 i) view returns (uint256)',
+            'function someName(uint256 i) view returns (uint256)',
+            'function someName(uint256 a, uint256 b) view returns (uint256)',
+            'function someName() view returns (uint256)',
+            'function bar(uint256 a, uint256 b) view returns (uint256)',
+            'function bar() view returns (uint256)',
+          ]),
       ).toThrow('Cannot find a matching method for bar')
     })
   })
@@ -186,6 +163,8 @@ describe(ArrayHandler.name, () => {
 
     it('calls the method "length" times', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -204,7 +183,6 @@ describe(ArrayHandler.name, () => {
         'owners',
         { type: 'array', method, length: 3 },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
@@ -216,6 +194,8 @@ describe(ArrayHandler.name, () => {
 
     it('passes the ignoreRelative field', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -231,7 +211,6 @@ describe(ArrayHandler.name, () => {
         'owners',
         { type: 'array', method, length: 3, ignoreRelative: true },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
@@ -243,6 +222,8 @@ describe(ArrayHandler.name, () => {
 
     it('resolves the "length" field', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -258,7 +239,6 @@ describe(ArrayHandler.name, () => {
         'owners',
         { type: 'array', method, length: '{{ foo }}' },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {
         foo: { field: 'foo', value: 3 },
@@ -272,6 +252,8 @@ describe(ArrayHandler.name, () => {
 
     it('handles errors when length is present', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -290,7 +272,6 @@ describe(ArrayHandler.name, () => {
         'owners',
         { type: 'array', method, length: 3 },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
@@ -301,6 +282,8 @@ describe(ArrayHandler.name, () => {
 
     it('calls the method until revert without length', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -315,12 +298,7 @@ describe(ArrayHandler.name, () => {
         },
       })
 
-      const handler = new ArrayHandler(
-        'owners',
-        { type: 'array', method },
-        [],
-        DiscoveryLogger.SILENT,
-      )
+      const handler = new ArrayHandler('owners', { type: 'array', method }, [])
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
         field: 'owners',
@@ -331,6 +309,8 @@ describe(ArrayHandler.name, () => {
 
     it('handles non-revert errors without length', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -345,12 +325,7 @@ describe(ArrayHandler.name, () => {
         },
       })
 
-      const handler = new ArrayHandler(
-        'owners',
-        { type: 'array', method },
-        [],
-        DiscoveryLogger.SILENT,
-      )
+      const handler = new ArrayHandler('owners', { type: 'array', method }, [])
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
         field: 'owners',
@@ -360,17 +335,14 @@ describe(ArrayHandler.name, () => {
 
     it('has a builtin limit of 100', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>() {
           return EthereumAddress.ZERO as T
         },
       })
 
-      const handler = new ArrayHandler(
-        'owners',
-        { type: 'array', method },
-        [],
-        DiscoveryLogger.SILENT,
-      )
+      const handler = new ArrayHandler('owners', { type: 'array', method }, [])
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
         field: 'owners',
@@ -381,6 +353,8 @@ describe(ArrayHandler.name, () => {
 
     it('can have a different maxLength', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>() {
           return EthereumAddress.ZERO as T
         },
@@ -390,7 +364,6 @@ describe(ArrayHandler.name, () => {
         'owners',
         { type: 'array', method, maxLength: 15 },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
@@ -402,6 +375,8 @@ describe(ArrayHandler.name, () => {
 
     it('calls indices if present', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -417,7 +392,6 @@ describe(ArrayHandler.name, () => {
         'owners',
         { type: 'array', method, indices: [0, 2] },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
@@ -430,6 +404,8 @@ describe(ArrayHandler.name, () => {
       const owners = new Array(10).fill(0).map(() => EthereumAddress.random())
 
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -449,7 +425,6 @@ describe(ArrayHandler.name, () => {
         'owners',
         { type: 'array', method, indices: [0, 2, 3, 4, 5, 6] },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {})
       expect(result).toEqual({
@@ -468,6 +443,8 @@ describe(ArrayHandler.name, () => {
 
     it('resolves the "indices" field', async () => {
       const provider = mockObject<IProvider>({
+        blockNumber: 123,
+        chain: 'foo',
         async callMethod<T>(
           passedAddress: EthereumAddress,
           _abi: string,
@@ -483,7 +460,6 @@ describe(ArrayHandler.name, () => {
         'owners',
         { type: 'array', method, indices: '{{ foo }}' },
         [],
-        DiscoveryLogger.SILENT,
       )
       const result = await handler.execute(provider, address, {
         foo: { field: 'foo', value: [0, 2] },

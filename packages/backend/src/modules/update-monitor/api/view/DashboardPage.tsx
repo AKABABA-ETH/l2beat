@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react'
 
-import { TableData } from '../../../status/Components'
-import { Page } from '../../../status/Page'
-import { reactToHtml } from '../../../status/reactToHtml'
 import { DashboardProject } from '../props/getDashboardProjects'
+import { TableData } from './components/Components'
 import { Diff } from './components/Diff'
+import { Page } from './components/Page'
+import { reactToHtml } from './components/reactToHtml'
 
 import { getContractField, sortBySeverity } from '@l2beat/discovery'
 
@@ -12,7 +12,7 @@ interface DashboardPageProps {
   projects: Record<string, DashboardProject[]>
 }
 
-export function DashboardPage(props: DashboardPageProps) {
+function DashboardPage(props: DashboardPageProps) {
   return (
     <Page title="Discovery">
       <table style={{ width: '100%' }}>

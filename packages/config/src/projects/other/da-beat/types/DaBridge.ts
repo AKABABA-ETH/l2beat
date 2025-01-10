@@ -1,168 +1,127 @@
-import { ChainId, EthereumAddress, ProjectId } from '@l2beat/shared-pure'
-import { ScalingProjectContractSingleAddress } from '../../../../common'
-import { DaAccessibilityRisk } from './DaAccessibilityRisk'
-import { DaAttestationSecurityRisk } from './DaAttestationSecurityRisk'
-import { DaExitWindowRisk } from './DaExitWindowRisk'
+import { ChainId, UnixTime } from '@l2beat/shared-pure'
+import {
+  ScalingProjectPermission,
+  ScalingProjectTechnologyChoice,
+} from '../../../../common'
+import { DaBridgeContracts } from './DaBridgeContracts'
+import { DaCommitteeSecurityRisk } from './DaCommitteeSecurityRisk'
+import { DaLinks } from './DaLinks'
+import { DaRelayerFailureRisk } from './DaRelayerFailureRisk'
+import { DaTechnology } from './DaTechnology'
+import { DaUpgradeabilityRisk } from './DaUpgradeabilityRisk'
+import { DacTransactionDataType } from './DacTransactionDataType'
+import { EthereumDaBridgeRisks } from './EthereumDaRisks'
+import { UsedInProject } from './UsedInProject'
 
-export type DaBridgeKind = (typeof DaBridgeKind)[keyof typeof DaBridgeKind]
-
-const OnChainBridge = {
-  type: 'OnChainBridge',
-  display: 'On-chain bridge',
-} as const
-
-const DAC = {
-  type: 'DAC',
-  display: 'DAC',
-} as const
-
-const NoBridge = {
-  type: 'NoBridge',
-  display: 'No bridge',
-} as const
-
-export const DaBridgeKind = {
-  OnChainBridge,
-  DAC,
-  NoBridge,
-}
-
-export type DaBridge = NoDaBridge | OnChainDaBridge | DacBridge
+export type DaBridge =
+  | NoDaBridge
+  | OnChainDaBridge
+  | DacBridge
+  | EnshrinedBridge
 
 export type NoDaBridge = CommonDaBridge & {
-  kind: typeof NoBridge
-}
-
-export type OnChainDaBridge = CommonDaBridge & {
-  kind: typeof OnChainBridge
-
+  type: 'NoBridge'
   /**
-   * The chain ID of the data availability bridge
+   * Data about related permissions - preferably from discovery.
+   * It makes less sense to have permissions for NoBridge, but it's here in case we need to
+   * add some complementary information.
    */
-  chain: ChainId
-
+  permissions: Record<string, ScalingProjectPermission[]> | 'UnderReview'
   /**
-   * Data about related permissions - preferably from discovery
+   * Data about the contracts used in the bridge - preferably from discovery.
+   * It makes less sense to have contracts for NoBridge, but it's here in case we need to
+   * add some complementary information.
    */
-  permissions: Permissions[]
-
-  /**
-   * Data about the contracts used in the bridge - preferably from discovery
-   */
-  contracts: ScalingProjectContractSingleAddress
-}
-
-export type DacBridge = CommonDaBridge & {
-  kind: typeof DAC
-
-  /**
-   * The chain the DAC attests data on.
-   */
-  chain: ChainId
-
-  /**
-   * Total number of members in the DAC.
-   */
-  totalMembers: number
-
-  /**
-   * Minimum number of members required to sign and attest the data.
-   */
-  requiredMembers: number
-}
-
-type CommonDaBridge = {
-  /**
-   * Unique identifier of the data availability bridge
-   */
-  id: string
-
-  display: {
-    /**
-     * The name of the data availability bridge
-     */
-    name: string
-
-    /**
-     * Slug of the data availability bridge
-     */
-    slug: string
-
-    /**
-     * Description of the data availability bridge
-     */
-    description: string
-  }
-
-  /**
-   * List of projects given bridge is being used in
-   */
-  usedIn: ProjectId[]
-
-  /**
-   * Risks related to given data availability bridge
-   */
+  contracts: DaBridgeContracts
+  /** Risks related to given data availability bridge. */
   risks: DaBridgeRisks
 }
 
-export type DaBridgeRisks = {
-  /**
-   * Attestation - TBD
-   */
-  attestations: DaAttestationSecurityRisk
-
-  /**
-   * Exit window - TBD
-   * @unit seconds
-   */
-  exitWindow: DaExitWindowRisk
-
-  /**
-   * Accessibility - TBD
-   */
-  accessibility: DaAccessibilityRisk
+export type EnshrinedBridge = CommonDaBridge & {
+  type: 'Enshrined'
+  risks: EthereumDaBridgeRisks
+  callout: string
 }
 
-type Permissions = {
-  /**
-   * List of the accounts
-   */
-  accounts: PermissionedAccount[]
+export type OnChainDaBridge = CommonDaBridge & {
+  type: 'OnChainBridge'
+  /** The chain name the data availability bridge lives on. */
+  chain: string
+  /** Data about related permissions - preferably from discovery. */
+  permissions: Record<string, ScalingProjectPermission[]> | 'UnderReview'
+  /** Data about the validation type of the bridge */
+  validation: {
+    type: string
+  }
+  /** Data about the contracts used in the bridge - preferably from discovery. */
+  contracts: DaBridgeContracts
+  /** Risks related to given data availability bridge. */
+  risks: DaBridgeRisks
+}
 
-  /**
-   * Name of this group
-   */
+export type DacBridge = CommonDaBridge & {
+  type: 'DAC'
+  /** The chain the DAC attests data on. */
+  chain: ChainId
+  /**  Total members count.  */
+  membersCount: number
+  /** Data about the DAC members. */
+  knownMembers?: {
+    external: boolean
+    name: string
+    href: string
+    key?: string
+  }[]
+  /** Minimum number of members required to sign and attest the data. */
+  requiredMembers: number
+  /** TEMP: Members field will turn into N/A badge if this is true */
+  hideMembers?: boolean
+  /** The type of data. */
+  transactionDataType: DacTransactionDataType
+  /** Data about related permissions - preferably from discovery. */
+  permissions: Record<string, ScalingProjectPermission[]>
+  /** Data about the contracts used in the bridge - preferably from discovery. */
+  contracts: DaBridgeContracts
+  /** Risks related to given data availability bridge. */
+  risks: DaBridgeRisks
+}
+
+type CommonDaBridge = {
+  /** Unique identifier of the data availability bridge. */
+  id: string
+  /** Date of creation of the file (not the project) */
+  createdAt: UnixTime
+  display: DaBridgeDisplay
+  /** Is the DA bridge under review? */
+  isUnderReview?: boolean
+  /** Description of technology used by the data availability bridge. */
+  technology: DaTechnology
+  /** List of projects given bridge is being used in. */
+  usedIn: UsedInProject[]
+  /** Other considerations */
+  otherConsiderations?: ScalingProjectTechnologyChoice[]
+}
+
+interface DaBridgeDisplay {
+  /** The name of the data availability bridge. */
   name: string
-
-  /**
-   * Description of the permissions
-   */
+  /** Slug of the data availability bridge. */
+  slug: string
+  /** Description of the data availability bridge. */
   description: string
-
-  /**
-   * Name of the chain of these addresses. Optional for backwards compatibility
-   */
-  chain?: string
-
-  /**
-   * List of source code permalinks and useful materials
-   */
-  references?: Reference[]
+  /** A warning displayed on the table and project page */
+  warning?: string
+  /** Project raw with red warning will turn into red, and there will be red warning icon with this message */
+  redWarning?: string
+  /** Links related to the data availability bridge. */
+  links: DaLinks
 }
 
-interface PermissionedAccount {
-  address: EthereumAddress
-  type: 'EOA' | 'MultiSig' | 'Contract'
-}
-
-interface Reference {
-  /**
-   * Short text describing link contents
-   */
-  text: string
-
-  /**
-   * URL of the link, preferably https
-   */
-  href: string
+export type DaBridgeRisks = {
+  /** Attestation - TBD. */
+  committeeSecurity: DaCommitteeSecurityRisk
+  /** Upgradeability - TBD. @unit seconds. */
+  upgradeability: DaUpgradeabilityRisk
+  /** Relayer failure - TBD. */
+  relayerFailure: DaRelayerFailureRisk
 }

@@ -1,7 +1,10 @@
-module.exports = {
+/** @type {import('postcss-load-config').Config} */
+const config = {
   plugins: {
-    'postcss-import': {},
     tailwindcss: {},
     autoprefixer: {},
   },
 }
+
+// biome-ignore lint/style/noDefaultExport: config file
+export default config

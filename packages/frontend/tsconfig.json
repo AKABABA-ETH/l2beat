@@ -1,7 +1,21 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "@l2beat/typescript-config/nextjs",
   "compilerOptions": {
-    "lib": ["es2019", "DOM"],
-    "outDir": "build"
-  }
+    /* Path aliases */
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"],
+      "react": ["./node_modules/@types/react"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.mjs",
+    "**/*.js",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", "storybook-static"]
 }

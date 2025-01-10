@@ -1,31 +1,37 @@
 {
   "name": "polygonzkevm",
   "chain": "ethereum",
-  "blockNumber": 19976289,
-  "configHash": "0x8660573ec3e06fd6350670ae40ed0bd1067e4751b1b00a633cbc91f86ec05fde",
-  "version": 6,
+  "blockNumber": 20878349,
+  "configHash": "0x9f2a63feb17b6a63ff3e04a613e6e10404800c34a80bf98d0951ee464c231d4b",
   "contracts": [
-    {
-      "name": "PolygonzkEVMVerifier",
-      "address": "0x0775e11309d75aA6b0967917fB0213C5673eDf81",
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1711291211,
-      "derivedName": "FflonkVerifier"
-    },
     {
       "name": "daiBridge",
       "address": "0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98",
+      "sourceHashes": [
+        "0x612fcbfe67b3a142750d4b383ec80c3df15e053a88579b6d54660253f4c19baa",
+        "0x608730e7656b64bd18a9a04f2b0024b9dc95d2145d3e6cde1f5d590f31f4fff4"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904",
+          "via": []
+        }
+      ],
       "ignoreInWatchMode": ["totalBridgedDAI"],
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xF684f2CB299cCDaAB483ffc1573B82f40C6b775b",
-        "admin": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904"
-      },
-      "implementations": ["0xF684f2CB299cCDaAB483ffc1573B82f40C6b775b"],
       "sinceTimestamp": 1695199499,
       "values": {
+        "$admin": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904",
+        "$implementation": "0xF684f2CB299cCDaAB483ffc1573B82f40C6b775b",
+        "$pastUpgrades": [
+          [
+            "2023-09-20T08:44:59.000Z",
+            "0x2c7c12aeaf738701352017fc49f5268db9632b84bdc6f76474e6776371f53b7e",
+            ["0xF684f2CB299cCDaAB483ffc1573B82f40C6b775b"]
+          ]
+        ],
+        "$upgradeCount": 1,
         "beneficiary": "0xF29Ff96aaEa6C9A1fBa851f74737f3c069d4f1a9",
         "dai": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
         "DEFAULT_ADMIN_ROLE": "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -40,12 +46,9 @@
           "newAdmin": "0x0000000000000000000000000000000000000000",
           "schedule": 0
         },
-        "pendingDefaultAdminDelay": {
-          "newDelay": 0,
-          "schedule": 0
-        },
+        "pendingDefaultAdminDelay": { "newDelay": 0, "schedule": 0 },
         "sdai": "0x83F20F44975D03b1b09e64809B757c47f942BEeA",
-        "totalBridgedDAI": "254032905626934742210448",
+        "totalBridgedDAI": "972213332991168800922732",
         "totalProtocolDAI": "1000000000000000000",
         "zkEvmBridge": "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe"
       },
@@ -54,15 +57,39 @@
     {
       "name": "PolygonZkEVMEtrog",
       "address": "0x519E42c24163192Dca44CD3fBDCEBF6be9130987",
+      "sourceHashes": [
+        "0xa25e4c87882527d75fa2198c374939dd0c3b3fd509be89ee51c9b206bc62bdc4",
+        "0xf303702e52579ed796873f92868d2ebedd55360bf53043519e6061b19df3eb4b"
+      ],
+      "proxyType": "EIP1967 proxy",
       "ignoreInWatchMode": ["lastAccInputHash"],
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x2650a9a4fC64f63F573EF0F405064EF54BC46f71",
-        "admin": "0x5132A183E9F3CB7C848b0AAC5Ae0c4f0491B7aB2"
-      },
-      "implementations": ["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"],
       "sinceTimestamp": 1706364971,
       "values": {
+        "$admin": "0x5132A183E9F3CB7C848b0AAC5Ae0c4f0491B7aB2",
+        "$implementation": "0x2650a9a4fC64f63F573EF0F405064EF54BC46f71",
+        "$pastUpgrades": [
+          [
+            "2024-01-27T14:16:11.000Z",
+            "0x4e3fc80071c2d0852584cb59bfcd784519bfb3582aa3334098a4b32b5f6aaef4",
+            ["0x79BCB82B35A335cD8A8Ec433b304a0c91f67CDE0"]
+          ],
+          [
+            "2024-03-14T12:25:35.000Z",
+            "0xeba0bc3b2674c961c5a998f22f789ea610a7c3e57e622a4dd951cca2702b8be3",
+            ["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]
+          ],
+          [
+            "2024-03-24T23:36:47.000Z",
+            "0x67e892c44b9d14709693e74dd5e17fb40d98c8c2cc1c5330265e758e8958a01b",
+            ["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]
+          ],
+          [
+            "2024-10-01T14:22:59.000Z",
+            "0x069690e412d29d96bc94d6bf5c816e43bb401cbf948f3e3cad261e073e2d2afe",
+            ["0x2650a9a4fC64f63F573EF0F405064EF54BC46f71"]
+          ]
+        ],
+        "$upgradeCount": 4,
         "admin": "0x242daE44F5d8fb54B198D03a94dA45B5a4413e21",
         "bridgeAddress": "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe",
         "calculatePolPerForceBatch": 0,
@@ -80,7 +107,7 @@
         "INITIALIZE_TX_CONSTANT_BYTES_EMPTY_METADATA": 31,
         "INITIALIZE_TX_DATA_LEN_EMPTY_METADATA": 228,
         "INITIALIZE_TX_EFFECTIVE_PERCENTAGE": "0xff",
-        "lastAccInputHash": "0xadc2b474c1301bee6c8c89fbe30a3c6e7365cc594a229d2bdf6331d9db5cbb28",
+        "lastAccInputHash": "0xd65a78b223b357e2cdd9473590e8e919508c3809828e8413bc10290c9e32fa7f",
         "lastForceBatch": 0,
         "lastForceBatchSequenced": 0,
         "networkName": "polygon zkEVM",
@@ -99,14 +126,30 @@
     {
       "name": "usdcBridge",
       "address": "0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xA4e6762eAAf259DA74696F46fAAF79bA9DdE14E6",
-        "admin": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904"
-      },
-      "implementations": ["0xA4e6762eAAf259DA74696F46fAAF79bA9DdE14E6"],
+      "sourceHashes": [
+        "0x74f36c1c292d2992d00c72ffd2ff8a4b8648a1c9058e63210c2742186a9daf50",
+        "0xefc52c461b0de070fb85381ef77033d1a68b13e59d2ca477477b766802ab1164"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904",
+          "via": []
+        }
+      ],
       "sinceTimestamp": 1700125979,
       "values": {
+        "$admin": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904",
+        "$implementation": "0xA4e6762eAAf259DA74696F46fAAF79bA9DdE14E6",
+        "$pastUpgrades": [
+          [
+            "2023-11-16T09:12:59.000Z",
+            "0x6402dc60bb9c4f704f126f4b11e40b33c287b4ac7f73ea60c50d7452d52ce735",
+            ["0xA4e6762eAAf259DA74696F46fAAF79bA9DdE14E6"]
+          ]
+        ],
+        "$upgradeCount": 1,
         "bridge": "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe",
         "l1USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
         "owner": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904",
@@ -117,16 +160,42 @@
       "derivedName": "L1Escrow"
     },
     {
+      "name": "PolygonzkEVMVerifier",
+      "address": "0xc521580cd8586Cc688A7430F9DcE0f6A803F2883",
+      "sourceHashes": [
+        "0x1b9299553467d8c5557640b4aa02efa58c4fd2cec8e008db1a70ce0a1c5a131b"
+      ],
+      "sinceTimestamp": 1726821035,
+      "values": { "$immutable": true },
+      "derivedName": "FflonkVerifier_11"
+    },
+    {
       "name": "wstETHBridge",
       "address": "0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x18FED1E19dC564DC917D203be9d40790472D22e9",
-        "admin": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904"
-      },
-      "implementations": ["0x18FED1E19dC564DC917D203be9d40790472D22e9"],
+      "sourceHashes": [
+        "0x612fcbfe67b3a142750d4b383ec80c3df15e053a88579b6d54660253f4c19baa",
+        "0x768cec78a852b6918281dca4675713010a4e764f5eb658f4f98c8ae258523e62"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904",
+          "via": []
+        }
+      ],
       "sinceTimestamp": 1703945135,
       "values": {
+        "$admin": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904",
+        "$implementation": "0x18FED1E19dC564DC917D203be9d40790472D22e9",
+        "$pastUpgrades": [
+          [
+            "2023-12-30T14:05:35.000Z",
+            "0x12c54f4243dc8e3b41be87984b78248eecbf98b92e30ff10b487be2599d7e3a1",
+            ["0x18FED1E19dC564DC917D203be9d40790472D22e9"]
+          ]
+        ],
+        "$upgradeCount": 1,
         "counterpartContract": "0xDB5D9c10FD2a92692DB51853e06058EE0436d69B",
         "counterpartNetwork": 1,
         "DEFAULT_ADMIN_ROLE": "0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -142,10 +211,7 @@
           "newAdmin": "0x0000000000000000000000000000000000000000",
           "schedule": 0
         },
-        "pendingDefaultAdminDelay": {
-          "newDelay": 0,
-          "schedule": 0
-        },
+        "pendingDefaultAdminDelay": { "newDelay": 0, "schedule": 0 },
         "polygonZkEVMBridge": "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe",
         "wrappedTokenAddress": "0xbf6De60Ccd9D22a5820A658fbE9fc87975EA204f"
       },
@@ -155,28 +221,38 @@
       "name": "",
       "address": "0xF29Ff96aaEa6C9A1fBa851f74737f3c069d4f1a9",
       "unverified": true,
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1651947248
+      "sinceTimestamp": 1651947248,
+      "values": { "$immutable": true }
     },
     {
       "name": "EscrowsAdmin",
       "address": "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904",
       "template": "GnosisSafe",
+      "sourceHashes": [
+        "0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff",
+        "0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"
+      ],
+      "proxyType": "gnosis safe",
+      "receivedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x4A27aC91c5cD3768F140ECabDe3FC2B2d92eDb98"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x70E70e58ed7B1Cec0D8ef7464072ED8A52d755eB"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0xf0CDE1E7F0FAD79771cd526b1Eb0A12F69582C01"
+        }
+      ],
       "ignoreInWatchMode": ["nonce"],
-      "upgradeability": {
-        "type": "gnosis safe",
-        "masterCopy": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
-        "modules": [],
-        "threshold": "5 of 10 (50%)"
-      },
-      "implementations": ["0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"],
       "sinceTimestamp": 1694792111,
       "values": {
-        "domainSeparator": "0x8a124b80a35ff530b08dee85e5c8febf58bd7c0faed74b60fa781f8695708242",
-        "getChainId": 1,
-        "getOwners": [
+        "$immutable": false,
+        "$implementation": "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552",
+        "$members": [
           "0x099198353446A9E3a20672eDC1Bd461E978842c3",
           "0xb771380f912E4b5F6beDdf81314C383c13F16ab5",
           "0xD09971D8ed6C6a5e57581e90d593ee5B94e348D4",
@@ -188,7 +264,11 @@
           "0x4DE44Aa0Ef9DB64DF3eB3465d35D73d0409d44ed",
           "0x4E83124eD15b13265240B61EC9627797CCE1032E"
         ],
-        "getThreshold": 5,
+        "$threshold": 5,
+        "domainSeparator": "0x8a124b80a35ff530b08dee85e5c8febf58bd7c0faed74b60fa781f8695708242",
+        "getChainId": 1,
+        "GnosisSafe_modules": [],
+        "multisigThreshold": "5 of 10 (50%)",
         "nonce": 1,
         "VERSION": "1.3.0"
       },
@@ -196,26 +276,23 @@
     }
   ],
   "eoas": [
-    "0x0000000000000000000000000000000000000000",
-    "0x099198353446A9E3a20672eDC1Bd461E978842c3",
-    "0x148Ee7dAF16574cD020aFa34CC658f8F3fbd2800",
-    "0x4DE44Aa0Ef9DB64DF3eB3465d35D73d0409d44ed",
-    "0x4E83124eD15b13265240B61EC9627797CCE1032E",
-    "0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA",
-    "0xb771380f912E4b5F6beDdf81314C383c13F16ab5",
-    "0xBDa0B27f93B2FD3f076725b89cf02e48609bC189",
-    "0xc4591c41e01a7a654B5427f39Bbd1dEe5bD45D1D",
-    "0xD09971D8ed6C6a5e57581e90d593ee5B94e348D4",
-    "0xd1B856ee12Bd00922cae8DD86ab068f8c0F95224",
-    "0xDB5D9c10FD2a92692DB51853e06058EE0436d69B",
-    "0xE6Ee0F8D81170160d50ed77b9C91E6219473d43a",
-    "0xF53D1fB2EeD22Cf1E8f7E90Da7f1CAe88344065F",
-    "0xf56AE6520776934127AB68438d1b4652BCe07F8f"
+    { "address": "0x0000000000000000000000000000000000000000" },
+    { "address": "0x099198353446A9E3a20672eDC1Bd461E978842c3" },
+    { "address": "0x148Ee7dAF16574cD020aFa34CC658f8F3fbd2800" },
+    { "address": "0x4DE44Aa0Ef9DB64DF3eB3465d35D73d0409d44ed" },
+    { "address": "0x4E83124eD15b13265240B61EC9627797CCE1032E" },
+    { "address": "0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA" },
+    { "address": "0xb771380f912E4b5F6beDdf81314C383c13F16ab5" },
+    { "address": "0xBDa0B27f93B2FD3f076725b89cf02e48609bC189" },
+    { "address": "0xc4591c41e01a7a654B5427f39Bbd1dEe5bD45D1D" },
+    { "address": "0xD09971D8ed6C6a5e57581e90d593ee5B94e348D4" },
+    { "address": "0xd1B856ee12Bd00922cae8DD86ab068f8c0F95224" },
+    { "address": "0xDB5D9c10FD2a92692DB51853e06058EE0436d69B" },
+    { "address": "0xE6Ee0F8D81170160d50ed77b9C91E6219473d43a" },
+    { "address": "0xF53D1fB2EeD22Cf1E8f7E90Da7f1CAe88344065F" },
+    { "address": "0xf56AE6520776934127AB68438d1b4652BCe07F8f" }
   ],
   "abis": {
-    "0x0775e11309d75aA6b0967917fB0213C5673eDf81": [
-      "function verifyProof(bytes32[24] proof, uint256[1] pubSignals) view returns (bool)"
-    ],
     "0x18FED1E19dC564DC917D203be9d40790472D22e9": [
       "constructor()",
       "event AdminChanged(address previousAdmin, address newAdmin)",
@@ -432,6 +509,9 @@
       "function zkMinterBurner() view returns (address)",
       "function zkNetworkId() view returns (uint32)"
     ],
+    "0xc521580cd8586Cc688A7430F9DcE0f6A803F2883": [
+      "function verifyProof(bytes32[24] proof, uint256[1] pubSignals) view returns (bool)"
+    ],
     "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552": [
       "constructor()",
       "event AddedOwner(address owner)",
@@ -550,5 +630,8 @@
     "0xf694C9e3a34f5Fa48b6f3a0Ff186C1c6c4FcE904": [
       "constructor(address _singleton)"
     ]
+  },
+  "usedTemplates": {
+    "GnosisSafe": "0x18527e82c3800311291da7323caa876f588cde67692c1c84d5ecb5161da61359"
   }
 }

@@ -7,6 +7,9 @@ import {
 
 import {
   CONTRACTS,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   EXITS,
   FORCE_TRANSACTIONS,
   NEW_CRYPTOGRAPHY,
@@ -15,9 +18,11 @@ import {
   STATE_CORRECTNESS,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../common'
+import { formatExecutionDelay } from '../../common/formatDelays'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
+import { PROOFS } from '../zk-catalog/common/proofSystems'
 import { getStage } from './common/stages/getStage'
 import { Layer2 } from './types'
 
@@ -35,21 +40,24 @@ const forcedWithdrawalFee = discovery.getContractValue<number>(
 )
 
 const upgrades = {
-  upgradableBy: ['ProxyOwner'],
+  upgradableBy: ['LoopringMultisig'],
   upgradeDelay: 'No delay',
 }
 
 const upgradeDelay = 0
+const finalizationPeriod = 0
 
 export const loopring: Layer2 = {
   type: 'layer2',
   id: ProjectId('loopring'),
+  createdAt: new UnixTime(1623153328), // 2021-06-08T11:55:28Z
+  badges: [Badge.VM.AppChain, Badge.DA.EthereumCalldata],
   display: {
     name: 'Loopring',
     slug: 'loopring',
     description:
       'Loopring is a ZK Rollup exchange protocol for trading and payments.',
-    purposes: ['NFT', 'AMM'],
+    purposes: ['NFT', 'Exchange'],
     provider: 'Loopring',
     category: 'ZK Rollup',
     links: {
@@ -78,7 +86,7 @@ export const loopring: Layer2 = {
         'Loopring is a ZK rollup that posts state diffs to the L1. For a transaction to be considered final, the state diffs have to be submitted and validity proof should be generated, submitted, and verified. ',
     },
     finality: {
-      finalizationPeriod: 0,
+      finalizationPeriod,
     },
   },
   config: {
@@ -132,7 +140,7 @@ export const loopring: Layer2 = {
           selector: '0xdcb2aa31',
           functionSignature:
             'function submitBlocksWithCallbacks(bool isDataCompressed, bytes calldata data, ((uint16,(uint16,uint16,uint16,bytes)[])[], address[])  calldata config)',
-          sinceTimestampInclusive: new UnixTime(1616396742),
+          sinceTimestamp: new UnixTime(1616396742),
         },
       },
     ],
@@ -149,13 +157,18 @@ export const loopring: Layer2 = {
       stateUpdate: 'disabled',
     },
   },
-  dataAvailability: addSentimentToDataAvailability({
-    layers: ['Ethereum (calldata)'],
-    bridge: { type: 'Enshrined' },
-    mode: 'State diffs',
-  }),
-  riskView: makeBridgeCompatible({
-    stateValidation: RISK_VIEW.STATE_ZKP_SN,
+  dataAvailability: [
+    addSentimentToDataAvailability({
+      layers: [DA_LAYERS.ETH_CALLDATA],
+      bridge: DA_BRIDGES.ENSHRINED,
+      mode: DA_MODES.STATE_DIFFS,
+    }),
+  ],
+  riskView: {
+    stateValidation: {
+      ...RISK_VIEW.STATE_ZKP_SN,
+      secondLine: formatExecutionDelay(finalizationPeriod),
+    },
     dataAvailability: RISK_VIEW.DATA_ON_CHAIN,
     exitWindow: RISK_VIEW.EXIT_WINDOW(upgradeDelay, forcedWithdrawalDelay),
     sequencerFailure: {
@@ -192,29 +205,32 @@ export const loopring: Layer2 = {
         },
       ],
     },
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL('LRC'),
-    validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-  }),
-  stage: getStage({
-    stage0: {
-      callsItselfRollup: true,
-      stateRootsPostedToL1: true,
-      dataAvailabilityOnL1: true,
-      rollupNodeSourceAvailable: false,
+  },
+  stage: getStage(
+    {
+      stage0: {
+        callsItselfRollup: true,
+        stateRootsPostedToL1: true,
+        dataAvailabilityOnL1: true,
+        rollupNodeSourceAvailable: true,
+      },
+      stage1: {
+        stateVerificationOnL1: true,
+        fraudProofSystemAtLeast5Outsiders: null,
+        usersHave7DaysToExit: false,
+        usersCanExitWithoutCooperation: true,
+        securityCouncilProperlySetUp: null,
+      },
+      stage2: {
+        proofSystemOverriddenOnlyInCaseOfABug: null,
+        fraudProofSystemIsPermissionless: null,
+        delayWith30DExitWindow: false,
+      },
     },
-    stage1: {
-      stateVerificationOnL1: true,
-      fraudProofSystemAtLeast5Outsiders: null,
-      usersHave7DaysToExit: false,
-      usersCanExitWithoutCooperation: true,
-      securityCouncilProperlySetUp: null,
+    {
+      rollupNodeLink: 'https://github.com/Loopring/loopring-subgraph-v2',
     },
-    stage2: {
-      proofSystemOverriddenOnlyInCaseOfABug: null,
-      fraudProofSystemIsPermissionless: null,
-      delayWith30DExitWindow: false,
-    },
-  }),
+  ),
   technology: {
     stateCorrectness: {
       ...STATE_CORRECTNESS.VALIDITY_PROOFS,
@@ -313,7 +329,7 @@ export const loopring: Layer2 = {
   },
   permissions: [
     ...discovery.getMultisigPermission(
-      'ProxyOwner',
+      'LoopringMultisig',
       'This address is the owner of the following contracts: LoopringIOExchangeOwner, ExchangeV3 (proxy), BlockVerifier, AgentRegistry, LoopringV3. This allows it to grant access to submitting blocks, arbitrarily change the forced withdrawal fee, change the Verifier address and upgrade ExchangeV3 implementation potentially gaining access to all funds in DefaultDepositContract.',
     ),
     {
@@ -393,6 +409,7 @@ export const loopring: Layer2 = {
       },
     ],
     proofVerification: {
+      shortDescription: 'Loopring is a DEX rollup on Ethereum.',
       aggregation: false,
       requiredTools: [
         {
@@ -413,10 +430,7 @@ export const loopring: Layer2 = {
           subVerifiers: [
             {
               name: 'Main circuit',
-              proofSystem: 'Groth16',
-              mainArithmetization: 'R1CS+QAP',
-              mainPCS: 'N/A',
-              trustedSetup: 'Powers of Tau 18',
+              ...PROOFS.GROTH16('POT18'),
               link: 'https://github.com/Loopring/protocol3-circuits.git',
             },
           ],
@@ -431,6 +445,7 @@ export const loopring: Layer2 = {
       date: '2019-12-04T00:00:00Z',
       description:
         'Loopring Protocol 3.0 is fully operational with support for orderbook trading on WeDex.',
+      type: 'general',
     },
     {
       name: 'Loopring Protocol 3.6 Pre-release',
@@ -438,6 +453,7 @@ export const loopring: Layer2 = {
       date: '2020-09-22T00:00:00Z',
       description:
         'Enhancements in transfers, order-book trading and AMM swap.',
+      type: 'general',
     },
     {
       name: 'Loopring’s ZK Rollup AMM is Live',
@@ -445,12 +461,14 @@ export const loopring: Layer2 = {
       date: '2020-12-02T00:00:00Z',
       description:
         'Improved implementation, enabling gas-free instant swaps and liquidity changes.',
+      type: 'general',
     },
     {
       name: 'Loopring Supports Payments',
       link: 'https://medium.loopring.io/loopring-pay-is-live-zkrollup-transfers-on-ethereum-770d35213408',
       date: '2020-06-06T00:00:00Z',
       description: 'Support for ERC20 transfers is live on Loopring.',
+      type: 'general',
     },
     {
       name: 'DeFi Port is Live on Loopring',
@@ -458,12 +476,14 @@ export const loopring: Layer2 = {
       date: '2022-09-27T00:00:00Z',
       description:
         'Dutch auctions, lending, and other DeFi functions can be performed on Loopring.',
+      type: 'general',
     },
     {
       name: 'Loopring Supports NFTs',
       link: 'https://medium.loopring.io/loopring-now-supports-nfts-on-l2-29174a343d0d',
       date: '2021-08-24T00:00:00Z',
       description: 'Loopring supports NFT minting, trading, and transfers.',
+      type: 'general',
     },
     {
       name: 'Loopring DEX is online',
@@ -471,6 +491,7 @@ export const loopring: Layer2 = {
       date: '2020-02-27T00:00:00Z',
       description:
         'ZK Rollup trading is live, as Loopring launches their order book based exchange.',
+      type: 'general',
     },
   ],
 }

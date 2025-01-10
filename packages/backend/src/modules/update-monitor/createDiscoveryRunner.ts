@@ -2,15 +2,19 @@ import {
   ConfigReader,
   DiscoveryChainConfig,
   DiscoveryLogger,
-  HttpClient,
   DiscoveryCache as IDiscoveryCache,
+  InMemoryCache,
+  LeveledCache,
+  RedisCache,
   getDiscoveryEngine,
 } from '@l2beat/discovery'
 
+import { Database } from '@l2beat/database'
+import { HttpClient } from '@l2beat/shared'
+import { assert } from '@l2beat/shared-pure'
 import { Peripherals } from '../../peripherals/Peripherals'
 import { DiscoveryCache } from './DiscoveryCache'
 import { DiscoveryRunner } from './DiscoveryRunner'
-import { DiscoveryCacheRepository } from './repositories/DiscoveryCacheRepository'
 
 export function createDiscoveryRunner(
   http: HttpClient,
@@ -19,19 +23,18 @@ export function createDiscoveryRunner(
   discoveryLogger: DiscoveryLogger,
   chainConfigs: DiscoveryChainConfig[],
   chain: string,
-  enableCache: boolean,
+  cacheEnabled: boolean,
+  cacheUri: string,
 ) {
-  const discoveryCacheRepository = peripherals.getRepository(
-    DiscoveryCacheRepository,
-  )
-  let discoveryCache: IDiscoveryCache = new DiscoveryCache(
-    discoveryCacheRepository,
-  )
-  if (!enableCache) {
-    discoveryCache = {
-      get: async () => undefined,
-      set: async () => {},
-    }
+  let discoveryCache: IDiscoveryCache = {
+    get: async () => undefined,
+    set: async () => {},
+  }
+
+  if (cacheEnabled) {
+    const l1Cache = new InMemoryCache(5000)
+    const l2Cache = decodeCacheUri(cacheUri, peripherals.database)
+    discoveryCache = new LeveledCache(l1Cache, l2Cache)
   }
 
   const { allProviders, discoveryEngine } = getDiscoveryEngine(
@@ -43,4 +46,14 @@ export function createDiscoveryRunner(
   )
 
   return new DiscoveryRunner(allProviders, discoveryEngine, configReader, chain)
+}
+
+function decodeCacheUri(uri: string, database: Database): IDiscoveryCache {
+  if (uri === 'postgres') {
+    return new DiscoveryCache(database)
+  } else if (uri.startsWith('redis')) {
+    return new RedisCache(uri)
+  } else {
+    assert(false, 'unsupported cache URI')
+  }
 }

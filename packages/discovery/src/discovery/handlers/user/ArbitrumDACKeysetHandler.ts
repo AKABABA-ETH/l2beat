@@ -1,9 +1,8 @@
-import { assert } from '@l2beat/backend-tools'
-import { Bytes, EthereumAddress } from '@l2beat/shared-pure'
+import { assert, Bytes, EthereumAddress } from '@l2beat/shared-pure'
 import { providers, utils } from 'ethers'
 import * as z from 'zod'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
+import { base64 } from 'ethers/lib/utils'
 import { IProvider } from '../../provider/IProvider'
 import { Handler, HandlerResult } from '../Handler'
 
@@ -25,26 +24,25 @@ export class ArbitrumDACKeysetHandler implements Handler {
   constructor(
     readonly field: string,
     readonly definition: ArbitrumDACKeysetHandlerDefinition,
-    readonly logger: DiscoveryLogger,
   ) {}
 
   async execute(
     provider: IProvider,
     address: EthereumAddress,
   ): Promise<HandlerResult> {
-    this.logger.logExecution(this.field, ['Resolving Arbitrum DAC Keyset'])
-
     const events = await provider.getLogs(address, [
       [abi.getEventTopic('SetValidKeyset')],
     ])
 
-    const { requiredSignatures, membersCount } = decodeLastEvent(events)
+    const { requiredSignatures, membersCount, blsSignatures } =
+      decodeLastEvent(events)
 
     return {
       field: this.field,
       value: {
         requiredSignatures,
         membersCount,
+        blsSignatures,
       },
     }
   }
@@ -53,11 +51,13 @@ export class ArbitrumDACKeysetHandler implements Handler {
 function decodeLastEvent(events: providers.Log[]): {
   requiredSignatures: number
   membersCount: number
+  blsSignatures: string[]
 } {
   if (events.length === 0) {
     return {
       requiredSignatures: 0,
       membersCount: 0,
+      blsSignatures: [],
     }
   }
 
@@ -72,8 +72,23 @@ function decodeLastEvent(events: providers.Log[]): {
 
   const requiredSignatures = membersCount - assummedHonestMembers + 1
 
+  const blsSignatures: string[] = []
+  let head = 16
+  for (let i = 0; i < membersCount; i++) {
+    const size = keysetBytes.slice(head, head + 2).toNumber()
+    head += 2
+
+    blsSignatures.push(
+      base64.encode(keysetBytes.slice(head, head + size).toString()),
+    )
+    head += size
+  }
+
+  assert(head === keysetBytes.length)
+
   return {
     requiredSignatures,
     membersCount,
+    blsSignatures,
   }
 }

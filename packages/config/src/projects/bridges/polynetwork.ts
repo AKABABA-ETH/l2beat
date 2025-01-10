@@ -16,6 +16,7 @@ const warningText = isPaused ? 'The bridge is currently paused.' : undefined
 export const polynetwork: Bridge = {
   type: 'bridge',
   id: ProjectId('polynetwork'),
+  createdAt: new UnixTime(1662628329), // 2022-09-08T09:12:09Z
   display: {
     name: 'Poly Bridge',
     slug: 'polynetwork',
@@ -93,12 +94,8 @@ export const polynetwork: Bridge = {
         'Poly Bridge operation is centered around PolyNetwork chain that acts as a type of a light client for all supported chains. Each supported chain has a set or Relayers that transmit successive block headers to the PolyNetwork chain, as well as lock or burn events. Those events, after passing verification on PolyNetwork chain, are relayed to the destination chain by Relayers that are responsible for the destination chain. Relayers on the destination chain pass messages to appropriate contracts that mint or release corresponding tokens to the user after verifying validity of the message.',
       references: [
         {
-          text: 'PolyNetwork docs from source code',
-          href: 'https://github.com/polynetwork/docs',
-        },
-        {
-          text: 'Ethereum-related PolyNetwork docs from source code',
-          href: 'https://github.com/polynetwork/docs/blob/master/eth/README.md',
+          text: 'Poly Bridge docs',
+          href: 'https://github.com/polynetwork/poly-bridge/tree/master/doc',
         },
       ],
       risks: [
@@ -123,12 +120,10 @@ export const polynetwork: Bridge = {
         {
           category: 'Users can be censored if',
           text: 'chain Relayers decide to not pass certain transactions to the destination chain.',
-          isCritical: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'a fake block header is relayed through the PolyNetwork chain that allows to prove a burn/mint transaction that never occurred on the source chain.',
-          isCritical: true,
         },
         {
           category: 'Funds can be frozen if',
@@ -235,14 +230,22 @@ export const polynetwork: Bridge = {
   ],
   milestones: [
     {
+      name: 'New deployments suspended',
+      date: '2024-04-10T00:00:00.00Z',
+      link: 'https://x.com/PolyNetwork2/status/1778012918941892984',
+      type: 'general',
+    },
+    {
       name: 'Contracts hacked for $611M',
       date: '2021-08-10T00:00:00.00Z',
       link: 'https://en.wikipedia.org/wiki/Poly_Network_exploit',
+      type: 'incident',
     },
     {
       name: 'Compromised multisig steals funds',
       date: '2023-07-03T00:00:00.00Z',
       link: 'https://rekt.news/poly-network-rekt2/',
+      type: 'incident',
     },
   ],
 }

@@ -1,4 +1,4 @@
-import { EthereumAddress } from '@l2beat/shared-pure'
+import { EthereumAddress, Hash256 } from '@l2beat/shared-pure'
 import { expect } from 'earl'
 
 import {
@@ -7,6 +7,7 @@ import {
   AnalyzedContract,
   ExtendedTemplate,
 } from '../analysis/AddressAnalyzer'
+import { EMPTY_ANALYZED_CONTRACT } from '../utils/testUtils'
 import { removeAlreadyAnalyzed } from './removeAlreadyAnalyzed'
 
 describe(removeAlreadyAnalyzed.name, () => {
@@ -25,19 +26,31 @@ describe(removeAlreadyAnalyzed.name, () => {
       generateFakeAnalysis(B, {
         template: 'templateForB',
         reason: 'byExtends',
+        templateHash: Hash256(
+          '0x000000000000000000000000000000000000000000000000000000000000000b',
+        ),
       }),
       generateFakeAnalysis(C, {
         template: 'templateForC',
         reason: 'byReferrer',
+        templateHash: Hash256(
+          '0x000000000000000000000000000000000000000000000000000000000000000c',
+        ),
       }),
       { address: D, type: 'EOA' },
       generateFakeAnalysis(E, {
         template: 'templateForE',
         reason: 'byReferrer',
+        templateHash: Hash256(
+          '0x000000000000000000000000000000000000000000000000000000000000000e',
+        ),
       }),
       generateFakeAnalysis(F, {
         template: 'templateForF',
         reason: 'byReferrer',
+        templateHash: Hash256(
+          '0x000000000000000000000000000000000000000000000000000000000000000f',
+        ),
       }),
     ]
     const toAnalyze: AddressesWithTemplates = {
@@ -61,12 +74,18 @@ describe(removeAlreadyAnalyzed.name, () => {
       generateFakeAnalysis(B, {
         template: 'templateForB',
         reason: 'byExtends',
+        templateHash: Hash256(
+          '0x000000000000000000000000000000000000000000000000000000000000000b',
+        ),
       }),
       generateFakeAnalysis(
         C,
         {
           template: 'templateForC',
           reason: 'byReferrer',
+          templateHash: Hash256(
+            '0x000000000000000000000000000000000000000000000000000000000000000c',
+          ),
         },
         {
           '@template': 'Conflicting templates: newTemplateForC',
@@ -78,6 +97,9 @@ describe(removeAlreadyAnalyzed.name, () => {
         {
           template: 'templateForE',
           reason: 'byReferrer',
+          templateHash: Hash256(
+            '0x000000000000000000000000000000000000000000000000000000000000000e',
+          ),
         },
         {
           '@template':
@@ -87,6 +109,9 @@ describe(removeAlreadyAnalyzed.name, () => {
       generateFakeAnalysis(F, {
         template: 'templateForF',
         reason: 'byReferrer',
+        templateHash: Hash256(
+          '0x000000000000000000000000000000000000000000000000000000000000000f',
+        ),
       }),
     ])
   })
@@ -98,18 +123,13 @@ const generateFakeAnalysis = (
   errors?: Record<string, string>,
 ): AnalyzedContract => {
   return {
-    type: 'Contract',
+    ...EMPTY_ANALYZED_CONTRACT,
     address,
     name: `NameOf${address.toString()}`,
     derivedName: undefined,
     isVerified: true,
-    upgradeability: { type: 'immutable' },
-    implementations: [],
     values: { a: 1 },
     errors: errors ?? {},
-    abis: {},
-    sourceBundles: [],
     extendedTemplate,
-    relatives: {},
   }
 }

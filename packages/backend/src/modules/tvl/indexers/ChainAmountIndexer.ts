@@ -1,66 +1,31 @@
-import { UnixTime } from '@l2beat/shared-pure'
-
-import { assert } from '@l2beat/backend-tools'
+import { INDEXER_NAMES } from '@l2beat/config'
+import { assert, UnixTime } from '@l2beat/shared-pure'
+import { Indexer } from '@l2beat/uif'
+import { ManagedMultiIndexer } from '../../../tools/uif/multi/ManagedMultiIndexer'
 import {
-  DatabaseMiddleware,
-  DatabaseTransaction,
-} from '../../../peripherals/database/DatabaseMiddleware'
-import { DEFAULT_RETRY_FOR_TVL } from '../../../tools/uif/defaultRetryForTvl'
-import {
-  ManagedMultiIndexer,
-  ManagedMultiIndexerOptions,
-} from '../../../tools/uif/multi/ManagedMultiIndexer'
-import {
+  Configuration,
   RemovalConfiguration,
-  UpdateConfiguration,
 } from '../../../tools/uif/multi/types'
-import { AmountRepository } from '../repositories/AmountRepository'
-import { BlockTimestampRepository } from '../repositories/BlockTimestampRepository'
-import { AmountService, ChainAmountConfig } from '../services/AmountService'
-import { SyncOptimizer } from '../utils/SyncOptimizer'
-
-export interface ChainAmountIndexerDeps
-  extends Omit<ManagedMultiIndexerOptions<ChainAmountConfig>, 'name'> {
-  amountService: AmountService
-  amountRepository: AmountRepository
-  blockTimestampRepository: BlockTimestampRepository
-  syncOptimizer: SyncOptimizer
-  chain: string
-}
+import { ChainAmountConfig, ChainAmountIndexerDeps } from './types'
 
 export class ChainAmountIndexer extends ManagedMultiIndexer<ChainAmountConfig> {
   constructor(private readonly $: ChainAmountIndexerDeps) {
-    const logger = $.logger.tag($.chain)
-    const name = 'chain_amount_indexer'
-    super({ ...$, name, logger, updateRetryStrategy: DEFAULT_RETRY_FOR_TVL })
+    super({
+      ...$,
+      name: INDEXER_NAMES.CHAIN_AMOUNT,
+      tags: {
+        tag: $.chain,
+        chain: $.chain,
+      },
+      updateRetryStrategy: Indexer.getInfiniteRetryStrategy(),
+    })
   }
 
   override async multiUpdate(
     from: number,
     to: number,
-    configurations: UpdateConfiguration<ChainAmountConfig>[],
-    dbMiddleware: DatabaseMiddleware,
-  ): Promise<number> {
-    const configurationsToSync = configurations.filter((c) => !c.hasData)
-
-    if (configurationsToSync.length !== configurations.length) {
-      this.logger.info('Filtered out configurations with data', {
-        from,
-        to,
-        skippedConfigurations:
-          configurations.length - configurationsToSync.length,
-        configurationsToSync: configurationsToSync.length,
-      })
-    }
-
-    if (configurationsToSync.length === 0) {
-      this.logger.info('No configurations to sync', {
-        from,
-        to,
-      })
-      return to
-    }
-
+    configurations: Configuration<ChainAmountConfig>[],
+  ) {
     const timestamp = this.$.syncOptimizer.getTimestampToSync(from)
     if (timestamp.toNumber() > to) {
       this.logger.info('Skipping update due to sync optimization', {
@@ -68,7 +33,7 @@ export class ChainAmountIndexer extends ManagedMultiIndexer<ChainAmountConfig> {
         to,
         optimizedTimestamp: timestamp.toNumber(),
       })
-      return to
+      return () => Promise.resolve(to)
     }
 
     const blockNumber = await this.getBlockNumber(timestamp)
@@ -76,7 +41,7 @@ export class ChainAmountIndexer extends ManagedMultiIndexer<ChainAmountConfig> {
     const amounts = await this.$.amountService.fetchAmounts(
       timestamp,
       blockNumber,
-      configurationsToSync,
+      configurations.map((c) => ({ id: c.id, ...c.properties })),
     )
 
     this.logger.info('Fetched amounts for timestamp', {
@@ -87,22 +52,23 @@ export class ChainAmountIndexer extends ManagedMultiIndexer<ChainAmountConfig> {
     })
 
     const nonZeroAmounts = amounts.filter((a) => a.amount > 0)
-    dbMiddleware.add(async (trx?: DatabaseTransaction) => {
-      this.logger.info('Saving amounts for timestamp into DB', {
+
+    return async () => {
+      await this.$.db.amount.insertMany(nonZeroAmounts)
+      this.logger.info('Saved amounts for timestamp into DB', {
         timestamp: timestamp.toNumber(),
         escrows: nonZeroAmounts.filter((a) => a.type === 'escrow').length,
         totalSupplies: nonZeroAmounts.filter((a) => a.type === 'totalSupply')
           .length,
       })
-      await this.$.amountRepository.addMany(nonZeroAmounts, trx)
-    })
 
-    return timestamp.toNumber()
+      return timestamp.toNumber()
+    }
   }
 
   private async getBlockNumber(timestamp: UnixTime) {
     const blockNumber =
-      await this.$.blockTimestampRepository.findByChainAndTimestamp(
+      await this.$.db.blockTimestamp.findBlockNumberByChainAndTimestamp(
         this.$.chain,
         timestamp,
       )
@@ -113,16 +79,13 @@ export class ChainAmountIndexer extends ManagedMultiIndexer<ChainAmountConfig> {
     return blockNumber
   }
 
-  override async removeData(
-    configurations: RemovalConfiguration[],
-  ): Promise<void> {
+  override async removeData(configurations: RemovalConfiguration[]) {
     for (const configuration of configurations) {
-      const deletedRecords =
-        await this.$.amountRepository.deleteByConfigInTimeRange(
-          configuration.id,
-          new UnixTime(configuration.from),
-          new UnixTime(configuration.to),
-        )
+      const deletedRecords = await this.$.db.amount.deleteByConfigInTimeRange(
+        configuration.id,
+        new UnixTime(configuration.from),
+        new UnixTime(configuration.to),
+      )
 
       if (deletedRecords > 0) {
         this.logger.info('Deleted amounts for configuration', {

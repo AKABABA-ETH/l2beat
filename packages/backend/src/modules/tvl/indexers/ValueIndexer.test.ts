@@ -1,17 +1,20 @@
 import { Logger } from '@l2beat/backend-tools'
-import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
+import { createAmountId, createPriceId } from '@l2beat/config'
+import { Database } from '@l2beat/database'
+import {
+  AssetId,
+  EthereumAddress,
+  ProjectId,
+  UnixTime,
+} from '@l2beat/shared-pure'
 import { expect, mockObject } from 'earl'
 import { IndexerService } from '../../../tools/uif/IndexerService'
 import { _TEST_ONLY_resetUniqueIds } from '../../../tools/uif/ids'
-import { ValueRepository } from '../repositories/ValueRepository'
 import { ValueService } from '../services/ValueService'
 import { SyncOptimizer } from '../utils/SyncOptimizer'
-import { ValueIndexer, ValueIndexerDeps } from './ValueIndexer'
-
-import { createAmountId } from '../utils/createAmountId'
-import { createAssetId } from '../utils/createAssetId'
-import { createPriceId } from '../utils/createPriceId'
 import { MOCKS_FOR_TVL } from '../utils/test/mocks'
+import { ValueIndexer } from './ValueIndexer'
+import { ValueIndexerDeps } from './types'
 
 const { priceConfiguration, amountConfiguration, valueRecord } = MOCKS_FOR_TVL
 
@@ -93,8 +96,8 @@ describe(ValueIndexer.name, () => {
       const valueService = mockObject<ValueService>({
         calculateTvlForTimestamps: async () => values,
       })
-      const valueRepository = mockObject<ValueRepository>({
-        addOrUpdateMany: async () => 1,
+      const valueRepository = mockObject<Database['value']>({
+        upsertMany: async () => 1,
       })
       const ADDRESS_A = EthereumAddress.random()
       const ADDRESS_B = EthereumAddress.random()
@@ -111,7 +114,7 @@ describe(ValueIndexer.name, () => {
       const indexer = mockIndexer({
         syncOptimizer,
         valueService,
-        valueRepository,
+        db: mockObject<Database>({ value: valueRepository }),
         amountConfigs,
         priceConfigs,
       })
@@ -134,12 +137,18 @@ describe(ValueIndexer.name, () => {
           [createAmountId(amountConfigs[1]), amountConfigs[1]],
         ]),
         new Map([
-          [createAssetId(priceConfigs[0]), createPriceId(priceConfigs[0])],
-          [createAssetId(priceConfigs[1]), createPriceId(priceConfigs[1])],
+          [
+            AssetId.create(priceConfigs[0].chain, priceConfigs[0].address),
+            createPriceId(priceConfigs[0]),
+          ],
+          [
+            AssetId.create(priceConfigs[1].chain, priceConfigs[1].address),
+            createPriceId(priceConfigs[1]),
+          ],
         ]),
         timestamps,
       )
-      expect(valueRepository.addOrUpdateMany).toHaveBeenOnlyCalledWith(values)
+      expect(valueRepository.upsertMany).toHaveBeenOnlyCalledWith(values)
     })
   })
 })
@@ -148,7 +157,7 @@ const MAX_TIMESTAMPS = 100
 function mockIndexer(v: Partial<ValueIndexerDeps>) {
   return new ValueIndexer({
     valueService: mockObject<ValueService>(),
-    valueRepository: mockObject<ValueRepository>(),
+    db: mockObject<Database>({ value: mockObject<Database['value']>() }),
     priceConfigs: [],
     amountConfigs: [],
     project: ProjectId('project'),

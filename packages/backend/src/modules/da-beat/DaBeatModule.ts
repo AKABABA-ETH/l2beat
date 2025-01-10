@@ -1,8 +1,7 @@
 import { Logger } from '@l2beat/backend-tools'
-
-import { CoingeckoClient } from '@l2beat/shared'
 import { Config } from '../../config'
 import { Peripherals } from '../../peripherals/Peripherals'
+import { Providers } from '../../providers/Providers'
 import { Clock } from '../../tools/Clock'
 import { ApplicationModule } from '../ApplicationModule'
 import { DaBeatPricesRefresher } from './DaBeatPricesRefresher'
@@ -12,6 +11,7 @@ export function createDaBeatModule(
   config: Config,
   logger: Logger,
   peripherals: Peripherals,
+  providers: Providers,
   clock: Clock,
 ): ApplicationModule | undefined {
   const daBeatConfig = config.daBeat
@@ -20,11 +20,14 @@ export function createDaBeatModule(
     return
   }
 
+  logger = logger.tag({
+    feature: 'dabeat',
+    module: 'dabeat',
+  })
+
   const pricesRefresher = new DaBeatPricesRefresher(
     peripherals.database,
-    peripherals.getClient(CoingeckoClient, {
-      apiKey: config.daBeat.coingeckoApiKey,
-    }),
+    providers.clients.coingecko,
     clock,
     logger,
   )

@@ -3,7 +3,7 @@ import type { EthereumAddress, Hash256 } from '@l2beat/shared-pure'
 
 import { DiscoveryOutput } from '@l2beat/discovery-types'
 import { ConfigReader } from './ConfigReader'
-import { DiscoveryOverrides } from './DiscoveryOverrides'
+import { CommonAddressNames, DiscoveryOverrides } from './DiscoveryOverrides'
 import type {
   DiscoveryContract,
   DiscoveryCustomType,
@@ -19,9 +19,11 @@ export class DiscoveryConfig {
 
   constructor(
     private readonly config: RawDiscoveryConfig,
+    commonAddressNames: CommonAddressNames = {},
+    private readonly globalTypes: Record<string, DiscoveryCustomType> = {},
     configReader: ConfigReader = new ConfigReader(),
   ) {
-    this.overrides = new DiscoveryOverrides(config)
+    this.overrides = new DiscoveryOverrides(config, commonAddressNames)
     this.sharedModuleDiscovery = Object.values(config.sharedModules ?? {}).map(
       (projectName) => {
         return configReader.readDiscovery(projectName, config.chain)
@@ -63,8 +65,21 @@ export class DiscoveryConfig {
       : []
   }
 
-  get types(): Record<string, DiscoveryCustomType> | undefined {
-    return this.config.types
+  // NOTE(radomski): name is for contract local types
+  typesFor(name: string): Record<string, DiscoveryCustomType> {
+    const result = structuredClone(this.globalTypes)
+    for (const key of Object.keys(this.config.types ?? {})) {
+      // biome-ignore lint/style/noNonNullAssertion: we know it's there
+      result[key] = (this.config.types ?? {})[key]!
+    }
+
+    const contractLocal = this.overrides.get(name)?.types ?? {}
+    for (const key of Object.keys(contractLocal)) {
+      // biome-ignore lint/style/noNonNullAssertion: we know it's there
+      result[key] = contractLocal[key]!
+    }
+
+    return result
   }
 
   get hash(): Hash256 {

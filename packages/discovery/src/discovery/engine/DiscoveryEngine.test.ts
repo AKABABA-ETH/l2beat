@@ -1,27 +1,20 @@
 import { EthereumAddress, UnixTime } from '@l2beat/shared-pure'
 import { expect, mockFn, mockObject } from 'earl'
 
-import { UpgradeabilityParameters } from '@l2beat/discovery-types'
 import { DiscoveryLogger } from '../DiscoveryLogger'
 import { AddressAnalyzer } from '../analysis/AddressAnalyzer'
 import { DiscoveryConfig } from '../config/DiscoveryConfig'
 import { RawDiscoveryConfig } from '../config/RawDiscoveryConfig'
 import { IProvider } from '../provider/IProvider'
+import { EMPTY_ANALYZED_CONTRACT } from '../utils/testUtils'
 import { DiscoveryEngine } from './DiscoveryEngine'
 
 const base = {
+  ...EMPTY_ANALYZED_CONTRACT,
   derivedName: undefined,
-  errors: {},
-  values: {},
   isVerified: true,
   deploymentTimestamp: new UnixTime(1234),
   deploymentBlockNumber: 9876,
-  upgradeability: { type: 'immutable' } as UpgradeabilityParameters,
-  implementations: [],
-  abis: {},
-  sourceBundles: [],
-  matchingTemplates: {},
-  relatives: {},
   selfMeta: undefined,
   targetsMeta: undefined,
   combinedMeta: undefined,
@@ -40,13 +33,6 @@ describe(DiscoveryEngine.name, () => {
   it('can perform a discovery', async () => {
     const config = generateFakeConfig([A], {
       [B.toString()]: { ignoreDiscovery: true },
-    })
-
-    const discoveryLogger = mockObject<DiscoveryLogger>({
-      flushServer: () => {},
-      log: () => {},
-      logSkip: () => {},
-      logRelatives: () => {},
     })
 
     const addressAnalyzer = mockObject<AddressAnalyzer>({
@@ -75,7 +61,7 @@ describe(DiscoveryEngine.name, () => {
         relatives: {},
       })
 
-    const engine = new DiscoveryEngine(addressAnalyzer, discoveryLogger)
+    const engine = new DiscoveryEngine(addressAnalyzer, DiscoveryLogger.SILENT)
     const result = await engine.discover(provider, config)
 
     expect(result).toEqual([
@@ -95,10 +81,6 @@ describe(DiscoveryEngine.name, () => {
       },
       { ...base, type: 'Contract', name: 'D', address: D },
     ])
-
-    expect(discoveryLogger.log).toHaveBeenCalledTimes(5)
-    expect(discoveryLogger.logRelatives).toHaveBeenCalledTimes(0)
-    expect(discoveryLogger.flushServer).toHaveBeenCalledTimes(1)
   })
 })
 

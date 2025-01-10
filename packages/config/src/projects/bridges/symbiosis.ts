@@ -10,12 +10,13 @@ const discovery = new ProjectDiscovery('symbiosis')
 export const symbiosis: Bridge = {
   type: 'bridge',
   id: ProjectId('symbiosis'),
+  createdAt: new UnixTime(1688541556), // 2023-07-05T07:19:16Z
   display: {
     name: 'Symbiosis',
     slug: 'symbiosis',
     category: 'Hybrid',
     description:
-      'Symbiosis is a cross-chain AMM DEX externally validated my a MPC relayers network.',
+      'Symbiosis is a cross-chain AMM DEX externally validated my an MPC relayers network.',
     links: {
       websites: [
         'https://symbiosis.finance/',
@@ -27,6 +28,7 @@ export const symbiosis: Bridge = {
         'https://medium.com/@symbiosis_fi',
         'https://twitter.com/symbiosis_fi',
       ],
+      documentation: ['https://docs.symbiosis.finance'],
     },
   },
   riskView: {
@@ -75,19 +77,19 @@ export const symbiosis: Bridge = {
         {
           category: 'Users can be censored if',
           text: 'MPC nodes decide to censor certain transactions.',
-          isCritical: true,
+
           _ignoreTextFormatting: true,
         },
         {
           category: 'Funds can be stolen if',
           text: 'MPC nodes decide to maliciously takeover them or there is an external exploit which will result in signing malicious transaction.',
-          isCritical: true,
+
           _ignoreTextFormatting: true,
         },
         {
           category: 'Funds can be lost if',
           text: 'MPC nodes lose their private keys.',
-          isCritical: true,
+
           _ignoreTextFormatting: true,
         },
       ],
@@ -100,7 +102,6 @@ export const symbiosis: Bridge = {
         {
           category: 'Funds can be lost if',
           text: 'destination token contract is maliciously upgraded or not securely implemented.',
-          isCritical: true,
         },
       ],
       references: [],
@@ -111,7 +112,7 @@ export const symbiosis: Bridge = {
       {
         address: discovery.getContract('Portal').address, // Portal v2
         sinceTimestamp: new UnixTime(1668373200),
-        tokens: ['USDC', 'SIS', 'WETH'],
+        tokens: '*',
         chain: 'ethereum',
       },
     ],
@@ -122,17 +123,14 @@ export const symbiosis: Bridge = {
         'MetaRouter',
         'An upgradeable contract to process funds by provided route.',
       ),
-      {
-        address: discovery.getContract('Bridge').address,
-        name: 'Bridge',
-        description:
-          'A contract that generates Oracle requests for the Symbiosis relayers network.',
-      },
-      {
-        address: discovery.getContract('Portal').address,
-        name: 'Portal',
-        description: 'A contract that stores "bridged" liquidity.',
-      },
+      discovery.getContractDetails(
+        'Bridge',
+        'A contract that generates Oracle requests for the Symbiosis relayers network.',
+      ),
+      discovery.getContractDetails(
+        'Portal',
+        'A contract that stores "bridged" liquidity.',
+      ),
     ],
     risks: [],
     isIncomplete: true,

@@ -1,23 +1,28 @@
 import {
+  assert,
+  ChainId,
   EthereumAddress,
   UnixTime,
   assertUnreachable,
-  gatherAddressesFromUpgradeability,
   notUndefined,
 } from '@l2beat/shared-pure'
 import { expect } from 'earl'
 import { utils } from 'ethers'
-import { startsWith } from 'lodash'
+import { startsWith, uniq } from 'lodash'
 
+import { get$Implementations } from '@l2beat/discovery-types'
+import { describe } from 'mocha'
+import { chains } from '../../chains'
 import {
   NUGGETS,
-  ScalingProjectReference,
-  ScalingProjectRiskViewEntry,
-  ScalingProjectTechnologyChoice,
+  type ScalingProjectReference,
+  type ScalingProjectRiskViewEntry,
+  type ScalingProjectTechnologyChoice,
 } from '../../common'
-import { ScalingProjectTechnology } from '../../common/ScalingProjectTechnology'
+import type { ScalingProjectTechnology } from '../../common/ScalingProjectTechnology'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
 import { checkRisk } from '../../test/helpers'
+import { tokenList } from '../../tokens'
 import { layer2s, milestonesLayer2s } from './index'
 
 describe('layer2s', () => {
@@ -87,6 +92,57 @@ describe('layer2s', () => {
         }
       }
     })
+
+    describe('every escrow sinceTimestamp is greater or equal to chains minTimestampForTvl', () => {
+      for (const layer2 of layer2s) {
+        for (const escrow of layer2.config.escrows) {
+          const chain = chains.find((c) => c.name === escrow.chain)
+
+          it(`${layer2.id.toString()} : ${escrow.address.toString()}`, () => {
+            assert(
+              chain,
+              `Chain not found for escrow ${escrow.address.toString()}`,
+            )
+            assert(
+              chain.minTimestampForTvl,
+              `Escrow ${escrow.address.toString()} added for chain without minTimestampForTvl ${
+                chain.name
+              }`,
+            )
+
+            expect(escrow.sinceTimestamp.toNumber()).toBeGreaterThanOrEqual(
+              chain.minTimestampForTvl.toNumber(),
+            )
+          })
+        }
+      }
+    })
+
+    describe('every escrow can resolve all of its tokens', () => {
+      const chainsMap = new Map<string, ChainId>(
+        chains.map((c) => [c.name, ChainId(c.chainId)]),
+      )
+      for (const layer2 of layer2s) {
+        for (const escrow of layer2.config.escrows) {
+          const chainId = chainsMap.get(escrow.chain)
+          if (!chainId) continue
+          const tokensOnChain = tokenList.filter((t) => t.chainId === chainId)
+
+          if (escrow.tokens === '*') continue
+          for (const token of escrow.tokens) {
+            it(`${layer2.id.toString()}:${escrow.address.toString()}:${token}`, () => {
+              const foundToken = tokensOnChain.find((t) => t.symbol === token)
+
+              assert(
+                foundToken,
+                `Please add token with symbol ${token} on ${escrow.chain} chain`,
+              )
+              expect(foundToken).not.toBeNullish()
+            })
+          }
+        }
+      }
+    })
   })
 
   describe('chain name equals project id', () => {
@@ -151,6 +207,8 @@ describe('layer2s', () => {
                   case 'transfer':
                     return []
                   case 'sharpSubmission':
+                    return []
+                  case 'sharedBridge':
                     return []
                   default:
                     assertUnreachable(x)
@@ -255,9 +313,7 @@ describe('layer2s', () => {
 
                     const contractAddresses = [
                       contract.address,
-                      ...gatherAddressesFromUpgradeability(
-                        contract.upgradeability,
-                      ),
+                      ...get$Implementations(contract.values),
                     ]
 
                     expect(
@@ -292,6 +348,42 @@ describe('layer2s', () => {
               expect(
                 contractAddresses.some((a) => referencedAddresses.includes(a)),
               ).toEqual(true)
+            })
+          }
+        } catch {
+          continue
+        }
+      }
+    })
+
+    describe('technology references are valid', () => {
+      for (const layer2 of layer2s) {
+        try {
+          const discovery = new ProjectDiscovery(layer2.id.toString())
+          if (layer2.technology.isUnderReview === true) continue
+
+          for (const [key, choicesAny] of Object.entries(layer2.technology)) {
+            if (choicesAny === undefined) {
+              continue
+            }
+            it(`${layer2.id.toString()} : ${key}`, () => {
+              const choicesTyped = choicesAny as
+                | ScalingProjectTechnologyChoice
+                | ScalingProjectTechnologyChoice[]
+
+              const choices = Array.isArray(choicesTyped)
+                ? choicesTyped
+                : [choicesTyped]
+              const referencedAddresses = getReferencedAddresses(
+                choices.flatMap((c) => c.references).map((ref) => ref.href),
+              )
+
+              const allAddresses = discovery
+                .getAllContractAddresses()
+                .concat(discovery.getContractsAndEoas().map((m) => m.address))
+              for (const address of referencedAddresses) {
+                expect(allAddresses.includes(address)).toBeTruthy()
+              }
             })
           }
         } catch {
@@ -359,18 +451,6 @@ describe('layer2s', () => {
         })
       }
     })
-  })
-
-  describe('every purpose is short', () => {
-    const purposes = layer2s.map((x) => x.display.purposes)
-    for (const purpose of purposes) {
-      const totalLength = purpose.reduce((acc, curr) => {
-        return acc + curr.length
-      }, 0)
-      it(purpose.join(', '), () => {
-        expect(totalLength).toBeLessThanOrEqual(20)
-      })
-    }
   })
 
   describe('milestones', () => {
@@ -527,6 +607,17 @@ describe('layer2s', () => {
         })
       }
     })
+  })
+
+  describe('badges', () => {
+    for (const layer2 of layer2s) {
+      if (layer2.badges === undefined) {
+        continue
+      }
+      it(`${layer2.display.name} does not have duplicated badges`, () => {
+        expect(layer2.badges?.length).toEqual(uniq(layer2.badges).length)
+      })
+    }
   })
 })
 

@@ -1,7 +1,7 @@
-import { ProxyDetails } from '@l2beat/discovery-types'
+import { ContractValue, ProxyDetails } from '@l2beat/discovery-types'
 import { Bytes, EthereumAddress } from '@l2beat/shared-pure'
-
 import { IProvider } from '../../provider/IProvider'
+import { getPastUpgradesSingleEvent } from '../pastUpgrades'
 
 // keccak256('org.zeppelinos.proxy.implementation')
 const IMPLEMENTATION_SLOT = Bytes.fromHex(
@@ -33,14 +33,35 @@ export async function detectZeppelinOSProxy(
     provider.getStorageAsAddress(address, OWNER_SLOT),
     provider.getStorageAsAddress(address, ADMIN_SLOT),
   ])
+
+  const admins = [owner, admin].filter((a) => a !== EthereumAddress.ZERO)
+  const pastUpgrades = []
+  try {
+    pastUpgrades.push(
+      ...(await getPastUpgradesSingleEvent(
+        provider,
+        address,
+        'event Upgraded(address indexed implementation)',
+      )),
+    )
+  } catch {
+    pastUpgrades.push(
+      ...(await getPastUpgradesSingleEvent(
+        provider,
+        address,
+        'event Upgraded(address implementation)',
+      )),
+    )
+  }
+
   return {
-    implementations: [implementation],
-    relatives: [owner, admin].filter((x) => x !== EthereumAddress.ZERO),
-    upgradeability: {
-      type: 'ZeppelinOS proxy',
-      implementation,
-      owner: owner !== EthereumAddress.ZERO ? owner : undefined,
-      admin: admin !== EthereumAddress.ZERO ? admin : undefined,
+    type: 'ZeppelinOS proxy',
+    values: {
+      $immutable: admins.length === 0,
+      $implementation: implementation.toString(),
+      $admin: admins.map((a) => a.toString()),
+      $pastUpgrades: pastUpgrades as ContractValue,
+      $upgradeCount: pastUpgrades.length,
     },
   }
 }

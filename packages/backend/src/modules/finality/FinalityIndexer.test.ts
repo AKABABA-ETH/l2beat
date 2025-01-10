@@ -4,13 +4,9 @@ import { ProjectId, UnixTime } from '@l2beat/shared-pure'
 import { ChildIndexer } from '@l2beat/uif'
 import { expect, mockFn, mockObject } from 'earl'
 
-import { IndexerStateRepository } from '../../tools/uif/IndexerStateRepository'
+import { Database, FinalityRecord } from '@l2beat/database'
 import { FinalityIndexer } from './FinalityIndexer'
-import { BaseAnalyzer } from './analyzers/types/BaseAnalyzer'
-import {
-  FinalityRecord,
-  FinalityRepository,
-} from './repositories/FinalityRepository'
+import { BaseAnalyzer, Batch } from './analyzers/types/BaseAnalyzer'
 import { FinalityConfig } from './types/FinalityConfig'
 
 const MIN_TIMESTAMP = UnixTime.fromDate(new Date('2024-02-07T00:00:00Z'))
@@ -18,8 +14,8 @@ const MIN_TIMESTAMP = UnixTime.fromDate(new Date('2024-02-07T00:00:00Z'))
 describe(FinalityIndexer.name, () => {
   describe(FinalityIndexer.prototype.update.name, () => {
     it('skips update if to is earlier than minTimestamp', async () => {
-      const finalityRepository = mockObject<FinalityRepository>({
-        add: mockFn(),
+      const finalityRepository = mockObject<Database['finality']>({
+        insert: mockFn(),
       })
 
       const finalityIndexer = getMockFinalityIndexer({
@@ -35,12 +31,12 @@ describe(FinalityIndexer.name, () => {
       const result = await finalityIndexer.update(from + 1, to)
       expect(result).toEqual(to)
       expect(mockIsConfigurationSynced).not.toHaveBeenCalled()
-      expect(finalityRepository.add).not.toHaveBeenCalled()
+      expect(finalityRepository.insert).not.toHaveBeenCalled()
     })
 
     it('skips update if the project is synced', async () => {
-      const finalityRepository = mockObject<FinalityRepository>({
-        add: mockFn(),
+      const finalityRepository = mockObject<Database['finality']>({
+        insert: mockFn(),
       })
 
       const finalityIndexer = getMockFinalityIndexer({
@@ -57,13 +53,13 @@ describe(FinalityIndexer.name, () => {
       expect(mockIsConfigurationSynced).toHaveBeenCalledWith(
         new UnixTime(to).toStartOf('day'),
       )
-      expect(finalityRepository.add).not.toHaveBeenCalled()
+      expect(finalityRepository.insert).not.toHaveBeenCalled()
       expect(result).toEqual(to)
     })
 
     it('skips adding to database if finalityData is undefined', async () => {
-      const finalityRepository = mockObject<FinalityRepository>({
-        add: mockFn(),
+      const finalityRepository = mockObject<Database['finality']>({
+        insert: mockFn(),
       })
 
       const finalityIndexer = getMockFinalityIndexer({
@@ -78,15 +74,15 @@ describe(FinalityIndexer.name, () => {
 
       // TODO: refactor tests after uif update
       const result = await finalityIndexer.update(from + 1, to)
-      expect(finalityRepository.add).not.toHaveBeenCalled()
+      expect(finalityRepository.insert).not.toHaveBeenCalled()
       expect(result).toEqual(to)
     })
 
     it('skips updates for target in the past', async () => {
-      const finalityRepository = mockObject<FinalityRepository>({
-        add: mockFn().resolvesToOnce(1),
+      const finalityRepository = mockObject<Database['finality']>({
+        insert: mockFn().resolvesToOnce(1),
       })
-      const runtimeConfiguration = getMockFinalityRuntimeConfiguration([2, 4])
+      const runtimeConfiguration = getMockFinalityRuntimeConfiguration([])
       const finalityIndexer = getMockFinalityIndexer({
         runtimeConfiguration,
         finalityRepository,
@@ -101,7 +97,7 @@ describe(FinalityIndexer.name, () => {
       // https://linear.app/l2beat/issue/L2B-4752/refactor-finalityindexer-logic-to-allow-analyzers-different
       // TODO: refactor tests after uif update
       await finalityIndexer.update(from + 1, to)
-      expect(finalityRepository.add).not.toHaveBeenCalled()
+      expect(finalityRepository.insert).not.toHaveBeenCalled()
     })
 
     it('correctly syncs not synced project', async () => {
@@ -109,12 +105,21 @@ describe(FinalityIndexer.name, () => {
       const from = start.toNumber()
       const to = start.add(1, 'days').toNumber()
 
-      const finalityRepository = mockObject<FinalityRepository>({
-        add: mockFn().resolvesToOnce(1),
+      const finalityRepository = mockObject<Database['finality']>({
+        insert: mockFn().resolvesToOnce(1),
       })
 
       const runtimeConfiguration = getMockFinalityRuntimeConfiguration(
-        [2, 4],
+        [
+          {
+            l1Timestamp: 123,
+            l2Blocks: [{ timestamp: 121, blockNumber: 12 }],
+          },
+          {
+            l1Timestamp: 142,
+            l2Blocks: [{ timestamp: 138, blockNumber: 15 }],
+          },
+        ],
         'analyze',
       )
       const finalityIndexer = getMockFinalityIndexer({
@@ -125,13 +130,13 @@ describe(FinalityIndexer.name, () => {
 
       // TODO: refactor tests after uif update
       await finalityIndexer.update(from + 1, to)
-      expect(finalityRepository.add).toHaveBeenCalledWith({
+      expect(finalityRepository.insert).toHaveBeenCalledWith({
         projectId: ProjectId('project'),
         timestamp: start.add(1, 'days'),
         averageTimeToInclusion: 3,
         minimumTimeToInclusion: 2,
         maximumTimeToInclusion: 4,
-        averageStateUpdate: 3,
+        averageStateUpdate: 0,
       })
     })
   })
@@ -140,7 +145,7 @@ describe(FinalityIndexer.name, () => {
     it('returns true if project is synced', async () => {
       const syncedTimestamp = new UnixTime(41234123)
 
-      const finalityRepository = mockObject<FinalityRepository>({
+      const finalityRepository = mockObject<Database['finality']>({
         findLatestByProjectId: mockFn().resolvesToOnce({
           projectId: ProjectId('project'),
           timestamp: syncedTimestamp,
@@ -159,7 +164,7 @@ describe(FinalityIndexer.name, () => {
     it('returns false if project is not synced', async () => {
       const syncedTimestamp = new UnixTime(41234123)
 
-      const finalityRepository = mockObject<FinalityRepository>({
+      const finalityRepository = mockObject<Database['finality']>({
         findLatestByProjectId: mockFn().resolvesToOnce({
           projectId: ProjectId('project'),
           timestamp: syncedTimestamp.add(-1, 'seconds'),
@@ -182,11 +187,22 @@ describe(FinalityIndexer.name, () => {
         averageTimeToInclusion: 2,
         minimumTimeToInclusion: 1,
         maximumTimeToInclusion: 3,
-        averageStateUpdate: 2,
+        averageStateUpdate: 0,
       }
 
       const runtimeConfiguration = getMockFinalityRuntimeConfiguration([
-        1, 2, 3,
+        {
+          l1Timestamp: 123,
+          l2Blocks: [{ timestamp: 122, blockNumber: 12 }],
+        },
+        {
+          l1Timestamp: 234,
+          l2Blocks: [{ timestamp: 232, blockNumber: 15 }],
+        },
+        {
+          l1Timestamp: 345,
+          l2Blocks: [{ timestamp: 342, blockNumber: 19 }],
+        },
       ])
       const finalityIndexer = getMockFinalityIndexer({ runtimeConfiguration })
 
@@ -220,12 +236,21 @@ describe(FinalityIndexer.name, () => {
       const to = start.add(1, 'days').toNumber()
 
       const runtimeConfiguration = getMockFinalityRuntimeConfiguration(
-        [2, 4],
+        [
+          {
+            l1Timestamp: 123,
+            l2Blocks: [{ timestamp: 121, blockNumber: 12 }],
+          },
+          {
+            l1Timestamp: 142,
+            l2Blocks: [{ timestamp: 138, blockNumber: 15 }],
+          },
+        ],
         'analyze',
       )
 
-      const finalityRepository = mockObject<FinalityRepository>({
-        add: mockFn().resolvesToOnce(1),
+      const finalityRepository = mockObject<Database['finality']>({
+        insert: mockFn().resolvesToOnce(1),
       })
 
       const finalityIndexer = getMockFinalityIndexer({
@@ -235,13 +260,13 @@ describe(FinalityIndexer.name, () => {
       finalityIndexer.isConfigurationSynced = mockFn().resolvesToOnce(false)
 
       await finalityIndexer.update(from + 1, to)
-      expect(finalityRepository.add).toHaveBeenCalledWith({
+      expect(finalityRepository.insert).toHaveBeenCalledWith({
         projectId: ProjectId('project'),
         timestamp: start.add(1, 'days'),
         averageTimeToInclusion: 3,
         minimumTimeToInclusion: 2,
         maximumTimeToInclusion: 4,
-        averageStateUpdate: 3,
+        averageStateUpdate: 0,
       })
 
       expect(
@@ -257,12 +282,21 @@ describe(FinalityIndexer.name, () => {
         const from = start.toNumber()
         const to = start.add(1, 'days').toNumber()
 
-        const finalityRepository = mockObject<FinalityRepository>({
-          add: mockFn().resolvesToOnce(1),
+        const finalityRepository = mockObject<Database['finality']>({
+          insert: mockFn().resolvesToOnce(1),
         })
 
         const runtimeConfiguration = getMockFinalityRuntimeConfiguration(
-          [2, 4],
+          [
+            {
+              l1Timestamp: 123,
+              l2Blocks: [{ timestamp: 121, blockNumber: 12 }],
+            },
+            {
+              l1Timestamp: 142,
+              l2Blocks: [{ timestamp: 138, blockNumber: 15 }],
+            },
+          ],
           mode,
         )
         const finalityIndexer = getMockFinalityIndexer({
@@ -273,7 +307,7 @@ describe(FinalityIndexer.name, () => {
 
         // TODO: refactor tests after uif update
         await finalityIndexer.update(from + 1, to)
-        expect(finalityRepository.add).toHaveBeenCalledWith({
+        expect(finalityRepository.insert).toHaveBeenCalledWith({
           projectId: ProjectId('project'),
           timestamp: start.add(1, 'days'),
           averageTimeToInclusion: 3,
@@ -308,14 +342,14 @@ describe(FinalityIndexer.name, () => {
         safeHeight: safeHeight.toNumber(),
       })
 
-      expect(stateRepository.findIndexerState).toHaveBeenCalledTimes(1)
+      expect(stateRepository.findByIndexerId).toHaveBeenCalledTimes(1)
     })
 
     it('indexer state undefined', async () => {
-      const stateRepository = mockObject<IndexerStateRepository>({
-        findIndexerState: async () => undefined,
-        addOrUpdate: async () => '',
-        setSafeHeight: async () => 0,
+      const stateRepository = mockObject<Database['indexerState']>({
+        findByIndexerId: async () => undefined,
+        upsert: async () => undefined,
+        updateSafeHeight: async () => 0,
       })
       const finalityIndexer = getMockFinalityIndexer({
         stateRepository,
@@ -327,15 +361,15 @@ describe(FinalityIndexer.name, () => {
         safeHeight: MIN_TIMESTAMP.toNumber(),
       })
 
-      expect(stateRepository.findIndexerState).toHaveBeenCalledTimes(1)
+      expect(stateRepository.findByIndexerId).toHaveBeenCalledTimes(1)
     })
   })
 
   describe(FinalityIndexer.prototype.getSafeHeight.name, () => {
     it('returns safe height from DB', async () => {
       const safeHeightDB = 123
-      const stateRepository = mockObject<IndexerStateRepository>({
-        findIndexerState: async () => ({
+      const stateRepository = mockObject<Database['indexerState']>({
+        findByIndexerId: async () => ({
           indexerId: 'finality_indexer',
           safeHeight: safeHeightDB,
           minTimestamp: MIN_TIMESTAMP,
@@ -346,20 +380,20 @@ describe(FinalityIndexer.name, () => {
       const safeHeight = await finalityIndexer.getSafeHeight()
 
       expect(safeHeight).toEqual(safeHeightDB)
-      expect(stateRepository.findIndexerState).toHaveBeenOnlyCalledWith(
+      expect(stateRepository.findByIndexerId).toHaveBeenOnlyCalledWith(
         finalityIndexer.indexerId,
       )
     })
     it('returns minTimestamp if indexer state is undefined', async () => {
-      const stateRepository = mockObject<IndexerStateRepository>({
-        findIndexerState: async () => undefined,
+      const stateRepository = mockObject<Database['indexerState']>({
+        findByIndexerId: async () => undefined,
       })
       const finalityIndexer = getMockFinalityIndexer({ stateRepository })
 
       const safeHeight = await finalityIndexer.getSafeHeight()
 
       expect(safeHeight).toEqual(MIN_TIMESTAMP.toNumber())
-      expect(stateRepository.findIndexerState).toHaveBeenOnlyCalledWith(
+      expect(stateRepository.findByIndexerId).toHaveBeenOnlyCalledWith(
         finalityIndexer.indexerId,
       )
     })
@@ -367,15 +401,15 @@ describe(FinalityIndexer.name, () => {
 
   describe(FinalityIndexer.prototype.setSafeHeight.name, () => {
     it('saves safe height in the database', async () => {
-      const stateRepository = mockObject<IndexerStateRepository>({
-        setSafeHeight: async () => 0, // return value is not important
+      const stateRepository = mockObject<Database['indexerState']>({
+        updateSafeHeight: async () => 0, // return value is not important
       })
       const finalityIndexer = getMockFinalityIndexer({ stateRepository })
 
       const safeHeight = MIN_TIMESTAMP.add(1, 'hours').toNumber()
       await finalityIndexer.setSafeHeight(safeHeight)
 
-      expect(stateRepository.setSafeHeight).toHaveBeenOnlyCalledWith(
+      expect(stateRepository.updateSafeHeight).toHaveBeenOnlyCalledWith(
         'finality_indexer_project',
         safeHeight,
       )
@@ -395,8 +429,8 @@ describe(FinalityIndexer.name, () => {
 })
 
 function getMockFinalityIndexer(params: {
-  stateRepository?: IndexerStateRepository
-  finalityRepository?: FinalityRepository
+  stateRepository?: Database['indexerState']
+  finalityRepository?: Database['finality']
   runtimeConfiguration?: FinalityConfig
 }) {
   const { stateRepository, finalityRepository, runtimeConfiguration } = params
@@ -408,8 +442,10 @@ function getMockFinalityIndexer(params: {
       tick: async () => 1,
       subscribe: () => {},
     }),
-    stateRepository ?? mockObject<IndexerStateRepository>({}),
-    finalityRepository ?? mockObject<FinalityRepository>({}),
+    mockObject<Database>({
+      indexerState: stateRepository ?? mockObject<Database['indexerState']>({}),
+      finality: finalityRepository ?? mockObject<Database['finality']>({}),
+    }),
     runtimeConfiguration ?? getMockFinalityRuntimeConfiguration(),
   )
 }
@@ -421,16 +457,15 @@ function getMockStateRepository(
     minTimestamp: MIN_TIMESTAMP,
   },
 ) {
-  const stateRepository = mockObject<IndexerStateRepository>({
-    findIndexerState: async () => indexerState,
-    addOrUpdate: async () => '',
-    setSafeHeight: async () => 0,
+  return mockObject<Database['indexerState']>({
+    findByIndexerId: async () => indexerState,
+    upsert: async () => undefined,
+    updateSafeHeight: async () => 0,
   })
-  return stateRepository
 }
 
 function getMockFinalityRuntimeConfiguration(
-  results?: number[],
+  results?: Batch[],
   stateUpdateMode?: StateUpdateMode,
 ) {
   return {

@@ -22,7 +22,7 @@ If you want to add starkex type project, go to the [next section](#starkex-type-
    - `cast block-number -r <rpc-url>`
    - `cast block -r <rpc-url>`
 
-If you get a response, you are good to go. If not, try to find another RPC. If you can't another,
+If you get a response, you are good to go. If not, try to find another RPC. If you can't find another,
 you need to talk to devs to handle this case.
 
 3. Next step is to fill activity config in project config file. Add `config.transactionApi` property
@@ -63,7 +63,7 @@ you need to talk to devs to handle this case.
    and fill it:
 
    - `type` (required): set it as `'starkex'`
-   - `product` (required): set it for you project `product` property from swaggerhub
+   - `product` (required): set it for your project `product` property from swaggerhub
    - `sinceTimestamp` (required): from which timestamp you want to start fetching data
    - `resyncLastDays` (required): set it to 7
 
@@ -74,7 +74,7 @@ you need to talk to devs to handle this case.
 2. Add `ACTIVITY_ENABLED=true` to your `.env` file. Also add `STARKEX_API_KEY` which is required. If
    you are using private RPC, you also need to add `ACTIVITY_<PROJECT_ID>_URL`.
 
-3. Run `yarn start:dev` in the `packages/backend` directory and wait till whole activity is synced.
+3. Run `pnpm start:dev` in the `packages/backend` directory and wait till whole activity is synced.
 
-4. Go to `packages/frontend`, run `yarn start:local` to start frontend and check if activity is
+4. Go to `packages/frontend`, set `DATABASE_URL` to your local database url and run `pnpm dev` to start frontend and check if activity is
    displayed correctly.

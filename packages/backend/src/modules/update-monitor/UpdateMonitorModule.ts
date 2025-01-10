@@ -1,15 +1,11 @@
 import { Logger } from '@l2beat/backend-tools'
-import {
-  ConfigReader,
-  DISCOVERY_LOGIC_VERSION,
-  HttpClient as DiscoveryHttpClient,
-  DiscoveryLogger,
-} from '@l2beat/discovery'
+import { ConfigReader, DiscoveryLogger } from '@l2beat/discovery'
+import { ChainConverter } from '@l2beat/shared-pure'
 
+import { HttpClient } from '@l2beat/shared'
 import { Config } from '../../config'
 import { Peripherals } from '../../peripherals/Peripherals'
 import { DiscordClient } from '../../peripherals/discord/DiscordClient'
-import { ChainConverter } from '../../tools/ChainConverter'
 import { Clock } from '../../tools/Clock'
 import { ApplicationModule } from '../ApplicationModule'
 import { UpdateMonitor } from './UpdateMonitor'
@@ -17,8 +13,6 @@ import { UpdateNotifier } from './UpdateNotifier'
 import { UpdateMonitorController } from './api/UpdateMonitorController'
 import { createUpdateMonitorRouter } from './api/UpdateMonitorRouter'
 import { createDiscoveryRunner } from './createDiscoveryRunner'
-import { UpdateMonitorRepository } from './repositories/UpdateMonitorRepository'
-import { UpdateNotifierRepository } from './repositories/UpdateNotifierRepository'
 
 export function createUpdateMonitorModule(
   config: Config,
@@ -31,6 +25,8 @@ export function createUpdateMonitorModule(
     return
   }
 
+  logger = logger.tag({ feature: 'update_monitor', module: 'update_monitor' })
+
   const configReader = new ConfigReader()
 
   const discordClient = config.updateMonitor.discord
@@ -39,25 +35,26 @@ export function createUpdateMonitorModule(
 
   const chainConverter = new ChainConverter(config.chains)
   const updateNotifier = new UpdateNotifier(
-    peripherals.getRepository(UpdateNotifierRepository),
+    peripherals.database,
     discordClient,
     chainConverter,
     logger,
   )
 
   // TODO: get rid of that once we achieve full library separation
-  const discoveryHttpClient = new DiscoveryHttpClient()
+  const http = new HttpClient()
 
-  const { chains, enableCache } = config.updateMonitor
+  const { chains, cacheEnabled, cacheUri } = config.updateMonitor
   const runners = chains.map((chainConfig) =>
     createDiscoveryRunner(
-      discoveryHttpClient,
+      http,
       configReader,
       peripherals,
       DiscoveryLogger.SILENT,
       chains,
       chainConfig.name,
-      !!enableCache,
+      !!cacheEnabled,
+      cacheUri,
     ),
   )
 
@@ -65,17 +62,17 @@ export function createUpdateMonitorModule(
     runners,
     updateNotifier,
     configReader,
-    peripherals.getRepository(UpdateMonitorRepository),
+    peripherals.database,
     clock,
     chainConverter,
     logger,
     !!config.updateMonitor.runOnStart,
-    DISCOVERY_LOGIC_VERSION,
   )
 
   const updateMonitorController = new UpdateMonitorController(
-    peripherals.getRepository(UpdateMonitorRepository),
+    peripherals.database,
     config.projects,
+    chains,
     configReader,
     chainConverter,
   )

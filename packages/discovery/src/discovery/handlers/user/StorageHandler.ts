@@ -3,10 +3,15 @@ import { utils } from 'ethers'
 import * as z from 'zod'
 
 import { getErrorMessage } from '../../../utils/getErrorMessage'
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { Handler, HandlerResult } from '../Handler'
-import { Reference, getReferencedName, resolveReference } from '../reference'
+import {
+  Reference,
+  ReferenceInput,
+  generateReferenceInput,
+  getReferencedName,
+  resolveReference,
+} from '../reference'
 import { SingleSlot } from '../storageCommon'
 import { NumberFromString } from '../types'
 import { bytes32ToContractValue } from '../utils/bytes32ToContractValue'
@@ -19,7 +24,7 @@ export const StorageHandlerDefinition = z.strictObject({
   offset: z.optional(
     z.union([z.number().int().nonnegative(), NumberFromString, Reference]),
   ),
-  returnType: z.optional(z.enum(['address', 'bytes', 'number'])),
+  returnType: z.optional(z.enum(['address', 'bytes', 'number', 'uint8'])),
   ignoreRelative: z.optional(z.boolean()),
 })
 
@@ -29,7 +34,6 @@ export class StorageHandler implements Handler {
   constructor(
     readonly field: string,
     private readonly definition: StorageHandlerDefinition,
-    readonly logger: DiscoveryLogger,
   ) {
     this.dependencies = getDependencies(definition)
   }
@@ -39,8 +43,12 @@ export class StorageHandler implements Handler {
     address: EthereumAddress,
     previousResults: Record<string, HandlerResult | undefined>,
   ): Promise<HandlerResult> {
-    this.logger.logExecution(this.field, ['Reading storage'])
-    const resolved = resolveDependencies(this.definition, previousResults)
+    const referenceInput = generateReferenceInput(
+      previousResults,
+      provider,
+      address,
+    )
+    const resolved = resolveDependencies(this.definition, referenceInput)
 
     let storage: Bytes
     try {
@@ -74,30 +82,30 @@ function getDependencies(definition: StorageHandlerDefinition): string[] {
 type ResolvedDefinition = ReturnType<typeof resolveDependencies>
 function resolveDependencies(
   definition: StorageHandlerDefinition,
-  previousResults: Record<string, HandlerResult | undefined>,
+  referenceInput: ReferenceInput,
 ): {
   slot: bigint | bigint[]
   offset: bigint
-  returnType: 'number' | 'address' | 'bytes'
+  returnType: 'number' | 'address' | 'bytes' | 'uint8'
 } {
   let offset = 0n
   if (definition.offset) {
-    const resolved = resolveReference(definition.offset, previousResults)
+    const resolved = resolveReference(definition.offset, referenceInput)
     offset = valueToBigInt(resolved)
   }
 
   let slot: bigint | bigint[]
   if (Array.isArray(definition.slot)) {
     slot = definition.slot.map((x) => {
-      const resolved = resolveReference(x, previousResults)
+      const resolved = resolveReference(x, referenceInput)
       return valueToBigInt(resolved)
     })
   } else {
-    const resolved = resolveReference(definition.slot, previousResults)
+    const resolved = resolveReference(definition.slot, referenceInput)
     slot = valueToBigInt(resolved)
   }
 
-  const returnType: 'number' | 'address' | 'bytes' =
+  const returnType: 'number' | 'address' | 'bytes' | 'uint8' =
     definition.returnType ?? 'bytes'
 
   return {

@@ -1,34 +1,35 @@
 {
   "name": "optimism",
   "chain": "optimism",
-  "blockNumber": 121593875,
-  "configHash": "0xd7f7ce9d127fdc33d8b5598a3a17b934faa23df38aab0efa4228abef552f4858",
-  "version": 6,
+  "blockNumber": 122593187,
+  "configHash": "0x31a3019cd0013048c71bd882672a02bed221167c8934d74ae1189dbeb3ceb61b",
   "contracts": [
     {
       "name": "MintManagerOwner",
       "address": "0x2A82Ae142b2e62Cb7D10b55E323ACB1Cab663a26",
       "template": "GnosisSafe",
+      "sourceHashes": [
+        "0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff",
+        "0x59fe14e95a8aa7f52213f18bae5c9329cf583a7ba31194698b15eddb97d5e825"
+      ],
+      "proxyType": "gnosis safe",
       "ignoreInWatchMode": ["nonce"],
-      "upgradeability": {
-        "type": "gnosis safe",
-        "masterCopy": "0xfb1bffC9d739B8D520DaF37dF666da4C687191EA",
-        "modules": [],
-        "threshold": "3 of 5 (60%)"
-      },
-      "implementations": ["0xfb1bffC9d739B8D520DaF37dF666da4C687191EA"],
       "sinceTimestamp": 1650712171,
       "values": {
-        "domainSeparator": "0x462891ca8f7777ee79e5fe4366d0577864fdf00769c59e345303b084bf0cf38d",
-        "getChainId": 10,
-        "getOwners": [
+        "$immutable": false,
+        "$implementation": "0xfb1bffC9d739B8D520DaF37dF666da4C687191EA",
+        "$members": [
           "0x3041BA32f451F5850c147805F5521AC206421623",
           "0x7cB07FE039a92B3D784f284D919503A381BEC54f",
           "0xdb203D7f00fF435dA107543B33495f9cA2c484C6",
           "0x4D014f3c5F33Aa9Cd1Dc29ce29618d07Ae666d15",
           "0xA902A27a7631D502E3Ec17fc5d4c3e0861752c94"
         ],
-        "getThreshold": 3,
+        "$threshold": 3,
+        "domainSeparator": "0x462891ca8f7777ee79e5fe4366d0577864fdf00769c59e345303b084bf0cf38d",
+        "getChainId": 10,
+        "GnosisSafe_modules": [],
+        "multisigThreshold": "3 of 5 (60%)",
         "nonce": 11,
         "VERSION": "1.3.0"
       },
@@ -37,14 +38,29 @@
     {
       "name": "DeployerWhitelist",
       "address": "0x4200000000000000000000000000000000000002",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xc0d3c0d3C0d3c0D3c0d3C0D3c0d3C0d3c0D30002",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xc0d3c0d3C0d3c0D3c0d3C0D3c0d3C0d3c0D30002"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x40a3a457f0e922425ed48d80603e24e652453f57be197487f62795991cff2c2b"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xc0d3c0d3C0d3c0D3c0d3C0D3c0d3C0d3c0D30002",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "owner": "0x0000000000000000000000000000000000000000",
         "version": "1.0.0"
       }
@@ -52,18 +68,33 @@
     {
       "name": "L2CrossDomainMessenger",
       "address": "0x4200000000000000000000000000000000000007",
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x54d303632c7acb15a0f8c319289166a6c178e02f2c930685ab3cdcbe5b19ca29"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "ignoreInWatchMode": ["messageNonce"],
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xC0d3c0d3c0D3c0D3C0d3C0D3C0D3c0d3c0d30007",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xC0d3c0d3c0D3c0D3C0d3C0D3C0D3c0d3c0d30007"],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xC0d3c0d3c0D3c0D3C0d3C0D3C0D3c0d3c0d30007",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "l1CrossDomainMessenger": "0x25ace71c97B33Cc4729CF772ae268934F7ab5fA1",
         "MESSAGE_VERSION": 1,
-        "messageNonce": "1766847064778384329583297500742918515827483896875618958121606201292637819",
+        "messageNonce": "1766847064778384329583297500742918515827483896875618958121606201292638481",
         "MIN_GAS_CALLDATA_OVERHEAD": 16,
         "MIN_GAS_DYNAMIC_OVERHEAD_DENOMINATOR": 63,
         "MIN_GAS_DYNAMIC_OVERHEAD_NUMERATOR": 64,
@@ -79,39 +110,81 @@
     {
       "name": "GasPriceOracle",
       "address": "0x420000000000000000000000000000000000000F",
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x6d0f92051952bf3dcccae9e0ff5cf654e3b386df386bc0609b0c7234a2a108bb"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "ignoreInWatchMode": ["l1BaseFee", "blobBaseFee"],
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xb528D11cC114E026F138fE568744c6D45ce6Da7A",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xb528D11cC114E026F138fE568744c6D45ce6Da7A"],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xa919894851548179A0750865e7974DA599C0Fac7",
+        "$pastUpgrades": [
+          [
+            "2024-03-14T00:00:01.000Z",
+            "0xedbfdad1f44ea830b863eac45eca4408398351b30511826012882059625963d2",
+            ["0xb528D11cC114E026F138fE568744c6D45ce6Da7A"]
+          ],
+          [
+            "2024-07-10T16:00:01.000Z",
+            "0x2f63bbe08a66796dde569281a58a53e0b0f64b7aa067297e9c70455fb8e375bc",
+            ["0xa919894851548179A0750865e7974DA599C0Fac7"]
+          ]
+        ],
+        "$upgradeCount": 2,
         "baseFee": 0,
-        "baseFeeScalar": 1368,
-        "blobBaseFee": 3,
-        "blobBaseFeeScalar": 810949,
+        "baseFeeScalar": 5227,
+        "blobBaseFee": 1,
+        "blobBaseFeeScalar": 1014213,
         "decimals": 6,
         "DECIMALS": 6,
         "gasPrice": 0,
         "isEcotone": true,
-        "l1BaseFee": 5200849598,
-        "version": "1.2.0"
+        "isFjord": true,
+        "l1BaseFee": 2198118884,
+        "version": "1.3.0"
       },
       "derivedName": "GasPriceOracle"
     },
     {
       "name": "L2StandardBridge",
       "address": "0x4200000000000000000000000000000000000010",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xC0d3c0d3c0D3c0d3C0D3c0D3C0d3C0D3C0D30010",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xC0d3c0d3c0D3c0d3C0D3c0D3C0d3C0D3C0D30010"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0xb1264cdbc9eb25c5d5f9542dc05d942009b4443379d97b246c66b11e2319215f"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xC0d3c0d3c0D3c0d3C0D3c0D3C0d3C0D3C0D30010",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "l1TokenBridge": "0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1",
         "messenger": "0x4200000000000000000000000000000000000007",
         "MESSENGER": "0x4200000000000000000000000000000000000007",
@@ -123,14 +196,29 @@
     {
       "name": "SequencerFeeVault",
       "address": "0x4200000000000000000000000000000000000011",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xC0D3C0d3c0d3c0d3C0D3c0d3C0D3c0d3c0D30011",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xC0D3C0d3c0d3c0d3C0D3c0d3C0D3c0d3c0D30011"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0xf13800f6674424ad602d8daac646acfc10794f492253796903ac26b7fdb3eabf"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xC0D3C0d3c0d3c0d3C0D3c0d3C0D3c0d3c0D30011",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "l1FeeWallet": "0xa3d596EAfaB6B13Ab18D40FaE1A962700C84ADEa",
         "MIN_WITHDRAWAL_AMOUNT": "10000000000000000000",
         "RECIPIENT": "0xa3d596EAfaB6B13Ab18D40FaE1A962700C84ADEa",
@@ -141,14 +229,29 @@
     {
       "name": "OptimismMintableERC20Factory",
       "address": "0x4200000000000000000000000000000000000012",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xc0D3c0d3C0d3c0d3c0D3c0d3c0D3c0D3c0D30012",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xc0D3c0d3C0d3c0d3c0D3c0d3c0D3c0D3c0D30012"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x33cbc2e27551e9c304842740517adbe533ed12516557dc9a8b7c63f7d599998b"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xc0D3c0d3C0d3c0d3c0D3c0d3c0D3c0D3c0D30012",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "BRIDGE": "0x4200000000000000000000000000000000000010",
         "version": "1.1.0"
       }
@@ -156,14 +259,29 @@
     {
       "name": "L1BlockNumber",
       "address": "0x4200000000000000000000000000000000000013",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xC0D3C0d3C0D3c0D3C0d3c0D3C0d3c0d3C0d30013",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xC0D3C0d3C0D3c0D3C0d3c0D3C0d3c0d3C0d30013"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x0ac40be66f726a1d64904e03831f746ee3fd847922d5e54ba4ad0e509602ccf8"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xC0D3C0d3C0D3c0D3C0d3c0D3C0d3c0d3C0d30013",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "version": "1.0.0"
       },
       "derivedName": "L1BlockNumber"
@@ -171,14 +289,35 @@
     {
       "name": "L2ERC721Bridge",
       "address": "0x4200000000000000000000000000000000000014",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xC0D3c0d3c0d3c0d3c0D3C0d3C0D3C0D3c0d30014",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xC0D3c0d3c0d3c0d3c0D3C0d3C0D3C0D3c0d30014"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x5e60fa0150197ecbd302b46ad0cc0b6f3f024342d97f052ed2f9a8c2a6ed3846"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1664918265,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xC0D3c0d3c0d3c0d3c0D3C0d3C0D3C0D3c0d30014",
+        "$pastUpgrades": [
+          [
+            "2022-10-04T21:36:13.000Z",
+            "0x02985bade8b066202067f455d11aa0996a23c022fcd923e113af5d9997ddb5ce",
+            ["0x5a7749f83b81B301cAb5f48EB8516B986DAef23D"]
+          ]
+        ],
+        "$upgradeCount": 1,
         "messenger": "0x4200000000000000000000000000000000000007",
         "MESSENGER": "0x4200000000000000000000000000000000000007",
         "OTHER_BRIDGE": "0x5a7749f83b81B301cAb5f48EB8516B986DAef23D",
@@ -189,6 +328,23 @@
     {
       "name": "L1Block",
       "address": "0x4200000000000000000000000000000000000015",
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0xbdd7533735ef92fffadfbee431b476e72f2f048487c921c5570443e3cba5cb30"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "ignoreInWatchMode": [
         "basefee",
         "hash",
@@ -197,26 +353,30 @@
         "sequenceNumber",
         "blobBaseFee"
       ],
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x07dbe8500fc591d1852B76feE44d5a05e13097Ff",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0x07dbe8500fc591d1852B76feE44d5a05e13097Ff"],
       "sinceTimestamp": 1636665399,
       "values": {
-        "basefee": 5200849598,
-        "baseFeeScalar": 1368,
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0x07dbe8500fc591d1852B76feE44d5a05e13097Ff",
+        "$pastUpgrades": [
+          [
+            "2024-03-14T00:00:01.000Z",
+            "0x9f2b2d34dfa2cb55cceb9860cade0cb03cfbd7ff1dd07d48b4708b29a46b4a24",
+            ["0x07dbe8500fc591d1852B76feE44d5a05e13097Ff"]
+          ]
+        ],
+        "$upgradeCount": 1,
+        "basefee": 2198118884,
+        "baseFeeScalar": 5227,
         "batcherHash": "0x0000000000000000000000006887246668a3b87f54deb3b94ba47a6f63f32985",
-        "blobBaseFee": 3,
-        "blobBaseFeeScalar": 810949,
+        "blobBaseFee": 1,
+        "blobBaseFeeScalar": 1014213,
         "DEPOSITOR_ACCOUNT": "0xDeaDDEaDDeAdDeAdDEAdDEaddeAddEAdDEAd0001",
-        "hash": "0x4e766839b41a9e088e11b51df57b310d08d08ef7a28678ddc8f0f8baf3022af6",
+        "hash": "0x2e964eeaf833d19fd3135e9ff9aae81186b0a6630bf08e7396db845b3bbac9a2",
         "l1FeeOverhead": 188,
         "l1FeeScalar": 684000,
-        "number": 20124649,
-        "sequenceNumber": 5,
-        "timestamp": 1718786387,
+        "number": 20290230,
+        "sequenceNumber": 4,
+        "timestamp": 1720785011,
         "version": "1.2.0"
       },
       "derivedName": "L1Block"
@@ -224,14 +384,29 @@
     {
       "name": "L2ToL1MessagePasser",
       "address": "0x4200000000000000000000000000000000000016",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xC0D3C0d3C0d3c0d3C0d3C0D3c0D3c0d3c0D30016",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xC0D3C0d3C0d3c0d3C0d3C0D3c0D3c0d3c0D30016"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x362ef15b4c72a78e42b10222a63ec31da455fc051e5fc3e6bade09de4d19bdd9"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xC0D3C0d3C0d3c0d3C0d3C0D3c0D3c0d3c0D30016",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "MESSAGE_VERSION": 1,
         "version": "1.0.0"
       },
@@ -240,14 +415,29 @@
     {
       "name": "OptimismMintableERC721Factory",
       "address": "0x4200000000000000000000000000000000000017",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xc0d3C0d3C0d3C0d3C0d3c0d3C0D3C0d3C0D30017",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xc0d3C0d3C0d3C0d3C0d3c0d3C0D3C0d3C0D30017"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x8dc81ca02eba8fc262038825d8c633ed5542af30e92e629f65787cf7161c0b69"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xc0d3C0d3C0d3C0d3C0d3c0d3C0D3C0d3C0D30017",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "BRIDGE": "0x4200000000000000000000000000000000000014",
         "REMOTE_CHAIN_ID": 1,
         "version": "1.2.0"
@@ -256,14 +446,96 @@
     {
       "name": "L2ProxyAdmin",
       "address": "0x4200000000000000000000000000000000000018",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xC0d3C0D3c0d3C0d3c0d3c0D3C0D3C0d3C0D30018",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xC0d3C0D3c0d3C0d3c0d3c0D3C0D3C0d3C0D30018"],
+      "template": "global/ProxyAdmin",
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x96d2f0fa1bd83ebd61ba6a2351c64c7fda7aa580b11ea67bb6bf4338e5c28512"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
+      "directlyReceivedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000002"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000007"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x420000000000000000000000000000000000000F"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000010"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000011"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000012"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000013"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000014"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000015"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000016"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000017"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000018"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000019"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x420000000000000000000000000000000000001A"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000020"
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000021"
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xC0d3C0D3c0d3C0d3c0d3c0D3C0D3C0d3C0D30018",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "addressManager": "0x0000000000000000000000000000000000000000",
         "isUpgrading": false,
         "owner": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b"
@@ -273,62 +545,134 @@
     {
       "name": "BaseFeeVault",
       "address": "0x4200000000000000000000000000000000000019",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xC0d3c0D3c0d3C0D3C0D3C0d3c0D3C0D3c0d30019",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xC0d3c0D3c0d3C0D3C0D3C0d3c0D3C0D3c0d30019"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x0c18a8a786c9a78d1ea6a3f71ee3369ae8acc817629b8bf4934b05f8a38a41a2"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xC0d3c0D3c0d3C0D3C0D3C0d3c0D3C0D3c0d30019",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "MIN_WITHDRAWAL_AMOUNT": "10000000000000000000",
         "RECIPIENT": "0xa3d596EAfaB6B13Ab18D40FaE1A962700C84ADEa",
-        "totalProcessed": "1928902844154653024561",
         "version": "1.1.0"
-      }
+      },
+      "derivedName": "BaseFeeVault"
     },
     {
       "name": "L1FeeVault",
       "address": "0x420000000000000000000000000000000000001A",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0xc0D3c0D3C0d3c0d3c0d3C0d3c0d3C0d3C0D3001A",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0xc0D3c0D3C0d3c0d3c0d3C0d3c0d3C0d3C0D3001A"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0xa5448c99f954f5f48195d1e118c0513d52fe9a6357928d1d29f617258ca935ff"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0xc0D3c0D3C0d3c0d3c0d3C0d3c0d3C0d3C0D3001A",
+        "$pastUpgrades": [],
+        "$upgradeCount": 0,
         "MIN_WITHDRAWAL_AMOUNT": "10000000000000000000",
         "RECIPIENT": "0xa3d596EAfaB6B13Ab18D40FaE1A962700C84ADEa",
-        "totalProcessed": "11679962820116169091101",
         "version": "1.1.0"
-      }
+      },
+      "derivedName": "L1FeeVault"
     },
     {
       "name": "SchemaRegistry",
       "address": "0x4200000000000000000000000000000000000020",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x6232208d66bAc2305b46b4Cb6BCB3857B298DF13",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0x6232208d66bAc2305b46b4Cb6BCB3857B298DF13"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x612d21c1676a505153f40dceb55f1251798affb5ed211cfc9c00efa2a51fcbfd"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0x6232208d66bAc2305b46b4Cb6BCB3857B298DF13",
+        "$pastUpgrades": [
+          [
+            "2023-07-27T22:05:33.000Z",
+            "0xe09a2d85965656572055111f1968491e9bb6b174bfaa5b3e38dbbb82ef94e6fb",
+            ["0x6232208d66bAc2305b46b4Cb6BCB3857B298DF13"]
+          ]
+        ],
+        "$upgradeCount": 1,
         "version": "1.0.1"
       }
     },
     {
       "name": "EAS",
       "address": "0x4200000000000000000000000000000000000021",
-      "upgradeability": {
-        "type": "EIP1967 proxy",
-        "implementation": "0x4E0275Ea5a89e7a3c1B58411379D1a0eDdc5b088",
-        "admin": "0x4200000000000000000000000000000000000018"
-      },
-      "implementations": ["0x4E0275Ea5a89e7a3c1B58411379D1a0eDdc5b088"],
+      "sourceHashes": [
+        "0x0a47b6d41e108156a5ce873322c843aad6040edbe7cf3d7e3473abb4d01e7e44",
+        "0x662edc082d445c579bb50a631e8c4137c8d9d9016da29683e3f1ccf24b835092"
+      ],
+      "proxyType": "EIP1967 proxy",
+      "issuedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+          "via": [
+            {
+              "address": "0x4200000000000000000000000000000000000018",
+              "delay": 0
+            }
+          ]
+        }
+      ],
       "sinceTimestamp": 1636665399,
       "values": {
+        "$admin": "0x4200000000000000000000000000000000000018",
+        "$implementation": "0x4E0275Ea5a89e7a3c1B58411379D1a0eDdc5b088",
+        "$pastUpgrades": [
+          [
+            "2023-07-27T22:05:33.000Z",
+            "0xe09a2d85965656572055111f1968491e9bb6b174bfaa5b3e38dbbb82ef94e6fb",
+            ["0x4E0275Ea5a89e7a3c1B58411379D1a0eDdc5b088"]
+          ]
+        ],
+        "$upgradeCount": 1,
         "getAttestTypeHash": "0xdbfdf8dc2b135c26253e00d5b6cbe6f20457e003fd526d97cea183883570de61",
         "getDomainSeparator": "0xd963157246e3d9bacafb6121ee5c596e8048baf5c3814c1b9fa094fdc4d6aed1",
         "getName": "EAS",
@@ -340,12 +684,13 @@
     {
       "name": "OPToken",
       "address": "0x4200000000000000000000000000000000000042",
+      "sourceHashes": [
+        "0xbaac8c2c26ae66ca5f26a277a6fc9ad2cac1d8e638fae5ab2589b8fec8262316"
+      ],
       "ignoreInWatchMode": ["totalSupply"],
-      "upgradeability": {
-        "type": "immutable"
-      },
       "sinceTimestamp": 1650979836,
       "values": {
+        "$immutable": true,
         "decimals": 18,
         "DOMAIN_SEPARATOR": "0xd423c9c6b838296762a6bbf9663d4609148ea6bc83b5e94ce2c05615edc69072",
         "name": "Optimism",
@@ -356,27 +701,14 @@
       "derivedName": "GovernanceToken"
     },
     {
-      "name": "OldQuixoticNFTBridge",
-      "address": "0x5a7749f83b81B301cAb5f48EB8516B986DAef23D",
-      "upgradeability": {
-        "type": "immutable"
-      },
-      "sinceTimestamp": 1664918893,
-      "values": {
-        "messenger": "0x4200000000000000000000000000000000000007",
-        "otherBridge": "0x5a7749f83b81B301cAb5f48EB8516B986DAef23D",
-        "version": "1.0.0"
-      },
-      "derivedName": "L2ERC721Bridge"
-    },
-    {
       "name": "MintManager",
       "address": "0x5C4e7Ba1E219E47948e6e3F55019A647bA501005",
-      "upgradeability": {
-        "type": "immutable"
-      },
+      "sourceHashes": [
+        "0x132b4ddf43264613a6251435ddd7443efbd8ed51129af51edb5c6ab298471b3d"
+      ],
       "sinceTimestamp": 1665174739,
       "values": {
+        "$immutable": true,
         "DENOMINATOR": 1000,
         "governanceToken": "0x4200000000000000000000000000000000000042",
         "MINT_CAP": 20,
@@ -387,17 +719,107 @@
     }
   ],
   "eoas": [
-    "0x0000000000000000000000000000000000000000",
-    "0x25ace71c97B33Cc4729CF772ae268934F7ab5fA1",
-    "0x3041BA32f451F5850c147805F5521AC206421623",
-    "0x4D014f3c5F33Aa9Cd1Dc29ce29618d07Ae666d15",
-    "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
-    "0x7cB07FE039a92B3D784f284D919503A381BEC54f",
-    "0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1",
-    "0xa3d596EAfaB6B13Ab18D40FaE1A962700C84ADEa",
-    "0xA902A27a7631D502E3Ec17fc5d4c3e0861752c94",
-    "0xdb203D7f00fF435dA107543B33495f9cA2c484C6",
-    "0xDeaDDEaDDeAdDeAdDEAdDEaddeAddEAdDEAd0001"
+    { "address": "0x0000000000000000000000000000000000000000" },
+    { "address": "0x25ace71c97B33Cc4729CF772ae268934F7ab5fA1" },
+    { "address": "0x3041BA32f451F5850c147805F5521AC206421623" },
+    { "address": "0x4D014f3c5F33Aa9Cd1Dc29ce29618d07Ae666d15" },
+    {
+      "address": "0x6B1BAE59D09fCcbdDB6C6cceb07B7279367C4E3b",
+      "receivedPermissions": [
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000002",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000007",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x420000000000000000000000000000000000000F",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000010",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000011",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000012",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000013",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000014",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000015",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000016",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000017",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000018",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000019",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x420000000000000000000000000000000000001A",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000020",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        },
+        {
+          "permission": "upgrade",
+          "target": "0x4200000000000000000000000000000000000021",
+          "via": [{ "address": "0x4200000000000000000000000000000000000018" }]
+        }
+      ],
+      "directlyReceivedPermissions": [
+        {
+          "permission": "act",
+          "target": "0x4200000000000000000000000000000000000018"
+        }
+      ]
+    },
+    { "address": "0x7cB07FE039a92B3D784f284D919503A381BEC54f" },
+    { "address": "0x99C9fc46f92E8a1c0deC1b1747d010903E884bE1" },
+    { "address": "0xa3d596EAfaB6B13Ab18D40FaE1A962700C84ADEa" },
+    { "address": "0xA902A27a7631D502E3Ec17fc5d4c3e0861752c94" },
+    { "address": "0xdb203D7f00fF435dA107543B33495f9cA2c484C6" },
+    { "address": "0xDeaDDEaDDeAdDeAdDEAdDEaddeAddEAdDEAd0001" }
   ],
   "abis": {
     "0x07dbe8500fc591d1852B76feE44d5a05e13097Ff": [
@@ -666,17 +1088,6 @@
       "function timestamp(bytes32 data) returns (uint64)",
       "function version() view returns (string)"
     ],
-    "0x5a7749f83b81B301cAb5f48EB8516B986DAef23D": [
-      "constructor(address _messenger, address _otherBridge)",
-      "event ERC721BridgeFinalized(address indexed localToken, address indexed remoteToken, address indexed from, address to, uint256 tokenId, bytes extraData)",
-      "event ERC721BridgeInitiated(address indexed localToken, address indexed remoteToken, address indexed from, address to, uint256 tokenId, bytes extraData)",
-      "function bridgeERC721(address _localToken, address _remoteToken, uint256 _tokenId, uint32 _minGasLimit, bytes _extraData)",
-      "function bridgeERC721To(address _localToken, address _remoteToken, address _to, uint256 _tokenId, uint32 _minGasLimit, bytes _extraData)",
-      "function finalizeBridgeERC721(address _localToken, address _remoteToken, address _from, address _to, uint256 _tokenId, bytes _extraData)",
-      "function messenger() view returns (address)",
-      "function otherBridge() view returns (address)",
-      "function version() view returns (string)"
-    ],
     "0x5C4e7Ba1E219E47948e6e3F55019A647bA501005": [
       "constructor(address _upgrader, address _governanceToken)",
       "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
@@ -699,7 +1110,7 @@
       "function register(string schema, address resolver, bool revocable) returns (bytes32)",
       "function version() view returns (string)"
     ],
-    "0xb528D11cC114E026F138fE568744c6D45ce6Da7A": [
+    "0xa919894851548179A0750865e7974DA599C0Fac7": [
       "function DECIMALS() view returns (uint256)",
       "function baseFee() view returns (uint256)",
       "function baseFeeScalar() view returns (uint32)",
@@ -708,12 +1119,15 @@
       "function decimals() pure returns (uint256)",
       "function gasPrice() view returns (uint256)",
       "function getL1Fee(bytes _data) view returns (uint256)",
+      "function getL1FeeUpperBound(uint256 _unsignedTxSize) view returns (uint256)",
       "function getL1GasUsed(bytes _data) view returns (uint256)",
       "function isEcotone() view returns (bool)",
+      "function isFjord() view returns (bool)",
       "function l1BaseFee() view returns (uint256)",
       "function overhead() view returns (uint256)",
       "function scalar() view returns (uint256)",
       "function setEcotone()",
+      "function setFjord()",
       "function version() view returns (string)"
     ],
     "0xc0d3c0d3C0d3c0D3c0d3C0D3c0d3C0d3c0D30002": [
@@ -926,5 +1340,9 @@
       "function simulateAndRevert(address targetContract, bytes calldataPayload)",
       "function swapOwner(address prevOwner, address oldOwner, address newOwner)"
     ]
+  },
+  "usedTemplates": {
+    "global/ProxyAdmin": "0x171ea6062ecb94d6e7913ecd058660d724f0bcc40120cd2c11b836e5c0450091",
+    "GnosisSafe": "0x18527e82c3800311291da7323caa876f588cde67692c1c84d5ecb5161da61359"
   }
 }

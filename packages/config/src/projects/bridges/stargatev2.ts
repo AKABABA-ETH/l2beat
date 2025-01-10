@@ -1,4 +1,9 @@
-import { assert, EthereumAddress, ProjectId } from '@l2beat/shared-pure'
+import {
+  assert,
+  EthereumAddress,
+  ProjectId,
+  UnixTime,
+} from '@l2beat/shared-pure'
 
 import { NUGGETS } from '../../common'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
@@ -44,6 +49,7 @@ const discoveredExecutorConfig: [number, string] = discovery.getContractValue(
 export const stargatev2: Bridge = {
   type: 'bridge',
   id: ProjectId('stargatev2'),
+  createdAt: new UnixTime(1718620600), // 2024-06-17T10:36:40Z
   display: {
     name: 'Stargate v2 (LayerZero v2)',
     shortName: 'Stargate v2',
@@ -72,7 +78,7 @@ export const stargatev2: Bridge = {
     validatedBy: {
       value: 'Third Party',
       description:
-        'The LayerZero message protocol is used. If all preconfigured verifiers agree on a message, it is considered verified and can be executed by a permissioned Executor at the destination.',
+        'The LayerZero message protocol is used. If all preconfigured DVNs agree on a message, it is considered verified and can be executed by a permissioned Executor at the destination.',
       sentiment: 'bad',
     },
     sourceUpgradeability: RISK_VIEW.UPGRADABLE_NO,
@@ -103,7 +109,8 @@ export const stargatev2: Bridge = {
       Users can choose between an economical batched bridge mode ('bus') or an individual fast 'taxi' mode that delivers the bridging message as soon as the user deposits.
       
       The Executor is a permissioned actor that withdraws the asset from the liquidity pool at the destination directly to the user.
-      They are only a relayer and depend on verifiers to verify the message coming from the source chain. These verifiers can be freely configured by the OApp owner (Stargate).
+      They are only a relayer and depend on LayerZero DVNs (distributed validator networks) to verify the message coming from the source chain. These DVNs can be freely configured by the OApp owner (Stargate) for each pair of endpoints. 
+      Stargatev2 currently has two DVNs configured: Stargate and Nethermind. From the viewpoint of the LayerZero message protocol, each DVN is a single signer and the current threshold for verification is 2.
       
       Just like the assets themselves, so-called *credits* are bridged among the supported pools in the Stargate v2 system. Credits can be seen as claims on assets, so a liquidity pool needs credits for a remote pool to be able to bridge there.
       These credits can be moved and rebalanced (but not minted) by a permissioned Planner.`,
@@ -131,14 +138,14 @@ export const stargatev2: Bridge = {
       assert(
         discoveredExecutorConfig[1] ===
           '0x173272739Bd7Aa6e4e214714048a9fE699453059', // LayerZero Executor
-        'The configured Executor for Stargate changed: Review the risk and permissions section.',
+        'The configured Executor for Stargate changed: Review the risk, PoO and permissions sections.',
       )
 
       return {
         name: 'LayerZero messaging',
         description:
-          'The LayerZero message protocol is used: For validation of messages from Stargate over LayerZero, two verifiers are currently configured: Nethermind and Stargate.\
-        If both verifiers agree on a message, it is verified and can be executed by a permissioned Executor at the destination. This configuration can be changed at any time by the StargateMultisig.',
+          'The LayerZero message protocol is used: For validation of messages from Stargate over LayerZero, two DVNs are currently configured: Nethermind and Stargate.\
+        If both DVNs agree on a message, it is verified and can be executed by a permissioned Executor at the destination. This configuration can be changed at any time by the StargateMultisig.',
         references: [
           {
             text: 'LayerZero Docs: Security Stack',
@@ -148,13 +155,11 @@ export const stargatev2: Bridge = {
         risks: [
           {
             category: 'Users can be censored if',
-            text: 'both whitelisted Verifiers or the LayerZero Executor fail to facilitate the transaction.',
-            isCritical: true,
+            text: 'both whitelisted DVNs or the LayerZero Executor fail to facilitate the transaction.',
           },
           {
             category: 'Funds can be stolen if',
-            text: 'both whitelisted Verifiers collude to submit a fraudulent message.',
-            isCritical: true,
+            text: 'both whitelisted DVNs collude to submit a fraudulent message.',
           },
         ],
       }
@@ -201,109 +206,91 @@ export const stargatev2: Bridge = {
       }),
       // MULTICHAIN ESCROWS:
       discovery_arbitrum.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xe8CDF27AcD73a434D661C84887215F7598e7d0d3'),
         tokens: ['USDC'],
         description: 'Stargate liquidity pool for USDC on Arbitrum.',
       }),
       discovery_arbitrum.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xcE8CcA271Ebc0533920C83d39F417ED6A0abB7D0'),
         tokens: ['USDT'],
         description: 'Stargate liquidity pool for USDT on Arbitrum.',
       }),
       discovery_arbitrum.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xA45B5130f36CDcA45667738e2a258AB09f4A5f7F'),
         tokens: ['ETH'],
         description: 'Stargate liquidity pool for ETH on Arbitrum.',
       }),
       discovery_optimism.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xcE8CcA271Ebc0533920C83d39F417ED6A0abB7D0'),
         tokens: ['USDC'],
         description: 'Stargate liquidity pool for USDC on Optimism.',
       }),
       discovery_optimism.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xe8CDF27AcD73a434D661C84887215F7598e7d0d3'),
         tokens: ['ETH'],
         description: 'Stargate liquidity pool for ETH on Optimism.',
       }),
       discovery_optimism.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0x19cFCE47eD54a88614648DC3f19A5980097007dD'),
         tokens: ['USDT'],
         description: 'Stargate liquidity pool for USDT on Optimism.',
       }),
       discovery_base.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0x27a16dc786820B16E5c9028b75B99F6f604b5d26'),
         tokens: ['USDC'],
         description: 'Stargate liquidity pool for USDC on Base.',
       }),
       discovery_base.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xdc181Bd607330aeeBEF6ea62e03e5e1Fb4B6F7C7'),
         tokens: ['ETH'],
         description: 'Stargate liquidity pool for USDC on Base.',
       }),
       discovery_scroll.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0x3Fc69CC4A842838bCDC9499178740226062b14E4'),
         tokens: ['USDC'],
         description: 'Stargate liquidity pool for USDC on Scroll.',
       }),
       discovery_scroll.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xC2b638Cb5042c1B3c5d5C969361fB50569840583'),
         tokens: ['ETH'],
         description: 'Stargate liquidity pool for ETH on Scroll.',
       }),
       discovery_metis.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0x36ed193dc7160D3858EC250e69D12B03Ca087D08'),
         tokens: ['WETH'],
         description: 'Stargate liquidity pool for ETH on Metis.',
       }),
       discovery_metis.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xD9050e7043102a0391F81462a3916326F86331F0'),
         tokens: ['Metis'],
         description: 'Stargate liquidity pool for METIS on Metis.',
       }),
       discovery_metis.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0x4dCBFC0249e8d5032F89D6461218a9D2eFff5125'),
         tokens: ['USDT'],
         description: 'Stargate liquidity pool for USDT on Metis.',
       }),
       discovery_linea.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0x81F6138153d473E8c5EcebD3DC8Cd4903506B075'),
         tokens: ['ETH'],
         description: 'Stargate liquidity pool for ETH on Linea.',
       }),
       discovery_mantle.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0x4c1d3Fc3fC3c177c3b633427c2F769276c547463'),
         tokens: ['WETH'],
         description: 'Stargate liquidity pool for ETH on Mantle.',
       }),
       discovery_mantle.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xB715B85682B731dB9D5063187C450095c91C57FC'),
         tokens: ['USDT'],
         description: 'Stargate liquidity pool for USDT on Mantle.',
       }),
       discovery_mantle.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xAc290Ad4e0c891FDc295ca4F0a6214cf6dC6acDC'),
         tokens: ['USDC'],
         description: 'Stargate liquidity pool for USDC on Mantle.',
       }),
       discovery_mantle.getEscrowDetails({
-        includeInTotal: false,
         address: EthereumAddress('0xF7628d84a2BbD9bb9c8E686AC95BB5d55169F3F1'),
         tokens: ['mETH'],
         description: 'Stargate liquidity pool for mETH on Mantle.',
@@ -322,11 +309,11 @@ export const stargatev2: Bridge = {
       ),
       discovery.getContractDetails(
         'Stargate Verifier',
-        'One of the registered verifiers for the OApp acts through this smart contract. They are allowed to verify LayerZero messages for the Stargate bridge and enable their execution at the destination.',
+        'One of the registered DVNs for the OApp acts through this smart contract. They are allowed to verify LayerZero messages for the Stargate bridge and enable their execution at the destination.',
       ),
       discovery.getContractDetails(
         'Nethermind Verifier',
-        'One of the registered verifiers for the OApp acts through this smart contract. They are allowed to verify LayerZero messages for the Stargate bridge and enable their execution at the destination.',
+        'One of the registered DVNs for the OApp acts through this smart contract. They are allowed to verify LayerZero messages for the Stargate bridge and enable their execution at the destination.',
       ),
     ],
     ...(() => {
@@ -344,11 +331,11 @@ export const stargatev2: Bridge = {
         ),
         discovery.getContractDetails(
           'Stargate Verifier',
-          'One out of the two verifier contracts that are currently registered to verify all cross chain messages.',
+          'One out of the two DVN contracts that are currently registered to verify all cross chain messages.',
         ),
         discovery.getContractDetails(
           'Nethermind Verifier',
-          'One out of the two verifier contracts that are currently registered to verify all cross chain messages.',
+          'One out of the two DVN contracts that are currently registered to verify all cross chain messages.',
         ),
         discovery.getContractDetails(
           'LayerZero Executor',
@@ -359,11 +346,10 @@ export const stargatev2: Bridge = {
     risks: [
       {
         category: 'Funds can be stolen if',
-        text: 'the OApp owner changes the configuration of the OApp to malicious verifiers and executors.',
-        isCritical: true,
+        text: 'the OApp owner changes the configuration of the OApp to malicious DVNs and executors.',
       },
       {
-        category: 'Users can be censored if',
+        category: 'Funds can be frozen if',
         text: "the permissioned Planner moves all credits away from the users' chain, preventing them from bridging.",
       },
     ],
@@ -381,7 +367,7 @@ export const stargatev2: Bridge = {
       return [
         ...discovery.getMultisigPermission(
           'Stargate Multisig',
-          'Owner of all pools and the associated OApps, can create new pools and endpoints, set fees and modify the OApp configuration to change verifiers and executors.',
+          'Owner of all pools and the associated OApps, can create new pools and endpoints, set fees and modify the OApp configuration to change DVNs and executors.',
         ),
       ]
     })(),
@@ -395,7 +381,7 @@ export const stargatev2: Bridge = {
         discovery.getPermissionedAccount('CreditMessaging', 'planner'),
       ],
       description:
-        'Central actor who can move credits (see CreditMessaging contract) among chains and thus move liquidity claims of the Stargate pools.',
+        'Central actor who can move credits (see CreditMessaging contract) among chains and thus move liquidity claims of the Stargate pools. Abuse of this permission can impact liveness but not security.',
     },
   ],
   knowledgeNuggets: [

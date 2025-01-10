@@ -1,58 +1,49 @@
-import path from 'path'
-import type { StorybookConfig } from '@storybook/react-vite'
-import { mergeConfig } from 'vite'
-import turbosnap from 'vite-plugin-turbosnap'
+import { dirname, join } from 'path'
 
-const config: StorybookConfig = {
-  stories: ['../src/**/*.stories.tsx'],
+/**
+ * This function is used to resolve the absolute path of a package.
+ * It is needed in projects that use Yarn PnP or are set up within a monorepo.
+ */
+function getAbsolutePath(value: string) {
+  return dirname(require.resolve(join(value, 'package.json')))
+}
+
+/** @type { import('@storybook/nextjs').StorybookConfig } */
+const config = {
+  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+
   addons: [
-    '@storybook/addon-essentials',
-    '@storybook/addon-styling',
-    '@storybook/addon-interactions',
-    'storybook-addon-pseudo-states',
+    getAbsolutePath('@storybook/addon-links'),
+    getAbsolutePath('@storybook/addon-essentials'),
+    getAbsolutePath('@chromatic-com/storybook'),
+    getAbsolutePath('@storybook/addon-interactions'),
+    getAbsolutePath('@storybook/addon-themes'),
+    getAbsolutePath('storybook-addon-pseudo-states'),
   ],
+
   framework: {
-    name: '@storybook/react-vite',
+    name: getAbsolutePath('@storybook/nextjs'),
     options: {},
   },
-  features: {
-    storyStoreV7: true,
+
+  async webpackFinal(config) {
+    config.resolve.alias = {
+      react: getAbsolutePath('react'),
+      'react-dom': getAbsolutePath('react-dom'),
+    }
+    return config
   },
-  staticDirs: ['../src/static', './static'],
-  viteFinal(config, { configType }) {
-    return mergeConfig(config, {
-      resolve: {
-        // Remove this once we are good to go with Context
-        ...config.resolve,
-        alias: {
-          ...config.resolve?.alias,
-          async_hooks: '.storybook/polyfills/async_hooks.js',
-          '../content/getCollection': path.resolve(
-            __dirname,
-            '../src/content/getCollection.mock.ts',
-          ),
-        },
-      },
-      optimizeDeps: {
-        exclude: ['@l2beat/discovery'],
-        include: ['@l2beat/config', '@l2beat/shared-pure'],
-        esbuildOptions: {
-          target: 'es2020',
-        },
-      },
-      build: {
-        target: 'es2020',
-      },
-      plugins:
-        configType === 'PRODUCTION'
-          ? [
-              turbosnap({
-                rootDir: process.cwd(),
-              }),
-            ]
-          : [],
-    })
+
+  staticDirs: [
+    '../public',
+    {
+      from: '../src/fonts',
+      to: 'src/fonts',
+    },
+  ],
+
+  typescript: {
+    reactDocgen: 'react-docgen-typescript',
   },
 }
-// biome-ignore lint/style/noDefaultExport: this is a config file
 export default config

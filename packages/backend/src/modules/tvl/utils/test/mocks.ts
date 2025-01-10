@@ -1,3 +1,4 @@
+import { AmountRecord, PriceRecord, ValueRecord } from '@l2beat/database'
 import {
   AssetId,
   CoingeckoId,
@@ -8,9 +9,6 @@ import {
   UnixTime,
 } from '@l2beat/shared-pure'
 import { mockObject } from 'earl'
-import { AmountRecord } from '../../repositories/AmountRepository'
-import { PriceRecord } from '../../repositories/PriceRepository'
-import { ValueRecord } from '../../repositories/ValueRepository'
 
 const DECIMALS = 18
 const USD_DECIMALS = 2
@@ -43,7 +41,10 @@ function amountConfiguration(v: Partial<TotalSupplyEntry>) {
     sinceTimestamp: UnixTime.ZERO,
     includeInTotal: true,
     decimals: DECIMALS,
+    assetId: AssetId.create(v.chain ?? 'chain', v.address),
     symbol: 'SYMBOL',
+    isAssociated: false,
+    category: 'other',
     ...v,
   })
 }
@@ -58,7 +59,7 @@ function priceRecord(id: string, timestamp: number): PriceRecord {
 
 function priceConfiguration(v: Partial<CoingeckoPriceConfigEntry>) {
   return mockObject<CoingeckoPriceConfigEntry>({
-    assetId: AssetId('AssetId'),
+    assetId: AssetId.create(v.chain ?? 'chain', v.address),
     address: EthereumAddress.ZERO,
     chain: 'chain',
     sinceTimestamp: UnixTime.ZERO,
@@ -74,11 +75,19 @@ function valueRecord(v?: Partial<ValueRecord>) {
     dataSource: 'chain',
     timestamp: new UnixTime(0),
     canonical: 0n,
+    canonicalAssociated: 0n,
     canonicalForTotal: 0n,
+    canonicalAssociatedForTotal: 0n,
     external: 0n,
+    externalAssociated: 0n,
     externalForTotal: 0n,
+    externalAssociatedForTotal: 0n,
     native: 0n,
+    nativeAssociated: 0n,
     nativeForTotal: 0n,
+    nativeAssociatedForTotal: 0n,
+    ether: 0n,
+    stablecoin: 0n,
     ...v,
   }
 }

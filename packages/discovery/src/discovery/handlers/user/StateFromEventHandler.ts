@@ -1,11 +1,9 @@
-import { assert } from '@l2beat/backend-tools'
 import { ContractValue } from '@l2beat/discovery-types'
-import { EthereumAddress } from '@l2beat/shared-pure'
+import { assert, EthereumAddress } from '@l2beat/shared-pure'
 import { utils } from 'ethers'
 import { pick, reduce } from 'lodash'
 import * as z from 'zod'
 
-import { DiscoveryLogger } from '../../DiscoveryLogger'
 import { IProvider } from '../../provider/IProvider'
 import { Handler, HandlerResult } from '../Handler'
 import { getEventFragment } from '../utils/getEventFragment'
@@ -33,7 +31,6 @@ export class StateFromEventHandler implements Handler {
     readonly field: string,
     readonly definition: StateFromEventDefinition,
     abi: string[],
-    readonly logger: DiscoveryLogger,
   ) {
     this.fragment = getEventFragment(definition.event, abi, () => true)
     this.abi = new utils.Interface([this.fragment])
@@ -47,7 +44,6 @@ export class StateFromEventHandler implements Handler {
     provider: IProvider,
     address: EthereumAddress,
   ): Promise<HandlerResult> {
-    this.logger.logExecution(this.field, ['Querying ', this.fragment.name])
     const topics = toTopics(this.abi, this.fragment, this.definition.topics)
     const logs = await provider.getLogs(address, topics)
 

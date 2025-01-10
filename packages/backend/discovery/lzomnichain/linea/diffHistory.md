@@ -1,4 +1,323 @@
-Generated with discovered.json: 0xc98c136c7f9b62280f79554f95aa0fd20a326442
+Generated with discovered.json: 0x3af63570b5d6a20ea734fb1f8c15d24dd6685caa
+
+# Diff at Mon, 21 Oct 2024 11:14:44 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@8895d33866f5665c4c710f4ddaa32bfa63cc3c78 block: 6393468
+- current block number: 6393468
+
+## Description
+
+Config related.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 6393468 (main branch discovery), not current.
+
+```diff
+    contract  (0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9) {
+    +++ description: None
+      values.$pastUpgrades.2.2:
++        ["0xC614E9C511a5149f1969F2CB0199d508bBB5b915"]
+      values.$pastUpgrades.2.1:
+-        ["0xC614E9C511a5149f1969F2CB0199d508bBB5b915"]
++        "0x32899d9143a2ea03680cd23ab7a3d62eaa47132232a71b7ac80d1ed6acc72a58"
+      values.$pastUpgrades.1.2:
++        ["0xd27B2Fe1d0a60E06A0ec7e64501d2f15e6c65Bd9"]
+      values.$pastUpgrades.1.1:
+-        ["0xd27B2Fe1d0a60E06A0ec7e64501d2f15e6c65Bd9"]
++        "0xff74215370891d87c949c0f7a05a6514ade104ffc5addfc704680fc644688cea"
+      values.$pastUpgrades.0.2:
++        ["0x5B19bd330A84c049b62D5B0FC2bA120217a18C1C"]
+      values.$pastUpgrades.0.1:
+-        ["0x5B19bd330A84c049b62D5B0FC2bA120217a18C1C"]
++        "0x89a4db6091313816b1a56948608303fe905eabf9626fb01fef4b0a33fad93be7"
+    }
+```
+
+Generated with discovered.json: 0x697928d9c5346ad0ae7baf2c8caa8cc4f0638fb3
+
+# Diff at Mon, 14 Oct 2024 11:00:20 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 6393468
+- current block number: 6393468
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 6393468 (main branch discovery), not current.
+
+```diff
+    contract MPTValidator01 (0x2D61DCDD36F10b22176E0433B86F74567d529aAa) {
+    +++ description: None
+      sourceHashes:
++        ["0x965651ae50a316c3ab842d2c8c9242c34d6e40eefa61f7c731bba9a1faf2ccea"]
+    }
+```
+
+```diff
+    contract UltraLightNodeV2 (0x38dE71124f7a447a01D67945a51eDcE9FF491251) {
+    +++ description: None
+      sourceHashes:
++        ["0x38c85ab54f670eaa1fc2b351aee39913bc12e2b26c460ee31cf89d3f1f7d59b9"]
+    }
+```
+
+```diff
+    contract LayerZero Multisig (0x5e306343ecf32B605d88c1e44f3879699ab5144D) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+```diff
+    contract NonceContract (0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675) {
+    +++ description: None
+      sourceHashes:
++        ["0x895867397d61409de8476975bae4d871fec1c289e52fe97b31872726808dae38"]
+    }
+```
+
+```diff
+    contract TreasuryV2 (0x980205D352F198748B626f6f7C38A8a5663Ec981) {
+    +++ description: None
+      sourceHashes:
++        ["0x9a8a40656962f8df570994ee72e4262dc5beb926ffc7686740df457bade87efb"]
+    }
+```
+
+```diff
+    contract Endpoint (0xb6319cC6c8c27A8F5dAF0dD3DF91EA35C4720dd7) {
+    +++ description: None
+      sourceHashes:
++        ["0x945c3299d0cf62b9ea7a77d6328295d54327299d6a153e1e7b48d85fa9b77215"]
+    }
+```
+
+```diff
+    contract FPValidator (0xC1b15d3B262bEeC0e3565C11C9e0F6134BdaCB36) {
+    +++ description: None
+      sourceHashes:
++        ["0x0d505ac1b08cd930c4b902daa632eaa029531d5c1aa50c45169b63c310b2da62"]
+    }
+```
+
+```diff
+    contract VerifierNetwork (0xD56e4eAb23cb81f43168F9F45211Eb027b9aC7cc) {
+    +++ description: None
+      sourceHashes:
++        ["0x1be31a02ca7158d467a49eeb964f0f8aa1d1e74019df854c1881d89d51260701"]
+    }
+```
+
+```diff
+    contract VerifierFeeLib (0xdeA04ef31C4B4FDf31CB58923F37869739280d49) {
+    +++ description: None
+      sourceHashes:
++        ["0x37e1cee9d0a4ad6ebb439d27dbbf23925fcd9f9c0d5b43a33a6335e62b54d18c"]
+    }
+```
+
+Generated with discovered.json: 0xa3ac8655e19857519361df9ccc63071a16f1d02b
+
+# Diff at Tue, 01 Oct 2024 11:13:53 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@bd754dc73c66120164006054f8d25c5fae9cd910 block: 6393468
+- current block number: 6393468
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 6393468 (main branch discovery), not current.
+
+```diff
+    contract  (0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9) {
+    +++ description: None
+      values.$pastUpgrades:
++        [["2023-07-14T16:23:48.000Z",["0x5B19bd330A84c049b62D5B0FC2bA120217a18C1C"]],["2023-09-20T19:41:08.000Z",["0xd27B2Fe1d0a60E06A0ec7e64501d2f15e6c65Bd9"]],["2023-09-22T14:20:47.000Z",["0xC614E9C511a5149f1969F2CB0199d508bBB5b915"]]]
+    }
+```
+
+Generated with discovered.json: 0x604610eb14192595266efc8cff1c64135781e109
+
+# Diff at Fri, 30 Aug 2024 08:17:29 GMT:
+
+- author: Adrian Adamiak (<adrian@adamiak.net>)
+- comparing to: main@6c1bd1f41fadf5f2cb1c1805b5a2c6138a3ed35a block: 6393468
+- current block number: 6393468
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 6393468 (main branch discovery), not current.
+
+```diff
+    contract  (0xFe7C30860D01e28371D40434806F4A8fcDD3A098) {
+    +++ description: None
+      receivedPermissions.0.via:
+-        []
+    }
+```
+
+Generated with discovered.json: 0x14a0a28049c7fb5ae616e65a38d145a8b76b6822
+
+# Diff at Fri, 23 Aug 2024 09:57:52 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@67597c7d6c810bc726594446890178150240711e block: 6393468
+- current block number: 6393468
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 6393468 (main branch discovery), not current.
+
+```diff
+    contract  (0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9) {
+    +++ description: None
+      values.$upgradeCount:
++        3
+    }
+```
+
+Generated with discovered.json: 0x47e95690c38d24c6fb5342f699be8f43adb55e92
+
+# Diff at Wed, 21 Aug 2024 10:08:15 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@2f6dde3357bf5d79196b6e94f79d853a6c4ec72b block: 6393468
+- current block number: 6393468
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 6393468 (main branch discovery), not current.
+
+```diff
+    contract  (0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9) {
+    +++ description: None
+      issuedPermissions:
++        [{"permission":"upgrade","target":"0xFe7C30860D01e28371D40434806F4A8fcDD3A098","via":[]}]
+    }
+```
+
+```diff
+    contract  (0xFe7C30860D01e28371D40434806F4A8fcDD3A098) {
+    +++ description: None
+      assignedPermissions:
+-        {"upgrade":["0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9"]}
+      receivedPermissions:
++        [{"permission":"upgrade","target":"0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9","via":[]}]
+    }
+```
+
+Generated with discovered.json: 0x6a4f7822cedaff44c544402377597c2345331cd9
+
+# Diff at Fri, 09 Aug 2024 10:14:22 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 6393468
+- current block number: 6393468
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 6393468 (main branch discovery), not current.
+
+```diff
+    contract LayerZero Multisig (0x5e306343ecf32B605d88c1e44f3879699ab5144D) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "2 of 5 (40%)"
+      values.getOwners:
+-        ["0xBb6633cc267951E938F9B6421E4F54aa5b2c1936","0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e","0x67FC8c432448f9a8d541C17579EF7a142378d5aD","0xf1f5E3777a3ADBe6f3289AD6b21eae6427dfb553","0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327"]
+      values.getThreshold:
+-        2
+      values.$members:
++        ["0xBb6633cc267951E938F9B6421E4F54aa5b2c1936","0x73E9c017Ad37e2113e709D8070Cc9E1b28180e1e","0x67FC8c432448f9a8d541C17579EF7a142378d5aD","0xf1f5E3777a3ADBe6f3289AD6b21eae6427dfb553","0x9F403140Bc0574D7d36eA472b82DAa1Bbd4eF327"]
+      values.$threshold:
++        2
+      values.multisigThreshold:
++        "2 of 5 (40%)"
+    }
+```
+
+```diff
+    contract  (0xFe7C30860D01e28371D40434806F4A8fcDD3A098) {
+    +++ description: None
+      assignedPermissions.admin:
+-        ["0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9"]
+      assignedPermissions.upgrade:
++        ["0xA658742d33ebd2ce2F0bdFf73515Aa797Fd161D9"]
+    }
+```
+
+Generated with discovered.json: 0xe0adae1e536411edad6663a7b3e219ec35a65883
+
+# Diff at Fri, 05 Jul 2024 14:34:03 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@111fee0655d72e75c60324b920975e421fd852f7 block: 3199002
+- current block number: 6393468
+
+## Description
+
+Config related.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 3199002 (main branch discovery), not current.
+
+```diff
+-   Status: DELETED
+    contract  (0x3c2269811836af69497E5F486A85D7316753cf62)
+    +++ description: None
+```
+
+```diff
+-   Status: DELETED
+    contract  (0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4)
+    +++ description: None
+```
+
+Generated with discovered.json: 0x4a21c6767c3d1a83ce5d8d08fef1680af4324194
 
 # Diff at Thu, 28 Mar 2024 11:38:52 GMT:
 

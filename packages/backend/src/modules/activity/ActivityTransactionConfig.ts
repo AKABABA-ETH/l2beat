@@ -1,13 +1,13 @@
 import { AssessCount } from '@l2beat/config'
 import { UnixTime } from '@l2beat/shared-pure'
 
-export interface SimpleActivityTransactionConfig<T extends string> {
+interface SimpleActivityTransactionConfig<T extends string> {
   type: T
   url: string
   callsPerMinute: number
 }
 
-export interface RpcActivityTransactionConfig {
+interface RpcActivityTransactionConfig {
   type: 'rpc'
   url: string
   callsPerMinute: number
@@ -15,7 +15,7 @@ export interface RpcActivityTransactionConfig {
   startBlock?: number
 }
 
-export interface StarkexActivityTransactionConfig {
+interface StarkexActivityTransactionConfig {
   type: 'starkex'
   product: string[]
   sinceTimestamp: UnixTime
@@ -24,9 +24,9 @@ export interface StarkexActivityTransactionConfig {
 
 export type ActivityTransactionConfig =
   | SimpleActivityTransactionConfig<'starknet'>
-  | SimpleActivityTransactionConfig<'aztec'>
   | SimpleActivityTransactionConfig<'zksync'>
   | SimpleActivityTransactionConfig<'loopring'>
-  | SimpleActivityTransactionConfig<'degate'>
+  | SimpleActivityTransactionConfig<'degate3'>
+  | SimpleActivityTransactionConfig<'fuel'>
   | RpcActivityTransactionConfig
   | StarkexActivityTransactionConfig

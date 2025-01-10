@@ -1,4 +1,953 @@
-Generated with discovered.json: 0xd5af38eb602805819026bd4794da730b6259ab05
+Generated with discovered.json: 0xc7414748081f2c9e2bf85e8c9b38dc502ab947ae
+
+# Diff at Thu, 12 Dec 2024 18:00:37 GMT:
+
+- author: vincfurc (<10850139+vincfurc@users.noreply.github.com>)
+- comparing to: main@fa5a98638066331a8ea6329a256a3462e7da2b3a block: 21285509
+- current block number: 21388078
+
+## Description
+
+Multisig threshold change, ignored lastProposeAggregateRootAt.
+
+## Watched changes
+
+```diff
+    contract GnosisSafe (0xeD5cF41b0fD6A3C564c17eE34d9D26Eafc30619b) {
+    +++ description: None
+      values.$members.13:
+-        "0x349f3839012DB2271e1BeC68F1668471D175Adb9"
+      values.$members.12:
+-        "0x6a0A93Cd6d6FB7a36bF6234ef4650Bf9474e7682"
+      values.$members.11:
+-        "0xAabB54394E8dd61Dd70897E9c80be8de7C64A895"
++        "0x349f3839012DB2271e1BeC68F1668471D175Adb9"
+      values.$members.10:
+-        "0x691C2EF68e25E620fa6cAdE2728f6aE34F37aAD2"
++        "0x6a0A93Cd6d6FB7a36bF6234ef4650Bf9474e7682"
+      values.$members.9:
+-        "0x40b46a6C2DEFdCFC1b6Cfb667CD0c024F1FfBBA9"
++        "0xAabB54394E8dd61Dd70897E9c80be8de7C64A895"
+      values.$members.8:
+-        "0x01a0A7BaAAca31AFB5b770FeFD69CE4917D9c32e"
++        "0x691C2EF68e25E620fa6cAdE2728f6aE34F37aAD2"
+      values.$members.7:
+-        "0xB0C2CBFfCd4C31AFFEe14993b6d48f99D285f621"
++        "0xf0c1d7d38972c117F899Ea190afd6FeEee04E5fd"
+      values.$members.6:
+-        "0xEeD1Edd7599F2991159e3Fe71CC2010E9590037e"
++        "0x01a0A7BaAAca31AFB5b770FeFD69CE4917D9c32e"
+      values.$members.5:
+-        "0x6fd2072B961aCC9bd6e188f957a0FB1CEb8632dc"
++        "0xEeD1Edd7599F2991159e3Fe71CC2010E9590037e"
+      values.$members.4:
+-        "0xc85aC6d2fdC376F335455D4cCA30c45ED1080849"
++        "0x5aA748326f03C651749E7998D88647e59Ee386Bc"
+      values.$members.3:
+-        "0x5aA748326f03C651749E7998D88647e59Ee386Bc"
++        "0xebD4919C075417a86F19713dADe101852867A04F"
+      values.$members.2:
+-        "0xebD4919C075417a86F19713dADe101852867A04F"
++        "0xf83bC4688979b13Da02CB94c76cEB169540760b5"
+      values.$members.1:
+-        "0xf83bC4688979b13Da02CB94c76cEB169540760b5"
++        "0x58edE8C66A15f23c61b8EadD1191FdaD904f7a87"
+      values.$members.0:
+-        "0x58edE8C66A15f23c61b8EadD1191FdaD904f7a87"
++        "0xB65540bBA534E88EB4a5062D0E6519C07063b259"
+      values.$threshold:
+-        6
++        5
+      values.multisigThreshold:
+-        "6 of 14 (43%)"
++        "5 of 12 (42%)"
+    }
+```
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 21285509 (main branch discovery), not current.
+
+```diff
+    contract RelayerProxyHub3 (0xB4F8D176466f5F544bAd53737bffAaeA17185c05) {
+    +++ description: None
+      values.lastProposeAggregateRootAt:
+-        1732782143
+    }
+```
+
+Generated with discovered.json: 0x98b4f5e84bbaff9188ce66e71b18ab07b6613d18
+
+# Diff at Tue, 10 Dec 2024 10:36:51 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@9ed5a41ddcad978cfdf826bc7a4827bf4a91c814 block: 21285509
+- current block number: 21285509
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 21285509 (main branch discovery), not current.
+
+```diff
++   Status: CREATED
+    contract Relayer3 (0x43100A190C3FeAE37Cb1f5d880e8fa8d81BE5CB9)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract Relayer10 (0x75bA5Af8EFFDCFca32E1e288806d54277D1fde99)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract RelayerProxyHub1 (0x75C6A865c30da54e365Cb5Def728890B3DD8BDC4)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract Relayer5 (0x9B077C59fDe7de5AdCeF8093Bc38B61d43FC7007)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract Relayer1 (0xaBcC9b596420A9E9172FD5938620E265a0f9Df92)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract RelayerProxyHub3 (0xB4F8D176466f5F544bAd53737bffAaeA17185c05)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract RelayerProxyHub2 (0xcDbF9D438670D19d1Fb3954Abc8a13666b302b28)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract AllowanceModule (0xCFbFaC74C26F8647cBDb8c5caf80BB5b32E43134)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract Relayer7 (0xe8a5eE73f3c8F1Cd55915f6Eb5Fc7df4206f3C78)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract GnosisSafe (0xeD5cF41b0fD6A3C564c17eE34d9D26Eafc30619b)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract GnosisSafe (0xf2964cCcB7CDA9e808aaBe8DB0DDDAF7890dd378)
+    +++ description: None
+```
+
+```diff
++   Status: CREATED
+    contract Relayer11 (0xF9D64d54D32EE2BDceAAbFA60C4C438E224427d0)
+    +++ description: None
+```
+
+Generated with discovered.json: 0x08be3bca758a6a558eaa261af2e07743cd31e7ae
+
+# Diff at Thu, 28 Nov 2024 10:09:41 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@cba708dac9336030203b425721a33c9db2b14313 block: 21234596
+- current block number: 21285509
+
+## Description
+
+Three signers removed, ALL others changed in Connext Multisig.
+
+## Watched changes
+
+```diff
+    contract Connext Multisig (0x4d50a469fc788a3c0CdC8Fd67868877dCb246625) {
+    +++ description: None
+      values.$members.11:
+-        "0x9b903Ae440CB1f01c342466D6DB6b57A5BF98C3f"
+      values.$members.10:
+-        "0xf8d8aF083aC452b05b0D2eb4499AD900324b5754"
+      values.$members.9:
+-        "0x1b526192C541DE6E23D73b4Afc4b6B45A75aeAdD"
+      values.$members.8:
+-        "0x320CBa820f33251d480Dcb79F7a9b1cc757aC12e"
++        "0xDbDcFbA39D6ace2DaC9Cf5E8fc0Fe80a074FD81b"
+      values.$members.7:
+-        "0xC832bB8015762B4857459551057EB61c68B93608"
++        "0x2eEd1440842990Fa61F0c396f981375Fa6004131"
+      values.$members.6:
+-        "0xe4d19c67ca0E9E3888158062De24321a0B272e73"
++        "0xBE2Ac45e75c14e9EEf9712a94Dce355f0151f5B1"
+      values.$members.4:
+-        "0x43A257c61e9Ef4750e426eC0770589509469b156"
++        "0x7AE8b0D6353F0931EB9FaC0A3562fA9e4C6Ff933"
+      values.$members.2:
+-        "0x450BCD84a040E6975a8092114A09cD37fA140873"
++        "0x334CE923420ff1aA4f272e92BF68013D092aE7B4"
+      values.$members.1:
+-        "0xc840e73B856f52E5491d6016daf5C7AE5e6beECD"
++        "0x3e11aa01A7eFdD428487ae75F5F4Fe0e5CeCeF06"
+      values.$threshold:
+-        8
++        7
+      values.multisigThreshold:
+-        "8 of 12 (67%)"
++        "7 of 9 (78%)"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract GnosisSafe (0xBE2Ac45e75c14e9EEf9712a94Dce355f0151f5B1)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../GnosisSafe.sol                                 |   0
+ .../Proxy.p.sol                                    |   0
+ .../GnosisSafe.sol                                 | 953 +++++++++++++++++++++
+ .../GnosisSafeProxy.p.sol                          |  35 +
+ 4 files changed, 988 insertions(+)
+```
+
+Generated with discovered.json: 0x5eee3971ab4144323b5d80fcc9ca4a630463748a
+
+# Diff at Thu, 21 Nov 2024 07:24:43 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@de1745323b367dd0fbb18ad6c862147dd90e90b0 block: 20640712
+- current block number: 21234596
+
+## Description
+
+Config related: new gnosisSafe template match.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20640712 (main branch discovery), not current.
+
+```diff
+    contract Connext Fee Multisig (0x7bE978Cc84612E08f7844672B0E6A6F367FE2b6A) {
+    +++ description: None
+      values.getOwners:
+-        ["0x9b903Ae440CB1f01c342466D6DB6b57A5BF98C3f","0xade09131C6f43fe22C2CbABb759636C43cFc181e","0x7fB1B8D2C4a8186426Fb12a4Ae483f0093ED2315","0xb71C02f99c42424257745827F1C2beBD7Fa1e936","0xD7a8070F0875915dB9b9E03bD47A0b973d19130b"]
+      values.getThreshold:
+-        1
+      template:
++        "GnosisSafe"
+    }
+```
+
+Generated with discovered.json: 0xcf3e778e85b0bbce6938806bdcff1180b6c74580
+
+# Diff at Fri, 18 Oct 2024 10:53:54 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@0295165a89d86b7450439f24f100d1baa74381fc block: 20640712
+- current block number: 20640712
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20640712 (main branch discovery), not current.
+
+```diff
+    contract OptimisticGovernor (0x172fB6b07D6aB708dd67392a09e1c40d16dA0460) {
+    +++ description: None
+      directlyReceivedPermissions:
++        [{"permission":"act","target":"0x4d50a469fc788a3c0CdC8Fd67868877dCb246625"}]
+    }
+```
+
+Generated with discovered.json: 0x043a4fcdeb9603f1615fbe53788e59778a48b5c4
+
+# Diff at Mon, 14 Oct 2024 10:49:12 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1afc77ff111ceb0970e7d09efcc7b2f376b0c281 block: 20640712
+- current block number: 20640712
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20640712 (main branch discovery), not current.
+
+```diff
+    contract MainnetSpokeConnector (0x02fdF04AF077687CDA03Bd3162388b7972A4a1Cc) {
+    +++ description: None
+      sourceHashes:
++        ["0xafd1330f5a43ba6b2a2db1315900ef6a75051e339fa9194fe9f671742c237a57"]
+    }
+```
+
+```diff
+    contract VotingToken (0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828) {
+    +++ description: None
+      sourceHashes:
++        ["0x349b0f612f02a8599667c43efe1e547bf4f18a46732001b3afb6b425a87325e9"]
+    }
+```
+
+```diff
+    contract OptimisticGovernor (0x172fB6b07D6aB708dd67392a09e1c40d16dA0460) {
+    +++ description: None
+      sourceHashes:
++        ["0xcecd27c998c8fd83d7532693da2bdff346a1dbedbaab4744f21d2bcf1986e9de"]
+    }
+```
+
+```diff
+    contract BaseHubConnector (0x23b7abe4cc664F24Eb68E80cFAdc572857799a94) {
+    +++ description: None
+      sourceHashes:
++        ["0xe1e1cddf981135f49c5ed0fd4a3ec66db79e2bb91e3cfea59e69f5da6ab165df"]
+    }
+```
+
+```diff
+    contract xLayerZkHubConnector (0x279fDA9AdDB854541f0bb86733d924e28c24c625) {
+    +++ description: None
+      sourceHashes:
++        ["0x8481f131a096c9d34bb43b220f73a7469f938128e441e7f5009eef26a021b104"]
+    }
+```
+
+```diff
+    contract UpgradeBeaconProxy (0x28A9e7bbed277092E2431F186E1aF898962d4E92) {
+    +++ description: None
+      sourceHashes:
++        ["0x096b81df0c8f5335503eff3f349aa3136ee8cc6a502b3929f5112ae8b164ee0a"]
+    }
+```
+
+```diff
+    contract Finder (0x40f941E48A552bF496B154Af6bf55725f18D77c3) {
+    +++ description: None
+      sourceHashes:
++        ["0x6b81a32a0de6b3e8ed743f089a6518d3791b0e4d373300269439642482338ddb"]
+    }
+```
+
+```diff
+    contract Connext Multisig (0x4d50a469fc788a3c0CdC8Fd67868877dCb246625) {
+    +++ description: None
+      sourceHashes:
++        ["0x81a7349eebb98ac33b0bc6842e3cb258034a8f2a4ba004570bb8e2e25947f9ff","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+```diff
+    contract ProposerV2 (0x50efaC9619225d7fB4703C5872da978849B6E7cC) {
+    +++ description: None
+      sourceHashes:
++        ["0x28c93f7b68e31548857633c6cb61284d9d2860cc0fbbcaaede8f631d364d66a4"]
+    }
+```
+
+```diff
+    contract RootManager (0x523AB7424AD126809b1d7A134eb6E0ee414C9B3A) {
+    +++ description: None
+      sourceHashes:
++        ["0x2ca55720c3cf2b2da110bcd8d47329f5a7924e3de8b3324c8b55b45f99eb94fd"]
+    }
+```
+
+```diff
+    contract LineaHubConnector (0x56Ab287e5c33Ee70158c951f34818bd095446255) {
+    +++ description: None
+      sourceHashes:
++        ["0xa7941f612635ebe90bf4c5a4dbbb4a7aff8c388f20ac06c5f881670d8554004c"]
+    }
+```
+
+```diff
+    contract MantleHubConnector (0x5B0E1a507E786f0a7c11C972ad5F4dd254661e24) {
+    +++ description: None
+      sourceHashes:
++        ["0x874db65420d6ae87b7f30ff1947bd1ee09a2498028cb98e58d43ad47ff6e936f"]
+    }
+```
+
+```diff
+    contract OptimismHubConnector (0x5c2149869146DeA55cDD1CF2DD828e4e1548bb2A) {
+    +++ description: None
+      sourceHashes:
++        ["0xe1e1cddf981135f49c5ed0fd4a3ec66db79e2bb91e3cfea59e69f5da6ab165df"]
+    }
+```
+
+```diff
+    contract WatcherManager (0x79e6E0242405A66B2dd8B96DEd3b2F0216Fd417d) {
+    +++ description: None
+      sourceHashes:
++        ["0x291566f24c232f7b88a3772c2a88517ba7bf4aeb4224c9053aabaa34ae92f50c"]
+    }
+```
+
+```diff
+    contract GovernorV2 (0x7b292034084A41B9D441B71b6E3557Edd0463fa8) {
+    +++ description: None
+      sourceHashes:
++        ["0xdf7f17e5c8ba1f0103fcfaf495da624089f8bfb3d5052217537bb064ca8c60b9"]
+    }
+```
+
+```diff
+    contract ModeHubConnector (0x7b2bE683266909A6a4068e743083dd40621d663E) {
+    +++ description: None
+      sourceHashes:
++        ["0xe1e1cddf981135f49c5ed0fd4a3ec66db79e2bb91e3cfea59e69f5da6ab165df"]
+    }
+```
+
+```diff
+    contract Connext Fee Multisig (0x7bE978Cc84612E08f7844672B0E6A6F367FE2b6A) {
+    +++ description: None
+      sourceHashes:
++        ["0xfe0725afd3cf2e5fb7627005a6bcf13ef7e35f78034eed2211edbffdb6a9aab5","0x618c83d2fbbe19fd6f2d6ee6ee79a60e6206e48bf361eaf4812e1c1fc14b4527"]
+    }
+```
+
+```diff
+    contract UpgradeBeaconProxy (0x7D2596D7E44b0990611d390Fbb0Bd24e64845694) {
+    +++ description: None
+      sourceHashes:
++        ["0x096b81df0c8f5335503eff3f349aa3136ee8cc6a502b3929f5112ae8b164ee0a"]
+    }
+```
+
+```diff
+    contract PolygonZkHubConnector (0x7ed49D0a13255802A281C08688563bd8D5f726b1) {
+    +++ description: None
+      sourceHashes:
++        ["0x8481f131a096c9d34bb43b220f73a7469f938128e441e7f5009eef26a021b104"]
+    }
+```
+
+```diff
+    contract GnosisSafe (0x8180D59b7175d4064bDFA8138A58e9baBFFdA44a) {
+    +++ description: None
+      sourceHashes:
++        ["0xd5a33441170541b7df25812e0e3dff6562b2f09ab835a6b431cb9e7198a47605","0xd42bbf9f7dcd3720a7fc6bdc6edfdfae8800a37d6dd4decfa0ef6ca4a2e88940"]
+    }
+```
+
+```diff
+    contract ArbitrumHubConnector (0x83096c7455f24E593aaC9A7c73f849d36d3EEb82) {
+    +++ description: None
+      sourceHashes:
++        ["0xec9f14911fa9c31669685bd1b89abbfa1a6a8bdd87f11af719c41ff7ec03987e"]
+    }
+```
+
+```diff
+    contract ConnextBridge (0x8898B472C54c31894e3B9bb83cEA802a5d0e63C6) {
+    +++ description: None
+      sourceHashes:
++        ["0xddff88cf097843837c49f9ed19ac3343d4f1950d3e0508e63669fbd972e4100c","0x72a9f0d6928e2ccb1a94e23690974a84ecc5be50d3be866e39469534323eebed","0x662d43eeaf35f8a6d80e9b833573360c1a83f418e93c65db17cf46c7b47758e8","0xf9087df539d680461ace025dfe27bd79d2eb110215ae416303b44629d7389219","0xa76e155468cff4d404ed0288be360d31e5ad958e5c2608e63134e03ec1d030c4","0xeaf1c83d9906c268afae35bf023ae9d7861e4bcdca5969bfd3c839e07bf3ae25","0x8692d1c129e074dfd45ba266215947cd7415ac1620b6aeca2d04cdfd593732ad","0x53d627be0e3afee6df116dcbf8d5988fe3b0e0c75fac31d03ec65870d7eb688e","0x6f2682c1f11312a6a8d948a5cf458cd0878e0b512e4e28f28c8444fd8a4bc91b","0x535e1a3124295865c51f088c9c1b0d4aff2003c3ed2744a9f3d8c24d059b1de2","0x96019d37901a28e311eaa7c1cf12caa35106001dba2273cfd3380b89952f6108","0x9efc9e4ba3961b565b36b5d255c7be95f240531bb7ffb97a3503db6bc34a5b77","0xdbc90380d4658e61987fc156f3647d7db9f8c00d8af551f3abbd1bae5ded1e28"]
+    }
+```
+
+```diff
+    contract EmergencyProposer (0x91F1804aCaf87C2D34A34A70be1bb16bB85D6748) {
+    +++ description: None
+      sourceHashes:
++        ["0x435ceb597bcf7bd820f593bdbc0e3ce4d223cc2203b368911d2b29fa6bc5e048"]
+    }
+```
+
+```diff
+    contract MetisHubConnector (0x9Ba7D2Ab079Bd1924859e2fECDAD1bEBe5B119Fa) {
+    +++ description: None
+      sourceHashes:
++        ["0x8260bb2699f6ede98283b1bd9e2d1fdd52e11144aca41b7ba56f4257cee0dd9d"]
+    }
+```
+
+```diff
+    contract WormholeHubConnector (0xae6B9cDE6191b710F5A18D82f751Ba52B78a99DA) {
+    +++ description: None
+      sourceHashes:
++        ["0xa4857ef08af1733cc8a6fb1ce54561fe834c6dae2d6a2be176506833af7d6f9f"]
+    }
+```
+
+```diff
+    contract PolygonHubConnector (0xE8cF9EbB1cFB137c692a0a4E470E257B9417d116) {
+    +++ description: None
+      sourceHashes:
++        ["0x801d3cc7883546ac5e0bbb1c4872555739352f0ecf116f9f317f51732c9d08f6"]
+    }
+```
+
+```diff
+    contract GnosisHubConnector (0xF1c78967584D5E0ffF66dA103b8eb06c82EC020d) {
+    +++ description: None
+      sourceHashes:
++        ["0xbe5ddf3ceaa76404a16ca4237ea9850cc76d59636c8de1526fab611e7d70ae6f"]
+    }
+```
+
+```diff
+    contract NewWormholeHubConnector (0xf5a3372ed529FCD0690b6013EAaE04170ec0626b) {
+    +++ description: None
+      sourceHashes:
++        ["0xa4857ef08af1733cc8a6fb1ce54561fe834c6dae2d6a2be176506833af7d6f9f"]
+    }
+```
+
+```diff
+    contract OptimisticOracleV3 (0xfb55F43fB9F48F63f9269DB7Dde3BbBe1ebDC0dE) {
+    +++ description: None
+      sourceHashes:
++        ["0xfb2c9056673690384bb615fd326655f97b80fa2a5601a15a35065b0a68186ae7"]
+    }
+```
+
+Generated with discovered.json: 0xaec4a912a3d3f29861db6f1357f53e67ba7a296f
+
+# Diff at Tue, 01 Oct 2024 10:49:35 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@bd754dc73c66120164006054f8d25c5fae9cd910 block: 20640712
+- current block number: 20640712
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20640712 (main branch discovery), not current.
+
+```diff
+    contract ConnextBridge (0x8898B472C54c31894e3B9bb83cEA802a5d0e63C6) {
+    +++ description: None
+      values.$pastUpgrades:
++        []
+      values.$upgradeCount:
++        0
+    }
+```
+
+Generated with discovered.json: 0x8bff205d514a54237007fec22c001f4543d064c7
+
+# Diff at Fri, 30 Aug 2024 10:12:23 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@78fe1115153efe3e1ba2014fd74329156dca3951 block: 20569082
+- current block number: 20640712
+
+## Description
+
+Optimistic mode reactivated. Messages are now now passed via offchain relayers and optimistically accepted onchain.
+
+## Watched changes
+
+```diff
+    contract MainnetSpokeConnector (0x02fdF04AF077687CDA03Bd3162388b7972A4a1Cc) {
+    +++ description: None
++++ description: When it's disabled, all roots must be passed via canonical rollup AMBs.
+      values.optimisticMode:
+-        false
++        true
+    }
+```
+
+```diff
+    contract RootManager (0x523AB7424AD126809b1d7A134eb6E0ee414C9B3A) {
+    +++ description: None
++++ description: When it's disabled, all roots must be passed via canonical rollup AMBs.
+      values.optimisticMode:
+-        false
++        true
+    }
+```
+
+Generated with discovered.json: 0xc6f0227ea0811dbe5b8dc7cebee5685c432900aa
+
+# Diff at Tue, 20 Aug 2024 09:57:39 GMT:
+
+- author: Radina Talanova (<nt.radina@gmail.com>)
+- comparing to: main@5417c4717b5cefeed17cd8419a7eb2dda22d4206 block: 20317972
+- current block number: 20569082
+
+## Description
+
+The optimistic mode is deactivated on Ethereum by a watcher (0x56dD71fffD089EdAdbA8eCdaaDb94269713f8f4d) and "slow" mode is active. All roots must now be passed via canonical rollup AMBs. On their bridge UI they have this message: "Due to adjustments with routers and liquidity pools this month, transaction processing on several paths may be slower than usual."
+
+## Watched changes
+
+```diff
+    contract MainnetSpokeConnector (0x02fdF04AF077687CDA03Bd3162388b7972A4a1Cc) {
+    +++ description: None
++++ description: When it's disabled, all roots must be passed via canonical rollup AMBs.
+      values.optimisticMode:
+-        true
++        false
+    }
+```
+
+```diff
+    contract RootManager (0x523AB7424AD126809b1d7A134eb6E0ee414C9B3A) {
+    +++ description: None
++++ description: When it's disabled, all roots must be passed via canonical rollup AMBs.
+      values.optimisticMode:
+-        true
++        false
+    }
+```
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20317972 (main branch discovery), not current.
+
+```diff
+    contract MainnetSpokeConnector (0x02fdF04AF077687CDA03Bd3162388b7972A4a1Cc) {
+    +++ description: None
+      fieldMeta:
++        {"optimisticMode":{"description":"When it's disabled, all roots must be passed via canonical rollup AMBs."}}
+    }
+```
+
+```diff
+    contract RootManager (0x523AB7424AD126809b1d7A134eb6E0ee414C9B3A) {
+    +++ description: None
+      fieldMeta.optimisticMode:
++        {"description":"When it's disabled, all roots must be passed via canonical rollup AMBs."}
+    }
+```
+
+Generated with discovered.json: 0x96e2d3515f785039b2980c9da704f2802cbb499e
+
+# Diff at Fri, 09 Aug 2024 10:08:27 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@1f0da1d0aab7bc6b3b5e54e7e93480bd98e57035 block: 20317972
+- current block number: 20317972
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20317972 (main branch discovery), not current.
+
+```diff
+    contract Connext Multisig (0x4d50a469fc788a3c0CdC8Fd67868877dCb246625) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "8 of 12 (67%)"
+      values.getOwners:
+-        ["0xdFa28361aC40679cC5D8EFa74c0421961397f2Eb","0xc840e73B856f52E5491d6016daf5C7AE5e6beECD","0x450BCD84a040E6975a8092114A09cD37fA140873","0x8D09e20b835009E5320cC11E6a6F00aF451aD669","0x43A257c61e9Ef4750e426eC0770589509469b156","0x6B44Dba00e92DD035976607CBF62bf1CC6320EC5","0xe4d19c67ca0E9E3888158062De24321a0B272e73","0xC832bB8015762B4857459551057EB61c68B93608","0x320CBa820f33251d480Dcb79F7a9b1cc757aC12e","0x1b526192C541DE6E23D73b4Afc4b6B45A75aeAdD","0xf8d8aF083aC452b05b0D2eb4499AD900324b5754","0x9b903Ae440CB1f01c342466D6DB6b57A5BF98C3f"]
+      values.getThreshold:
+-        8
+      values.$members:
++        ["0xdFa28361aC40679cC5D8EFa74c0421961397f2Eb","0xc840e73B856f52E5491d6016daf5C7AE5e6beECD","0x450BCD84a040E6975a8092114A09cD37fA140873","0x8D09e20b835009E5320cC11E6a6F00aF451aD669","0x43A257c61e9Ef4750e426eC0770589509469b156","0x6B44Dba00e92DD035976607CBF62bf1CC6320EC5","0xe4d19c67ca0E9E3888158062De24321a0B272e73","0xC832bB8015762B4857459551057EB61c68B93608","0x320CBa820f33251d480Dcb79F7a9b1cc757aC12e","0x1b526192C541DE6E23D73b4Afc4b6B45A75aeAdD","0xf8d8aF083aC452b05b0D2eb4499AD900324b5754","0x9b903Ae440CB1f01c342466D6DB6b57A5BF98C3f"]
+      values.$threshold:
++        8
+      values.multisigThreshold:
++        "8 of 12 (67%)"
+    }
+```
+
+```diff
+    contract Connext Fee Multisig (0x7bE978Cc84612E08f7844672B0E6A6F367FE2b6A) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "1 of 5 (20%)"
+      values.$members:
++        ["0x9b903Ae440CB1f01c342466D6DB6b57A5BF98C3f","0xade09131C6f43fe22C2CbABb759636C43cFc181e","0x7fB1B8D2C4a8186426Fb12a4Ae483f0093ED2315","0xb71C02f99c42424257745827F1C2beBD7Fa1e936","0xD7a8070F0875915dB9b9E03bD47A0b973d19130b"]
+      values.$threshold:
++        1
+      values.multisigThreshold:
++        "1 of 5 (20%)"
+    }
+```
+
+```diff
+    contract GnosisSafe (0x8180D59b7175d4064bDFA8138A58e9baBFFdA44a) {
+    +++ description: None
+      values.$multisigThreshold:
+-        "2 of 4 (50%)"
+      values.getOwners:
+-        ["0x363605C0bdE9F1F5053aDA30618d95dbFc109Bf5","0xcc400c09ecBAC3e0033e4587BdFAABB26223e37d","0x1d933Fd71FF07E69f066d50B39a7C34EB3b69F05","0x837219D7a9C666F5542c4559Bf17D7B804E5c5fe"]
+      values.getThreshold:
+-        2
+      values.$members:
++        ["0x363605C0bdE9F1F5053aDA30618d95dbFc109Bf5","0xcc400c09ecBAC3e0033e4587BdFAABB26223e37d","0x1d933Fd71FF07E69f066d50B39a7C34EB3b69F05","0x837219D7a9C666F5542c4559Bf17D7B804E5c5fe"]
+      values.$threshold:
++        2
+      values.multisigThreshold:
++        "2 of 4 (50%)"
+    }
+```
+
+Generated with discovered.json: 0x0c8c2fb63020264289bcd2c2930dce88b0953261
+
+# Diff at Tue, 30 Jul 2024 11:10:39 GMT:
+
+- author: Mateusz Radomski (<radomski.main@protonmail.com>)
+- comparing to: main@b2b6471ff62871f4956541f42ec025c356c08f7e block: 20317972
+- current block number: 20317972
+
+## Description
+
+Discovery rerun on the same block number with only config-related changes.
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20317972 (main branch discovery), not current.
+
+```diff
+    contract RootManager (0x523AB7424AD126809b1d7A134eb6E0ee414C9B3A) {
+    +++ description: None
+      fieldMeta:
++        {"connectorsHash":{"severity":"LOW","description":"Hash of all connectors' addresses. Changes when a connector is added or removed."},"watcherManager":{"severity":"MEDIUM","description":"Contract maintaining a list of Watchers able to stop the bridge if fraud is detected."}}
+    }
+```
+
+```diff
+    contract WatcherManager (0x79e6E0242405A66B2dd8B96DEd3b2F0216Fd417d) {
+    +++ description: None
+      fieldMeta:
++        {"WATCHERS":{"severity":"LOW","description":"Permissioned set of actors who can pause certain bridge components and remove connectors."}}
+    }
+```
+
+```diff
+    contract ConnextBridge (0x8898B472C54c31894e3B9bb83cEA802a5d0e63C6) {
+    +++ description: None
+      fieldMeta:
++        {"ROUTERS":{"description":"Routers can accelerate the bridging for users by fronting liquidity (for token transfers) or a bond (for crosschain contract calls) at the destination."},"relayerFeeVault":{"severity":"LOW","description":"This address receives the bridge fees"}}
+    }
+```
+
+Generated with discovered.json: 0xa4d9b32a352fab45729f1039d1720c106e0f9af8
+
+# Diff at Tue, 16 Jul 2024 08:47:32 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@4cebc868d0be9a9868d2842c2670f1974594c48e block: 20310579
+- current block number: 20317972
+
+## Description
+
+The Base connector that was accidentally removed is re-added.
+
+## Watched changes
+
+```diff
+    contract RootManager (0x523AB7424AD126809b1d7A134eb6E0ee414C9B3A) {
+    +++ description: None
+      values.connectors.13:
++        "0x23b7abe4cc664F24Eb68E80cFAdc572857799a94"
++++ description: Hash of all connectors' addresses. Changes when a connector is added or removed.
++++ severity: LOW
+      values.connectorsHash:
+-        "0xa4e473cfb05a7a4dfaac6b579b027ef81b1daf44179b942325dddbba59d5e587"
++        "0xe813f3a6a50b9d0b90ac54107ca8ab16dd7faba907e4de56210c710200c60755"
+    }
+```
+
+```diff
++   Status: CREATED
+    contract BaseHubConnector (0x23b7abe4cc664F24Eb68E80cFAdc572857799a94)
+    +++ description: None
+```
+
+## Source code changes
+
+```diff
+.../amarok/ethereum/.flat/BaseHubConnector.sol     | 1005 ++++++++++++++++++++
+ 1 file changed, 1005 insertions(+)
+```
+
+Generated with discovered.json: 0x32989f7cdc1a82d82ea6c20e509b400658f02e98
+
+# Diff at Mon, 15 Jul 2024 08:01:24 GMT:
+
+- author: sekuba (<29250140+sekuba@users.noreply.github.com>)
+- comparing to: main@c6bae99047cf03487a19e4008cfffabf520bcf2b block: 20289729
+- current block number: 20310579
+
+## Description
+
+After ~1 week of using canonical AMBs for message passing, optimistic mode is re-activated for the connext bridge. The connector for base is not yet reconnected.
+
+postmorten tldr from connext telegram:
+> had two false positives from our watcher, the RPC was behind in a watcher with a slightly misconfigured rpc/quorum. First one threw the system into slow mode, second one removed the base connector as it (falsely) detected fraud on the amb
+
+## Watched changes
+
+```diff
+    contract MainnetSpokeConnector (0x02fdF04AF077687CDA03Bd3162388b7972A4a1Cc) {
+    +++ description: None
+      values.optimisticMode:
+-        false
++        true
+    }
+```
+
+```diff
+    contract RootManager (0x523AB7424AD126809b1d7A134eb6E0ee414C9B3A) {
+    +++ description: None
+      values.optimisticMode:
+-        false
++        true
+    }
+```
+
+Generated with discovered.json: 0xf0a8f5e100287de45c70f0adc9d7086e8e93ca11
+
+# Diff at Fri, 12 Jul 2024 10:09:44 GMT:
+
+- author: sekuba (<sekuba@users.noreply.github.com>)
+- comparing to: main@48ec906f1df3ec8351c0e2324170592091f7c1db block: 20259771
+- current block number: 20289729
+
+## Description
+
+One of the op stack connectors (used for Base) is removed from the list of used connectors.
+The support of Base L2 is now removed from connnext/amarok/everclear.
+System is still in non-optimistic mode.
+
+## Watched changes
+
+```diff
+-   Status: DELETED
+    contract BaseHubConnector (0x23b7abe4cc664F24Eb68E80cFAdc572857799a94)
+    +++ description: None
+```
+
+```diff
+    contract RootManager (0x523AB7424AD126809b1d7A134eb6E0ee414C9B3A) {
+    +++ description: None
+      values.connectors.13:
+-        "0x279fDA9AdDB854541f0bb86733d924e28c24c625"
+      values.connectors.10:
+-        "0x23b7abe4cc664F24Eb68E80cFAdc572857799a94"
++        "0x279fDA9AdDB854541f0bb86733d924e28c24c625"
++++ description: Hash of all connectors' addresses. Changes when a connector is added or removed.
++++ severity: LOW
+      values.connectorsHash:
+-        "0xc42a577ed5d3cd88fe742888027cc407ea75817228119d14e6d19cd8e80208d6"
++        "0xa4e473cfb05a7a4dfaac6b579b027ef81b1daf44179b942325dddbba59d5e587"
+    }
+```
+
+## Source code changes
+
+```diff
+.../BaseHubConnector.sol => /dev/null              | 958 ---------------------
+ 1 file changed, 958 deletions(-)
+```
+
+## Config/verification related changes
+
+Following changes come from updates made to the config file,
+or/and contracts becoming verified, not from differences found during
+discovery. Values are for block 20259771 (main branch discovery), not current.
+
+```diff
+    contract NewOptimismHubConnector (0x23b7abe4cc664F24Eb68E80cFAdc572857799a94) {
+    +++ description: None
+      name:
+-        "NewOptimismHubConnector"
++        "BaseHubConnector"
+    }
+```
+
+```diff
+    contract OptimismV0HubConnector (0x9Ba7D2Ab079Bd1924859e2fECDAD1bEBe5B119Fa) {
+    +++ description: None
+      name:
+-        "OptimismV0HubConnector"
++        "MetisHubConnector"
+    }
+```
+
+Generated with discovered.json: 0xfdb6fed8b35e97461c2db907f00033d0d31fcebd
+
+# Diff at Mon, 08 Jul 2024 05:42:55 GMT:
+
+- author: sekuba (<sekuba@users.noreply.github.com>)
+- comparing to: main@e192ffbc9e265fdc44012a487bab5f0859ffe881 block: 20082446
+- current block number: 20259771
+
+## Description
+
+The optimistic mode is deactivated on the ethereum domain by a watcher (`0x56dD71fffD089EdAdbA8eCdaaDb94269713f8f4d`) with other chains following (https://app.blocksec.com/explorer/tx/base/0x4c550c961192befbd22a6eff5917ffdd41c33320ada8fd9bb340306a16385aff). Frontend automatically reflects this.
+
+This is a rare phenomenon and means that all roots must now be passed via canonical rollup AMBs. The result can be seen by looking at SpokeConnectors on the Spoke domain chains that now emit `AggregateRootReceived` (`0x84ef18531155afdb0e64ff905d67044ae3aac63a6fba4661cfd9c4c14f289bc8`) each time a root is received via AMB.
+Bridging can still be fast for users, just the reconciliation for LPs(routers) and slow-bridging (execution after reconciliation) much longer now. Also refer to the [architecture diagram on excalidraw](https://app.excalidraw.com/s/1Pobo8fNXle/7KAm671eZbq).
+
+## Watched changes
+
+```diff
+    contract MainnetSpokeConnector (0x02fdF04AF077687CDA03Bd3162388b7972A4a1Cc) {
+    +++ description: None
+      values.optimisticMode:
+-        true
++        false
+    }
+```
+
+```diff
+    contract RootManager (0x523AB7424AD126809b1d7A134eb6E0ee414C9B3A) {
+    +++ description: None
+      values.optimisticMode:
+-        true
++        false
+    }
+```
+
+Generated with discovered.json: 0x17beec9d610530d1b14aacb886211000ec5e431d
 
 # Diff at Mon, 10 Jun 2024 06:13:47 GMT:
 

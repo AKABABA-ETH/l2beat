@@ -22,10 +22,6 @@ export function getChainDiscoveryConfig(
     throw new Error('Missing explorerApi for chain: ' + chain)
   }
 
-  if (chainConfig.explorerApi.type !== 'etherscan') {
-    throw new Error('Only etherscan explorerApi is supported: ' + chain)
-  }
-
   const ENV_NAME = chain.toUpperCase()
 
   return {
@@ -40,16 +36,30 @@ export function getChainDiscoveryConfig(
       `${ENV_NAME}_REORG_SAFE_DEPTH_FOR_DISCOVERY`,
       `${ENV_NAME}_REORG_SAFE_DEPTH`,
     ]),
+    beaconApiUrl: env.optionalString([
+      'ETHEREUM_BEACON_API_URL_FOR_DISCOVERY',
+      'ETHEREUM_BEACON_API_URL',
+    ]),
     multicall: getMulticall3Config(
       multicallV3.sinceBlock,
       multicallV3.address,
       multicallV3.batchSize,
     ),
-    etherscanApiKey: env.string([
-      `${ENV_NAME}_ETHERSCAN_API_KEY_FOR_DISCOVERY`,
-      `${ENV_NAME}_ETHERSCAN_API_KEY`,
-    ]),
-    etherscanUrl: chainConfig.explorerApi.url,
-    etherscanUnsupported: chainConfig.explorerApi.missingFeatures,
+    explorer:
+      chainConfig.explorerApi.type === 'blockscout'
+        ? {
+            type: chainConfig.explorerApi.type,
+            url: chainConfig.explorerApi.url,
+            unsupported: chainConfig.explorerApi.missingFeatures,
+          }
+        : {
+            type: chainConfig.explorerApi.type,
+            url: chainConfig.explorerApi.url,
+            apiKey: env.string([
+              `${ENV_NAME}_ETHERSCAN_API_KEY_FOR_DISCOVERY`,
+              `${ENV_NAME}_ETHERSCAN_API_KEY`,
+            ]),
+            unsupported: chainConfig.explorerApi.missingFeatures,
+          },
   }
 }

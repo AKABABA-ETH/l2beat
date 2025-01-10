@@ -1,21 +1,13 @@
 import { dirname, posix } from 'path'
-import { assert } from '@l2beat/backend-tools'
-import { EthereumAddress } from '@l2beat/shared-pure'
+import { assert, EthereumAddress } from '@l2beat/shared-pure'
 import { writeFile } from 'fs/promises'
 import { mkdirp } from 'mkdirp'
 import { rimraf } from 'rimraf'
-
-import {
-  FileContent,
-  ParsedFilesManager,
-} from '../../flatten/ParsedFilesManager'
-import { flattenStartingFrom } from '../../flatten/flattenStartingFrom'
-import { formatSI, getThroughput, timed } from '../../utils/timing'
 import { DiscoveryLogger } from '../DiscoveryLogger'
 import { Analysis } from '../analysis/AddressAnalyzer'
 import { DiscoveryConfig } from '../config/DiscoveryConfig'
-import { PerContractSource } from '../source/SourceCodeService'
 import { removeSharedNesting } from '../source/removeSharedNesting'
+import { flattenDiscoveredSources } from './flattenDiscoveredSource'
 import { toDiscoveryOutput } from './toDiscoveryOutput'
 import { toPrettyJson } from './toPrettyJson'
 
@@ -111,148 +103,23 @@ async function saveFlatSources(
 ): Promise<void> {
   const flatSourcesFolder = options.flatSourcesFolder ?? '.flat'
   const flatSourcesPath = posix.join(rootPath, flatSourcesFolder)
-  const allContractNames = results.map((c) =>
-    c.type !== 'EOA' ? c.derivedName ?? c.name : 'EOA',
-  )
 
   await rimraf(flatSourcesPath)
+  await mkdirp(flatSourcesPath)
 
-  logger.log(`Saving flattened sources`)
-  for (const analyzedContract of results) {
-    try {
-      if (analyzedContract.type === 'EOA') {
-        continue
-      }
+  const flatten = flattenDiscoveredSources(results, logger)
+  for (const entryPath of Object.keys(flatten)) {
+    const outputPath = posix.join(flatSourcesPath, entryPath)
 
-      for (const [
-        bundleIndex,
-        bundle,
-      ] of analyzedContract.sourceBundles.entries()) {
-        const input: FileContent[] = Object.entries(bundle.source.files)
-          .map(([fileName, content]) => ({
-            path: fileName,
-            content,
-          }))
-          .filter((e) => e.path.endsWith('.sol'))
-
-        if (input.length === 0) {
-          logger.log(
-            `[SKIP]: ${analyzedContract.name}-${bundle.name} no .sol files`,
-          )
-          continue
-        }
-
-        const result = timed(() => {
-          const parsedFileManager = ParsedFilesManager.parseFiles(
-            input,
-            bundle.source.remappings,
-          )
-          const output = flattenStartingFrom(bundle.name, parsedFileManager)
-
-          return output
-        })
-
-        const throughput = formatThroughput(input, result.executionTime)
-
-        const containingDirectory = getFlatContainingDirectoryName(
-          analyzedContract,
-          allContractNames,
-        )
-
-        const fileName = getFlatSourceFileName(
-          analyzedContract,
-          bundleIndex,
-          bundle,
-          allContractNames,
-        )
-
-        const flatContent = addSolidityVersionComment(
-          bundle.source.solidityVersion,
-          result.value,
-        )
-        const path = posix.join(flatSourcesPath, containingDirectory, fileName)
-        await mkdirp(dirname(path))
-        await writeFile(path, flatContent)
-
-        logger.log(`[ OK ]: ${bundle.name} @ ${throughput}`)
-      }
-    } catch (e) {
-      assert(analyzedContract.type !== 'EOA', 'This should never happen')
-      const contractName = analyzedContract.derivedName ?? analyzedContract.name
-
-      logger.log(`[FAIL]: ${contractName} - ${stringifyError(e)}`)
+    if (posix.dirname(outputPath) !== flatSourcesPath) {
+      await mkdirp(posix.dirname(outputPath))
     }
+
+    const content = flatten[entryPath]
+    assert(content !== undefined, 'Content should never be undefined')
+
+    await writeFile(outputPath, content)
   }
-}
-
-function addSolidityVersionComment(
-  solidityVersion: string,
-  flatSource: string,
-): string {
-  return `// Compiled with solc version: ${solidityVersion}\n\n${flatSource}`
-}
-
-function getFlatContainingDirectoryName(
-  contract: Analysis,
-  allContractNames: string[],
-): string {
-  assert(contract.type !== 'EOA', 'Invalid execution path')
-
-  const hasNameClash =
-    allContractNames.filter((n) => n === contract.name).length > 1
-  const uniquenessSuffix = hasNameClash ? `-${contract.address.toString()}` : ''
-
-  const hasProxy = contract.sourceBundles.length > 1
-  return hasProxy ? `${contract.name}${uniquenessSuffix}` : ''
-}
-
-function getFlatSourceFileName(
-  contract: Analysis,
-  sourceIndex: number,
-  source: PerContractSource,
-  allContractNames: string[],
-): string {
-  assert(contract.type !== 'EOA', 'Invalid execution path')
-
-  const hasProxy = contract.sourceBundles.length > 1
-  const isProxy = hasProxy && sourceIndex === 0
-
-  const hasNameClash =
-    allContractNames.filter((n) => n === source.name).length > 1
-  const uniquenessSuffix =
-    hasNameClash && !hasProxy ? `-${source.address.toString()}` : ''
-  const hasManyImplementations = contract.implementations.length > 1
-
-  const implementationPostfix = hasManyImplementations ? `.${sourceIndex}` : ''
-  const proxyPostfix = isProxy ? '.p' : ''
-  const postfix = isProxy ? proxyPostfix : implementationPostfix
-  return `${source.name}${uniquenessSuffix}${postfix}.sol`
-}
-
-function formatThroughput(
-  input: FileContent[],
-  executionTimeMilliseconds: number,
-): string {
-  const sourceLineCount = input.reduce(
-    (acc, { content }) => acc + content.split('\n').length,
-    0,
-  )
-  const throughput = formatSI(
-    getThroughput(sourceLineCount, executionTimeMilliseconds),
-    'lines/s',
-  )
-
-  return throughput
-}
-
-function stringifyError(e: unknown): string {
-  if (e instanceof Error) {
-    return e.message
-  } else if (typeof e === 'string') {
-    return e
-  }
-
-  return JSON.stringify(e)
 }
 
 export function getSourceOutputPath(
@@ -289,10 +156,7 @@ export function getSourceOutputPath(
  * If there are more it returns
  * '/proxy', '/implementation-1', '/implementation-2', etc.
  */
-export function getImplementationFolder(
-  i: number,
-  sourcesCount: number,
-): string {
+function getImplementationFolder(i: number, sourcesCount: number): string {
   let name = ''
   if (sourcesCount > 1) {
     name = i === 0 ? 'proxy' : 'implementation'

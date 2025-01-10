@@ -1,23 +1,35 @@
-import { assert, ProjectId } from '@l2beat/shared-pure'
+import { EthereumAddress, ProjectId, UnixTime } from '@l2beat/shared-pure'
 
-import { RISK_VIEW, makeBridgeCompatible } from '../../common'
+import { CONTRACTS } from '../../common'
+import { REASON_FOR_BEING_OTHER } from '../../common/ReasonForBeingInOther'
 import { subtractOne } from '../../common/assessCount'
 import { ProjectDiscovery } from '../../discovery/ProjectDiscovery'
+import { Badge } from '../badges'
 import { orbitStackL3 } from '../layer2s/templates/orbitStack'
 import { Layer3 } from './types'
 
 const discovery = new ProjectDiscovery('degen', 'base')
 
 export const degen: Layer3 = orbitStackL3({
+  createdAt: new UnixTime(1712135735), // 2024-04-03T09:15:35Z
   hostChain: ProjectId('base'),
   discovery,
-  nativeToken: 'DEGEN',
+  additionalBadges: [
+    Badge.DA.DAC,
+    Badge.L3ParentChain.Base,
+    Badge.RaaS.Alchemy,
+  ],
+  additionalPurposes: ['Social'],
+  gasTokens: ['DEGEN'],
   display: {
+    reasonsForBeingOther: [
+      REASON_FOR_BEING_OTHER.CLOSED_PROOFS,
+      REASON_FOR_BEING_OTHER.SMALL_DAC,
+    ],
     name: 'Degen Chain',
     slug: 'degen',
     description:
       'Degen Chain is an ultra-low-cost L3 for the Degen community built with Arbitrum Orbit, Base for settlement, and AnyTrust for data availability. DEGEN is the native gas token.',
-    purposes: ['Social', 'DeFi', 'Universal'],
     links: {
       websites: ['https://syndicate.io/blog/degen-chain'],
       apps: ['https://bridge.degen.tips/', 'https://degen.tips/'],
@@ -31,24 +43,7 @@ export const degen: Layer3 = orbitStackL3({
     },
     activityDataSource: 'Blockchain RPC',
   },
-  stackedRiskView: makeBridgeCompatible({
-    stateValidation: RISK_VIEW.STATE_NONE,
-    dataAvailability: (() => {
-      const { membersCount, requiredSignatures } = discovery.getContractValue<{
-        membersCount: number
-        requiredSignatures: number
-      }>('SequencerInbox', 'dacKeyset')
-      return RISK_VIEW.DATA_EXTERNAL_DAC({
-        membersCount,
-        requiredSignatures,
-      })
-    })(),
-    exitWindow: RISK_VIEW.EXIT_WINDOW(0, 86400), // SequencerInbox.maxTimeVariation.delaySeconds
-    sequencerFailure: RISK_VIEW.SEQUENCER_SELF_SEQUENCE(129600), // degen l3 delay + base l2 delay
-    proposerFailure: RISK_VIEW.PROPOSER_CANNOT_WITHDRAW,
-    validatedBy: RISK_VIEW.VALIDATED_BY_L2(ProjectId('base')),
-    destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-  }),
+  blockNumberOpcodeTimeSeconds: 2, // block.number opcode on Base (Degen host chain) counts Base L2 block numbers that have 2 seconds block time (different to OP stack host chains that count the L1 blocks)
   transactionApi: {
     type: 'rpc',
     defaultUrl: 'https://rpc.degen.tips',
@@ -56,51 +51,45 @@ export const degen: Layer3 = orbitStackL3({
     assessCount: subtractOne,
     startBlock: 1,
   },
-  bridge: discovery.getContract('Bridge'),
+  chainConfig: {
+    name: 'degen',
+    chainId: 666666666,
+    explorerUrl: 'https://explorer.degen.tips/',
+    explorerApi: {
+      url: 'https://explorer.degen.tips/api',
+      type: 'blockscout',
+    },
+    minTimestampForTvl: new UnixTime(1710087539),
+    multicallContracts: [
+      {
+        address: EthereumAddress('0x79035Dc4436bA9C95016D3bF6304e5bA78B1066A'),
+        batchSize: 150,
+        sinceBlock: 2279171,
+        version: '3',
+      },
+    ],
+  },
+  bridge: discovery.getContract('ERC20Bridge'),
   rollupProxy: discovery.getContract('RollupProxy'),
   sequencerInbox: discovery.getContract('SequencerInbox'),
-  nonTemplatePermissions: [
-    ...discovery.getMultisigPermission(
-      'RollupOwnerMultisig',
-      (() => {
-        const discoveredAdminOwner = discovery.getAddressFromValue(
-          'ProxyAdmin',
-          'owner',
-        )
-        const discoveredUpgradeExecutorAddy =
-          discovery.getContract('UpgradeExecutor').address
-        const discoveredExecutor = discovery.getAccessControlField(
-          'UpgradeExecutor',
-          'EXECUTOR_ROLE',
-        ).members[0]
-        const discoveredRollupOwnerMultisig = discovery.getContract(
-          'RollupOwnerMultisig',
-        ).address
-        assert(
-          discoveredAdminOwner === discoveredUpgradeExecutorAddy &&
-            discoveredExecutor === discoveredRollupOwnerMultisig,
-          'Update the permissions section if this changes.',
-        )
-        const description =
-          'Has the executor role of the UpgradeExecutor and indirectly owns the ProxyAdmin (can upgrade the whole system).'
-        return description
-      })(),
-    ),
+  discoveryDrivenData: true,
+  nonTemplateContractRisks: [
     {
-      name: 'UTBAdmin',
-      accounts: discovery.getAccessControlRolePermission(
-        'UTBDecent',
-        'DEFAULT_ADMIN_ROLE',
-      ),
-      description:
-        'The UTBAdmin directly controls the UTB contracts critical functions like updating all roles and modules.',
+      category: 'Funds can be stolen if',
+      text: 'the security stack of the whitelisted LayerZero adapter changes or is compromised.',
+      isCritical: true,
     },
-  ],
-  nonTemplateContracts: [
-    discovery.getContractDetails('UTBDecent', {
-      description:
-        'The UTB contract serves as an L2<->L3 gateway by integrating with Decent (LayerZero app) to allow bridging and swapping in- and out of Degen L3. This is achieved using external modules (smart contracts) like swappers and bridgers that can be registered in the UTB contract.',
-    }),
+    CONTRACTS.UPGRADE_NO_DELAY_RISK,
   ],
   associatedTokens: ['DEGEN'],
+  milestones: [
+    {
+      name: 'Degen Chain halts for two days',
+      date: '2024-05-13T00:00:00Z',
+      link: 'https://x.com/degentokenbase/status/1789944238731297188',
+      description:
+        'Degen Chain halts for two days due to a chain misconfiguration.',
+      type: 'incident',
+    },
+  ],
 })

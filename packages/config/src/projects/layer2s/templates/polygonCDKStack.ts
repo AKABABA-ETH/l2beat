@@ -1,4 +1,7 @@
-import { ContractParameters } from '@l2beat/discovery-types'
+import {
+  ContractParameters,
+  get$Implementations,
+} from '@l2beat/discovery-types'
 import {
   assert,
   EthereumAddress,
@@ -10,6 +13,9 @@ import {
 import {
   CONTRACTS,
   ChainConfig,
+  DA_BRIDGES,
+  DA_LAYERS,
+  DA_MODES,
   DataAvailabilityBridge,
   DataAvailabilityLayer,
   EXITS,
@@ -23,6 +29,7 @@ import {
   ScalingProjectContract,
   ScalingProjectEscrow,
   ScalingProjectPermission,
+  ScalingProjectPurpose,
   ScalingProjectRiskViewEntry,
   ScalingProjectStateDerivation,
   ScalingProjectStateValidation,
@@ -31,14 +38,16 @@ import {
   ScalingProjectTransactionApi,
   TECHNOLOGY_DATA_AVAILABILITY,
   addSentimentToDataAvailability,
-  makeBridgeCompatible,
 } from '../../../common'
+import { formatDelay, formatExecutionDelay } from '../../../common/formatDelays'
 import { ProjectDiscovery } from '../../../discovery/ProjectDiscovery'
+import { Badge, BadgeId, badges } from '../../badges'
 import { getStage } from '../common/stages/getStage'
 import { Layer2, Layer2Display, Layer2TxConfig } from '../types'
+import { mergeBadges } from './utils'
 
 export interface DAProvider {
-  name: DataAvailabilityLayer
+  layer: DataAvailabilityLayer
   fallback?: DataAvailabilityLayer
   riskView: ScalingProjectRiskViewEntry
   technology: ScalingProjectTechnologyChoice
@@ -46,9 +55,10 @@ export interface DAProvider {
 }
 
 export interface PolygonCDKStackConfig {
+  createdAt: UnixTime
   daProvider?: DAProvider
   discovery: ProjectDiscovery
-  display: Omit<Layer2Display, 'provider' | 'category' | 'dataAvailabilityMode'>
+  display: Omit<Layer2Display, 'provider' | 'category' | 'purposes'>
   rpcUrl?: string
   transactionApi?: ScalingProjectTransactionApi
   chainConfig?: ChainConfig
@@ -66,12 +76,22 @@ export interface PolygonCDKStackConfig {
   upgradesAndGovernance?: string
   stateValidation?: ScalingProjectStateValidation
   associatedTokens?: string[]
+  additionalBadges?: BadgeId[]
+  additionalPurposes?: ScalingProjectPurpose[]
+  gasTokens?: string[]
 }
 
 export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
   const daProvider = templateVars.daProvider
   const shared = new ProjectDiscovery('shared-polygon-cdk')
   const rollupManagerContract = shared.getContract('PolygonRollupManager')
+  if (daProvider !== undefined) {
+    assert(
+      templateVars.additionalBadges?.find((b) => badges[b].type === 'DA') !==
+        undefined,
+      'DA badge is required for external DA',
+    )
+  }
 
   const upgradeDelay = shared.getContractValue<number>(
     'Timelock',
@@ -105,7 +125,7 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
     ...RISK_VIEW.EXIT_WINDOW(
       upgradeDelay,
       trustedAggregatorTimeout + pendingStateTimeout + forceBatchTimeout,
-      0,
+      { upgradeDelay2: 0 },
     ),
     description: `Even though there is a ${upgradeDelayString} Timelock for upgrades, forced transactions are disabled. Even if they were to be enabled, user withdrawals can be censored up to ${formatSeconds(
       trustedAggregatorTimeout + pendingStateTimeout + forceBatchTimeout,
@@ -129,21 +149,22 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
   )
   const bridge = shared.getContract('Bridge')
 
+  const finalizationPeriod =
+    templateVars.display.finality?.finalizationPeriod ?? 0
+
   return {
     type: 'layer2',
+    createdAt: templateVars.createdAt,
     id: ProjectId(templateVars.discovery.projectName),
     display: {
       ...templateVars.display,
+      purposes: ['Universal', ...(templateVars.additionalPurposes ?? [])],
       category:
         templateVars.daProvider !== undefined ? 'Validium' : 'ZK Rollup',
       provider: 'Polygon',
-      tvlWarning: templateVars.display.tvlWarning ?? {
-        content:
-          'The TVL is currently shared among all projects using the shared Polygon CDK contracts.',
-        sentiment: 'warning',
-      },
+      tvlWarning: templateVars.display.tvlWarning,
       finality: templateVars.display.finality ?? {
-        finalizationPeriod: 0,
+        finalizationPeriod,
         warnings: {
           timeToInclusion: {
             sentiment: 'neutral',
@@ -154,6 +175,7 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
     },
     config: {
       associatedTokens: templateVars.associatedTokens,
+      gasTokens: templateVars.gasTokens,
       escrows: templateVars.nonTemplateEscrows,
       transactionApi:
         templateVars.transactionApi ??
@@ -183,8 +205,8 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
                   selector: '0x5e9145c9',
                   functionSignature:
                     'function sequenceBatches((bytes,bytes32,uint64,uint64)[] batches,address l2Coinbase)',
-                  sinceTimestampInclusive: new UnixTime(1679653163),
-                  untilTimestampExclusive: new UnixTime(1707824735),
+                  sinceTimestamp: new UnixTime(1679653163),
+                  untilTimestamp: new UnixTime(1707824735),
                 },
               },
               {
@@ -206,8 +228,8 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
                   selector: '0x2b0006fa',
                   functionSignature:
                     'function verifyBatchesTrustedAggregator(uint64 pendingStateNum,uint64 initNumBatch,uint64 finalNewBatch,bytes32 newLocalExitRoot,bytes32 newStateRoot,bytes32[24] proof)',
-                  sinceTimestampInclusive: new UnixTime(1679653163),
-                  untilTimestampExclusive: new UnixTime(1707822059),
+                  sinceTimestamp: new UnixTime(1679653163),
+                  untilTimestamp: new UnixTime(1707822059),
                 },
               },
               {
@@ -229,8 +251,8 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
                   selector: '0x621dd411',
                   functionSignature:
                     'function verifyBatches(uint64 pendingStateNum,uint64 initNumBatch,uint64 finalNewBatch,bytes32 newLocalExitRoot,bytes32 newStateRoot,bytes32[24] calldata proof) ',
-                  sinceTimestampInclusive: new UnixTime(1679653163),
-                  untilTimestampExclusive: new UnixTime(1707822059),
+                  sinceTimestamp: new UnixTime(1679653163),
+                  untilTimestamp: new UnixTime(1707822059),
                 },
               },
               {
@@ -252,7 +274,7 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
                   selector: '0x1489ed10',
                   functionSignature:
                     'function verifyBatchesTrustedAggregator(uint32,uint64,uint64,uint64,bytes32,bytes32,address,bytes32[24])',
-                  sinceTimestampInclusive: new UnixTime(1707822059),
+                  sinceTimestamp: new UnixTime(1707822059),
                 },
               },
               {
@@ -274,7 +296,7 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
                   selector: '0x87c20c01',
                   functionSignature:
                     'function verifyBatches(uint32,uint64,uint64,uint64,bytes32,bytes32,address,bytes32[24])',
-                  sinceTimestampInclusive: new UnixTime(1707822059),
+                  sinceTimestamp: new UnixTime(1707822059),
                 },
               },
             ],
@@ -295,23 +317,25 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
             },
     },
     chainConfig: templateVars.chainConfig,
-    dataAvailability:
+    dataAvailability: [
       daProvider !== undefined
         ? addSentimentToDataAvailability({
             layers: daProvider.fallback
-              ? [daProvider.name, daProvider.fallback]
-              : [daProvider.name],
+              ? [daProvider.layer, daProvider.fallback]
+              : [daProvider.layer],
             bridge: daProvider.bridge,
-            mode: 'Transactions data',
+            mode: DA_MODES.TRANSACTION_DATA,
           })
         : addSentimentToDataAvailability({
-            layers: ['Ethereum (calldata)'],
-            bridge: { type: 'Enshrined' },
-            mode: 'Transactions data',
+            layers: [DA_LAYERS.ETH_CALLDATA],
+            bridge: DA_BRIDGES.ENSHRINED,
+            mode: DA_MODES.TRANSACTION_DATA,
           }),
-    riskView: makeBridgeCompatible({
+    ],
+    riskView: {
       stateValidation: {
-        ...RISK_VIEW.STATE_ZKP_SN,
+        ...RISK_VIEW.STATE_ZKP_ST_SN_WRAP,
+        secondLine: formatExecutionDelay(finalizationPeriod),
         sources: [
           {
             contract: rollupManagerContract.name,
@@ -348,6 +372,7 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
         description:
           RISK_VIEW.PROPOSER_SELF_PROPOSE_ZK.description +
           ` There is a ${trustedAggregatorTimeoutString} delay for proving and a ${pendingStateTimeoutString} delay for finalizing state proven in this way. These delays can only be lowered except during the emergency state.`,
+        secondLine: formatDelay(trustedAggregatorTimeout + pendingStateTimeout),
         sources: [
           {
             contract: rollupManagerContract.name,
@@ -362,9 +387,7 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
           },
         ],
       },
-      destinationToken: RISK_VIEW.NATIVE_AND_CANONICAL(),
-      validatedBy: RISK_VIEW.VALIDATED_BY_ETHEREUM,
-    }),
+    },
     stage:
       daProvider !== undefined
         ? { stage: 'NotApplicable' }
@@ -465,15 +488,6 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
     stateDerivation: templateVars.stateDerivation,
     stateValidation: templateVars.stateValidation,
     permissions: [
-      {
-        name: 'ProxyAdminOwner',
-        accounts: [
-          templateVars.discovery.formatPermissionedAccount(
-            shared.getContractValue('SharedProxyAdmin', 'owner'), // could be EOA or multisig
-          ),
-        ],
-        description: `Admin of the ${templateVars.rollupModuleContract.name} rollup, can set core system parameters like timeouts, sequencer, activate forced transactions and update the DA mode.`,
-      },
       {
         name: 'Sequencer',
         accounts: [
@@ -591,6 +605,15 @@ export function polygonCDKStack(templateVars: PolygonCDKStackConfig): Layer2 {
     upgradesAndGovernance: templateVars.upgradesAndGovernance,
     milestones: templateVars.milestones,
     knowledgeNuggets: templateVars.knowledgeNuggets,
+    badges: mergeBadges(
+      [
+        Badge.Stack.PolygonCDK,
+        Badge.VM.EVM,
+        Badge.DA.EthereumCalldata,
+        Badge.Infra.AggLayer,
+      ],
+      templateVars.additionalBadges ?? [],
+    ),
   }
 }
 
@@ -616,7 +639,7 @@ function technologyDA(
 }
 
 function safeGetImplementation(contract: ContractParameters): string {
-  const implementation = contract.implementations?.[0]
+  const implementation = get$Implementations(contract.values)[0]
   if (!implementation) {
     throw new Error(`No implementation found for ${contract.name}`)
   }
